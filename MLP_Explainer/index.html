@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akademia AI Pro - Interactive Explainers</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="bg-mesh"></div>
+    <div class="globe globe-1"></div>
+    <div class="globe globe-2"></div>
+
+    <nav class="navbar">
+        <div class="logo" id="nav-logo" style="cursor: pointer;">🧠 Akademia AI Pro</div>
+        <button id="back-to-menu-top" class="btn btn-secondary hidden"
+            style="font-size: 13px; padding: 8px 16px; border-radius:20px;">
+            🏠 Menu Główne
+        </button>
+    </nav>
+
+    <main class="container">
+        <!-- ======================= -->
+        <!-- MENU GŁÓWNE -->
+        <!-- ======================= -->
+        <div id="home-screen" class="active-screen menu-container">
+            <h1 class="main-title">Rozpocznij Interaktywny Kurs</h1>
+            <div class="menu-cards">
+                <div class="menu-card" data-target="lesson-perceptron">
+                    <div class="menu-icon">⚡</div>
+                    <h2>Klasyczny Perceptron</h2>
+                    <p>Linijka po linijce: Architektura, Reguła Uczenia, Bramki logiczne, rak piersi (Sklearn) i
+                        interaktywny model do klasyfikacji np. wycieczki rowerowej.</p>
+                    <span class="badge b-red">Poziom 1 (Od Podstaw)</span>
+                </div>
+                <div class="menu-card" data-target="lesson-mlp">
+                    <div class="menu-icon">🌌</div>
+                    <h2>Sieć MLP (Keras)</h2>
+                    <p>Rozkład na czynniki pierwsze: Architektura Głęboka (Dense), aktywacje ReLU i Softmax,
+                        Optymalizator Adam i Skalowanie Danych ze zjawiskowymi wizualizacjami.</p>
+                    <span class="badge b-blue">Poziom 2 (Sieci Gęste)</span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ======================= -->
+        <!-- LEKCJA 1: PERCEPTRON -->
+        <!-- ======================= -->
+        <div id="lesson-perceptron" class="hidden-screen lesson-flow">
+
+            <!-- P0: THEORY PERCEPTRON -->
+            <section class="card glass-effect active-section">
+                <div class="card-content">
+                    <span class="badge b-red">Krok 1 / 11 (Teoria)</span>
+                    <h1>Czym jest Perceptron?</h1>
+                    <p>W dziedzinie sztucznej inteligencji <b>Perceptron</b> uchodzi za historycznego ojca u Sieci Neuronowych. Opracowany matematycznie w 1957 roku przez dr Franka Rosenblatta był zapowiedzią zasymulowania wzroku i działania mózgu.</p>
+                    
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header">Biologia ➔ Matematyka</div>
+                            <div class="code-desc">Biologiczny neuron odbiera sygnał za pomocą dendrytów, kumuluje iskrę, i wyrzuca impuls aksonem dalej. <b>W programie jest to po prostu funkcja sumująca liczby.</b> Odbiera wejścia (liczby ułamkowe), waży je przez "ważność" sygnału (tzw. Wagi synaptyczne) i jeśli suma wykaże ładunek wystarczająco na plus - funkcja strzela wartością absolutną <code>1</code>. W innym wypadku <code>0</code>.</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header">Liniowa Separowalność (Pięta Achillesa)</div>
+                            <div class="code-desc">Pojedynczy Perceptron operuje płasko - rysuje podczas wyrokowania wyłącznie <b>jedną twardą prostą na wykresie.</b> Z tego powodu uchodzi za model matematycznie liniowy i nie jest w stanie pociąć bardziej zawiłych problemów z zachodzącymi na siebie danymi (np. XOR). Pchnęło to świat do budowania ich w pionowe "ściany" dziesiątek neuronów naraz (tzw. MLP).</div>
+                        </div>
+                    </div>
+                    
+                    <div class="anim-box">
+                        <div class="perceptron-diagram">
+                            <div class="p-inputs">
+                                <div class="p-in-node">X1</div><div class="p-in-node">X2</div><div class="p-in-node">X3</div>
+                            </div>
+                            <div class="p-lines"></div>
+                            <div class="p-soma">Suma = Σ (W*X)</div>
+                            <div class="p-arrow">➔</div>
+                            <div class="p-out">Wyj: 1</div>
+                        </div>
+                        <p class="anim-desc">Podrzynanie i sumowanie wszystkich drutów z informacją by wyrzucić jedną twardą decyzję.</p>
+                    </div>
+
+                    <button class="btn btn-primary next-btn">Jak to ująć w Kodzie? DALEJ ➔</button>
+                </div>
+            </section>
+            <!-- P1: INIT -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-red">Krok 2 / 11</span>
+                    <h1>Narodziny Algorytmu <span>(__init__)</span></h1>
+                    <p>Budowę naszej AI zaczynamy zupełnie od zera w szczerym Pythonie używając struktury klasy
+                        obiektowej.</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header"><span class="keyword">class</span> Perceptron:</div>
+                            <div class="code-desc"><b>Szablon:</b> Tworzymy formę "Perceptron". Od teraz wywołując w
+                                kodzie słowo <code>Perceptron()</code> ożywiamy jednego takiego "stwora".</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header"> <span class="keyword">def</span> <span
+                                    class="function">__init__</span>(self, lr=<span class="number">0.1</span>,
+                                epochs=<span class="number">20</span>):</div>
+                            <div class="code-desc"><b>Konstruktor:</b> Wywołuje się podczas narodzin. <b>lr (Learning
+                                    Rate)</b> to procent o jaki skorygujemy model za każdy błąd, a <b>epochs</b> mówi
+                                ile razy algorytm przeczyta szkolny podręcznik od deski do deski.</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header"> <span class="keyword">self</span>.w = np.random.uniform(<span
+                                    class="number">-0.5</span>, <span class="number">0.5</span>, <span
+                                    class="number">3</span>)</div>
+                            <div class="code-desc"><b>Wagi Początkowe (Myśli):</b> Inicjalizujemy 3 wagi (zmienne siły
+                                sygnału) losując je od -0.5 do 0.5. Pozycja <code>self.w[0]</code> będzie zarezerwowana
+                                dla tzw. Biasu - specjalnego niezależnego suwaka czułości całego neuronu!</div>
+                        </div>
+                    </div>
+
+                    <div class="anim-box">
+                        <div class="rand-weights">
+                            <div class="w-cube">W0</div>
+                            <div class="w-cube">W1</div>
+                            <div class="w-cube">W2</div>
+                        </div>
+                        <p class="anim-desc">Trzy wylosowane wagi to mózg komórki czekający na doświadczenie.</p>
+                    </div>
+
+                    <button class="btn btn-primary next-btn">Jak Myśli Neuron? DALEJ ➔</button>
+                </div>
+            </section>
+
+            <!-- P2: PREDICT -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-red">Krok 3 / 11</span>
+                    <h1>Podejmowanie Decyzji <span>(predict)</span></h1>
+                    <p>Aby komórka wydała osąd o bodźcu świetlnym (np. [0,1]), musi przeprowadzić go przez swoje
+                        wywęszone wagi za pomocą matmy wektorowej.</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header"> <span class="keyword">def</span> <span
+                                    class="function">predict</span>(self, x):<br> x = np.concatenate(([<span
+                                    class="number">1</span>], x))</div>
+                            <div class="code-desc"><b>Klejenie Biasu:</b> Nasz bodziec "x" z zewnątrz dostaje nałożoną z
+                                przodu stałą "1". Dlaczego? Bo zaraz przemnożymy bodziec z naszymi Wagami (W). Musimy
+                                stworzyć manekina `1` by wymnożyć go przez pierwszą sztuczną wagę z puli - czyli Bias
+                                (W0)!</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header"> s = np.dot(<span class="keyword">self</span>.w, x)</div>
+                            <div class="code-desc"><b>Zderzenie:</b> Potężna funkcja NumPy `dot` (Iloczyn Skalarny).
+                                Mnoży punktowo sygnał i wagę (np: <code>S = W0*1 + W1*x1 + W2*x2</code>). Z tego
+                                wielkiego zderzenia powstaje zaledwie jedna suma: Zmienna <b>s</b> (Potencjał).</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header"> <span class="keyword">return</span> <span class="number">1</span>
+                                <span class="keyword">if</span> s >= <span class="number">0</span> <span
+                                    class="keyword">else</span> <span class="number">0</span></div>
+                            <div class="code-desc"><b>Skok (Ruch):</b> Neuron myśli na twardo. Jeśli potencjał
+                                wzbudzenia 's' przebił linię podłogi (0) - krzyczy "TAK" (zwraca jedynkę). Jak nie, śpi
+                                na głucho zwracając (0).</div>
+                        </div>
+                    </div>
+
+                    <div class="anim-box">
+                        <div class="step-anim">
+                            <div class="step-bar-bg">
+                                <div class="step-bar-fill"></div>
+                            </div>
+                            <div class="step-result step-res-1">Dobił ! Zwracam 1</div>
+                        </div>
+                        <p class="anim-desc">Potencjał rośnie aż przekracza granice 0 -> neuron emituje jedynkę do
+                            diagnozy!</p>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Krok 3: Pętla Fit (Część 1) ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- P3: FIT P1 -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-red">Krok 4 / 11</span>
+                    <h1>Szkoła dla Sztucznej Inteligencji <span>(fit)</span></h1>
+                    <p>Zaczynamy uczyć "płaskiego" sztucznego nerwa na podstawie prawdziwych odpowiedzi w pętli.</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header"> <span class="keyword">def</span> <span
+                                    class="function">fit</span>(self, X, y):<br> <span class="keyword">for</span> _
+                                <span class="keyword">in</span> <span class="built_in">range</span>(<span
+                                    class="keyword">self</span>.epochs):<br> errors = <span class="number">0</span>
+                            </div>
+                            <div class="code-desc">Wrzucamy do kotła matrycę setek zadań z matmy (X) oraz klucz
+                                poprawnych odpowiedzi (y). Robimy dookoła tego "N Epok" iteracji. Symbol "_" zamiast np.
+                                "i" oznacza, że nie interesuje nas, który to numer kółka biegnie maszyna. Konfirmujemy
+                                też licznik pomyłek na 0.</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header"> <span class="keyword">for</span> x, yd <span
+                                    class="keyword">in</span> <span class="built_in">zip</span>(X, y):<br> x_ext =
+                                np.concatenate(([<span class="number">1</span>], x))<br> y_pred = <span
+                                    class="keyword">self</span>.predict(x)</div>
+                            <div class="code-desc">Korzystamy z pythonowego <code>zip</code> aby wyjąć konkretne jedno
+                                zdanie do przetłumaczenia z bazy i od razu obok trzymać za rączke prawidłowy klucz `yd`
+                                (y desired). Symulator strzela w opinii neuronu do <code>y_pred</code> używając
+                                `predict()`.</div>
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Krok 4: Błąd i Korekta ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- P4: FIT P2 -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-red">Krok 5 / 11</span>
+                    <h1>Karykastura Błędu: Magia AI</h1>
+                    <p>Najsłynniejsze trzy wersy w historii Machine Learningu (Podstawowa reguła różnicowa z lat
+                        50tych).</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header"> error = yd - y_pred</div>
+                            <div class="code-desc"><b>Ogień a Woda:</b> Odejmowanie prawdy od kłamstwa. Jeżeli
+                                powiedziano (1), a było (0) = <b>Błąd -1</b>. Jak zamilczał (0), a miało krzyczeć (1) =
+                                <b>Błąd +1</b>. Trafił to <b>Błąd = 0</b>.</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header"> <span class="keyword">self</span>.w += <span
+                                    class="keyword">self</span>.lr * error * x_ext</div>
+                            <div class="code-desc"><b>Święty Graal Uczenia:</b> Do wagi sumujemy Ułamek (LR) Z Błędu (1
+                                lub -1) * Sam Wektor Bodźca Z Przestrzeni. Neuron automatycznie przestawia swoją
+                                "Dźwignię opinnii / Wage" na plusie by w następnej Epoce móc przepchnąć prąd przy tym
+                                właśnie kwiecie!</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header"> errors += <span class="built_in">abs</span>(error)<br> <span
+                                    class="keyword">if</span> errors == <span class="number">0</span>:<br> <span
+                                    class="keyword">break</span></div>
+                            <div class="code-desc">Liczymy błędy do worka globalnego niezależnie od znaku (`abs` =
+                                wartość absolutna). Jeśli worek wyszedł po epoce rzutowo okrągłym zerem -> przerywamy
+                                marnować prąd w procesorze komendą `break`, model zameldował perfekcję stu-procentową na
+                                szkoleniu!</div>
+                        </div>
+                    </div>
+
+                    <div class="anim-box">
+                        <div class="update-anim">
+                            <span class="w-old">W: 0.12</span> ➔ <span class="w-new">W: 0.52 !</span>
+                        </div>
+                        <p class="anim-desc">Wykryto Błąd! Waga z automatu urosła do góry, aby w kolejnej Epoce wyrzucić
+                            wyższy potencjał na tej samej wejściówce!</p>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Krok 5: Egzamin Ucznia ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- P5: EVALUATE -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-red">Krok 6 / 11</span>
+                    <h1>Egzamin Ucznia <span>(evaluate)</span></h1>
+                    <p>Aby zobaczyć czy proces był udany, odpinamy mu odpowiedzi ze świadomości i zmuszamy do pisania
+                        klasówki z użyciem wykreowanej na ślepo struktury Wag z pamięci podręcznej.</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header"> <span class="keyword">def</span> <span
+                                    class="function">evaluate</span>(self, X, y):<br> correct = <span
+                                    class="number">0</span><br> <span class="keyword">for</span> x, yd <span
+                                    class="keyword">in</span> <span class="built_in">zip</span>(X,y):</div>
+                            <div class="code-desc">Ponownie zapętlamy "Arkusz Egzaminacyjny X" spajając z kluczem "yd".
+                                Inicjalizujemy licznik na 0 (Brak strzeżonych podpowiedzi o wagach uaktualnianych
+                                wewnątrz - evaluate nigdy nic nie dodaje na self.w !)</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header"> y_pred = <span class="keyword">self</span>.predict(x)<br> <span
+                                    class="keyword">if</span> y_pred == yd:<br> correct += <span
+                                    class="number">1</span><br> <span class="built_in">print</span>(f<span
+                                    class="string">"Dokładność: {correct}/{len(y)}"</span>)</div>
+                            <div class="code-desc">Wypluwamy strzał z diagnozy, przyrównujemy twardym boolem Pythona
+                                `==` do referencji tablic. Skuteczne trafienie to podbicie licznika. Komenda
+                                <code>len(y)</code> mówi ilu miało być pacjentów łącznie rzutując wspaniałą dokładność
+                                procentu (np 4/4).</div>
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Krok 6: Problemy Logiki i XOR ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- P6: GATES (AND OR XOR) -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-red">Krok 7 / 11</span>
+                    <h1>Problemy Logiki (Zguba XOR'a)</h1>
+                    <p>Płaski perceptron to mocarz jednej linii na płaszczyźnie wykresu. Odetnie `1` z `0,0,0` w bramce
+                        AND na wymiar. Odetnie `0` z bazy pełnej jedynek w OR. Ale polegnie sromotnie w problemie XOR!
+                    </p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header">X_xor = np.array([[<span class="number">0</span>,<span
+                                    class="number">0</span>], [<span class="number">0</span>,<span
+                                    class="number">1</span>], [<span class="number">1</span>,<span
+                                    class="number">0</span>], [<span class="number">1</span>,<span
+                                    class="number">1</span>]])<br>y_xor = np.array([<span class="number">0</span>,<span
+                                    class="number">1</span>,<span class="number">1</span>,<span
+                                    class="number">0</span>])</div>
+                            <div class="code-desc">Pomiędzy diagnozę zer z wariantu 0,0 oraz 1,1 wciskają nam się
+                                odpowiedzi punktowe chwiednych Prawd (1) stojące na przekątnych punktach (0,1 oraz 1,0).
+                                Matematyczna jedyna niemożliwość rozwiązania! Kod gubi się i wypluwa skuteczność
+                                oscyllacji max z 50-70%, myląc proste na każdej osiowej próbie!</div>
+                        </div>
+                    </div>
+
+                    <div class="anim-box">
+                        <div class="xor-grid-wrap">
+                            <div class="xor-p x-00">0</div>
+                            <div class="xor-p x-11">0</div>
+                            <div class="xor-p x-01">1</div>
+                            <div class="xor-p x-10">1</div>
+                            <div class="xor-line"></div>
+                        </div>
+                        <p class="anim-desc">Skacząca, zagubiona prosta liniowa bezwarunkowo nie może poprowadzić
+                            gładkiej rzeki dzielącej poprawnie zera od jedynek, bowiem rzucone są na ukos. <b>To właśnie
+                                ten powód wywołał rewolucję i nakazał ludziom złożyć Perceptrony w głębokie warstwy
+                                (Wielowarstwowa MLP - z kolejnego lekcji!)</b></p>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Krok 7: Zautomatyzowany Scikit-learn ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- P7: Sklearn & Syntax -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-red">Krok 8 / 11</span>
+                    <h1>Zderzenie z Machiną Google/Sklearn</h1>
+                    <p>Aby nie klepać matryc ręcznie palcem na 4 próby badawcze, stosujemy biblioteczne gotowce dla
+                        sprawdzianu bojowego.</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header">X,y = make_classification(n_samples=<span
+                                    class="number">200</span>, n_informative=<span class="number">2</span>,
+                                random_state=<span class="number">42</span>)</div>
+                            <div class="code-desc">Prosi robota generacyjnego o 200 surowców wektorowych posiadających
+                                czyste 2 cechy istotne `informative`. `random_state=42` nakazuje skompilować
+                                pseudo-losowo zawsze idealną powtarzającą się siatkę za każdym odpaleniem dla uczciwości
+                                w powtórzeniach prac.</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header">p_sk = SklearnPerceptron(eta0=<span class="number">0.01</span>,
+                                max_iter=<span class="number">100</span>)</div>
+                            <div class="code-desc">Biblioteka w budowie robi to co Ty, wywołje algorytm lat '50. Tylko
+                                nazywa rzeczy naukowo: Twój znany `lr` zwany pod flagę `eta0`, a `epochs` leci we flagę
+                                `max_iter` jako graniczne interacje zapętleń wektorowych optymalizacji.</div>
+                        </div>
+                    </div>
+
+                    <div class="anim-box">
+                        <div class="race-anim">
+                            <div class="race-track">
+                                <div class="runner r-my">Twój Kod: 19.0ms 🐢</div>
+                            </div>
+                            <div class="race-track">
+                                <div class="runner r-sk">Sklearn: 0.4ms 🐇</div>
+                            </div>
+                        </div>
+                        <p class="anim-desc">Potężny Sklearn miażdży skrypt domowej roboty szybkością i wydajnością
+                            dzięki niskopoziemowym, skompresowanym obliczeniom od Cythona.</p>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Krok 8: Prawdziwy Test Rak Piersi ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- P8: RAK PIERSI CM -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-red">Krok 9 / 11</span>
+                    <h1>Diagnoza (Rak Piersi) i Tablica Pomyłek</h1>
+                    <p>Wchodzimy na trudny rynek medyczny. Ładujemy <code>load_breast_cancer</code> z oszałamiającą
+                        zawartością 30 rozmaitych wymiarów gęstości mas guza i oceniamy sieć twardą <b>Matrycą Błędów
+                            (Confusion Matrix)</b>.</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header">train_test_split( ..., stratify=y) <br> clf = Perceptron( ...,
+                                early_stopping=<span class="keyword">True</span>)</div>
+                            <div class="code-desc"><b>stratify=y:</b> Chroniący kod zapobiega fatalności tasowania z
+                                czapki - zmusza w podziale próbki do dokładnego odwzorowania procentu zachorowalności
+                                grupy głównej! <br><b>early_stopping:</b> Maszyna inteligentnie w porę rezygnuje z
+                                bezładnego nadpisania reguł pod pamiątkową tablicę i "Wyłącza piec treningowy" jeśli
+                                widzi objawy skamienienia (Overfit).</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header">cm = confusion_matrix(y_test, y_pred_test)</div>
+                            <div class="code-desc">To najpiękniejsza tablica dla Data Scientista. Rozkłada sukces
+                                (Accuracy) na 4 obnażające sektory w macierzy 2x2. Pokażmy ten przypadek z użyciem
+                                wykreowanej siatki na dole.</div>
+                        </div>
+                    </div>
+
+                    <div class="anim-box" style="background:#0f172a;">
+                        <div class="cm-mat">
+                            <div class="cm-c cm-tp">Prawdziwy Guz: ZNALAZŁ <br>(41 Pacjentek)</div>
+                            <div class="cm-c cm-fp">Wolna Od Guza: STRASZY! <br>(5 FP)</div>
+                            <div class="cm-c cm-fn">Prawdziwy Guz: ZIGNOROWAŁ! <br>(1 Zmarła)</div>
+                            <div class="cm-c cm-tn">Zdrowa Kobieta: OK <br>(67 Pacjentek)</div>
+                        </div>
+                        <p class="anim-desc">Ciemna Zieleń to uśmiech (True Positive i True Negative). Problem jednak
+                            stoi pod pulsacyjnym <b>Czerwonym Alarmem FN (False-Negative - Fałszywe Zaprzeczenie
+                                Błędu)</b> - maszynie pomylił się odczyt 1 kobiety z rakiem nazywając ją zdrową
+                            pacjentką. Taki jeden przypadek potrafi zrujnować cały komercyjny wydźwięk oprogramowania
+                            95% skutecznego!!!</p>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Krok 9: Interaktywny Rower ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- P9: BIKE PLAYGROUND -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-red">Krok 10 / 11</span>
+                    <h1>Twój Rowerowy Model (Praktyka)</h1>
+                    <p>Załadowaliśmy na front end wszystkie Twoje prawdziwe 4 przetrenowane już ułamkowe wagi ze
+                        środowiska Notatnika ćwiczebnego. Poczuj wektor w użyciu na froncie!</p>
+
+                    <div class="playground-wrap">
+                        <div class="bike-ui">
+                            <label class="switch-row">
+                                <input type="checkbox" id="bike-sun" checked>
+                                <div class="lbl-txt">☀️ Czy Słońce?<br><small style="color:#f43f5e">(W1:
+                                        -0.0797)</small></div>
+                            </label>
+                            <label class="switch-row">
+                                <input type="checkbox" id="bike-time" checked>
+                                <div class="lbl-txt">🕒 Wolny Czas?<br><small style="color:#10b981">(W2: 0.3138)</small>
+                                </div>
+                            </label>
+                            <label class="switch-row">
+                                <input type="checkbox" id="bike-ok">
+                                <div class="lbl-txt">🚲 Sprawny Rower?<br><small style="color:#10b981">(W3:
+                                        0.2271)</small></div>
+                            </label>
+                        </div>
+                        <div class="code-desc"
+                            style="text-align:center; margin-top:15px; background:rgba(0,0,0,0.4); border-radius:6px;">
+                            <b>Potencjał Sumy</b> = Bias (-0.4100) + Wyliczenia z Wyboru Puszwek pow.</div>
+                        <div class="result-box no-go" id="bike-result"></div>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-success go-home-btn">Gratulacje! Zakończ i Pobiegnij na Egzamin
+                            🏠</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ======================= -->
+        <!-- LEKCJA 2: MLP (Rozbudowana!) -->
+        <!-- ======================= -->
+        <div id="lesson-mlp" class="hidden-screen lesson-flow">
+
+            <!-- M0: THEORY MLP -->
+            <section class="card glass-effect active-section">
+                <div class="card-content">
+                    <span class="badge b-blue">MLP 1 / 11 (Teoria)</span>
+                    <h1>Czym jest Sieć MLP? <span>(Multi-Layer)</span></h1>
+                    <p><b>MLP (Multi-Layer Perceptron)</b>. Co zrobisz, jeżeli twój zbiór chorych pacjentów na osi wykresu okrąża zdrowych dookoła uiszczając "zbiór w zbiorze"? Jedna płaska prosta noża logicznego wyuczonego w poprzedniej lekcji straci głowę i pocięłaby wszystkich na wskroś. Z pomocą idą rzędy komórek ułożone warstwami jedna po drugiej!</p>
+                    
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header">Warstwy Ukryte (Hidden Layers)</div>
+                            <div class="code-desc">Zamiast prosić pojedynczą komórkę o wyrok, zatrudniamy np. siatkę 64 komórek. Pierwsza ściana patrzy na dane początkowe, po czym wypuszcza 64 strzały opinii z połączeń na ewoluującą dalej kolejną ścianę mózgów, które szukają już wzorców opartych na abstrakcjach wygenerowanych wcześniej. To prawdziwa potęga <b>Deep Learning</b> układająca klocki nieliniowe pojęcia formy np koła czy spirali klasowej.</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header">Wsteczna Propagacja Błędu (Backpropagation)</div>
+                            <div class="code-desc">Jak powiedzieć tysiącom ukrytych w głębi neuronów, żeby zmodyfikowały Wagi skoro wiedzą o błędzie tylko u wylotu tablicy predykcyjnej? Używamy fali wstecznej (Backprop). Bólowa Strata klasyfikacji cofa się w tył silnikiem pochodnych macierzy (W tym błyszczy C++ z TensorFlow i gradienty). Kara cofa się wytypowanymi ścieżkami ucinając i modyfikując wagi na drodze ewolucji zwanej np. z użyciem Adama na tysiącach połączeń symultanicznie!</div>
+                        </div>
+                    </div>
+
+                    <div class="anim-box">
+                        <div class="mlp-diagram">
+                            <div class="layer l-in"><div class="mnode">Wejściowa</div></div>
+                            <div class="layer l-hid1"><div class="mnode"></div><div class="mnode"></div><div class="mnode"></div></div>
+                            <div class="layer l-hid2"><div class="mnode"></div><div class="mnode"></div><div class="mnode"></div></div>
+                            <div class="layer l-out"><div class="mnode">Wyjściowa</div></div>
+                        </div>
+                        <p class="anim-desc">Błąd płynie pod prąd w szale wstecznej nauki po ukończonym zliczeniu Straty na końcu.</p>
+                    </div>
+
+                    <button class="btn btn-primary next-btn">Jak Wygląda Kod w Tensorflow? ➔</button>
+                </div>
+            </section>
+            <!-- M1: IMPORTS -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-blue">MLP 2 / 9</span>
+                    <h1>Głębszy Algorytm <span>(TensorFlow / Keras)</span></h1>
+                    <p>Aby naprawić śmieszny zator "XORa" na płaskim neuronie z poprzedniej lekcji, rzucamy wielką broń.
+                        Otwieramy notatnik Deep Learning Artificial Neural Networks (MLP).</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header"><span class="keyword">import</span> tensorflow <span
+                                    class="keyword">as</span> tf<br><span class="keyword">import</span> keras</div>
+                            <div class="code-desc"><b>Więcej niż NumPy:</b> TensorFlow jest ryczącym, tytanowym
+                                silnikiem grafowym napisany przy współpracy Google Brain i Cuda w C++. Potrafi robić
+                                macierze z pochodnymi cząstkowymi z zawrotną predkąscią równocześnie po setkach rdzeni
+                                kart NVIDII do uczenia Głazów. <b>Keras</b> wjeżdża z góry na dół i dostarcza tylko
+                                piękne "uchwyty, interfejs i przyciski w HTMLowym smaku" do zbudowania tego bez krwotoku
+                                oczu inżyniera. Keras to kierownica obszyta skórą, TF to ziejący silnik w bagażniku.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="anim-box">
+                        <div class="gears-anim">
+                            <div class="gear gear-tf">⚙️</div> <span
+                                style="font-weight:900; font-size:30px; margin:0 20px;">+</span>
+                            <div class="gear gear-k">💠</div>
+                        </div>
+                        <p class="anim-desc">Potężne zębatki obliczeniowe TensorFlow przyodziane w estetyczne i logiczne
+                            moduły warstwowe Kerasa po wierzchu.</p>
+                    </div>
+
+                    <button class="btn btn-primary next-btn">Architektura Keras DALEJ ➔</button>
+                </div>
+            </section>
+
+            <!-- M2: ARCHITECTURE DENSE -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-blue">MLP 3 / 9</span>
+                    <h1>Pajęczyna Połączeń <span>(Dense & ReLU)</span></h1>
+                    <p>Budujemy własny model nadpisując matczyne dziedzictwo Kerasa by dodać do brzucha Gęste Warstwy
+                        Niejawne (Hidden Dense). To one zgniotą XORa wymyślając 64 unikalnych sztuk nowych
+                        wielowymiarowych lini opisu świata.</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header"><span class="keyword">class</span> <span
+                                    class="class">MLPmodel</span>(keras.Model):<br> <span class="keyword">def</span>
+                                <span class="function">__init__</span>(self):<br> <span
+                                    class="built_in">super</span>().__init__()</div>
+                            <div class="code-desc"><b>Dziedziczenie (super):</b> Jak tylko otwierasz powołującego nowego
+                                `__init__`, uderzasz do dziadków z `keras.Model` wezwaniem `super()`, błagając by po
+                                cichu odpalił wszystkie zaplecza, tablice tensorowe i śledzenie epoek potrzebne modelowi
+                                Keras bez wklepywania logiki w klawiaturę! Odfajkowane "gotowe" moduły do fit() w
+                                pamięci RAM obudziły się.</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header"> <span class="keyword">self</span>.warstwa1 =
+                                keras.layers.Dense(<span class="number">64</span>, activation=<span
+                                    class="string">'relu'</span>)</div>
+                            <div class="code-desc"><b>Dense(64):</b> Zamawia brutalnie i jawnie na własność 64 potężne
+                                sztuczne pojedyncze algorytmy neuronowe obudowane w grupę z poleceniem "Zespolić kable
+                                ze wszystkim co z przodu". Daje mu też filtr i wyjście typu bramkującego: <b>ReLU!
+                                    (Rectified Linear Unit)</b>. Nieliniowość w akcji. Jeśli dany neuron wymyśli bzdurną
+                                odpowiedź z masą odchyleń ujemnych - RelU stępi obwód, nie pozwoli mu wypowiedzieć
+                                negatywu niszcząc logarytmy i zablokuje potencjał do potulnego punktu spłaszczenia pod
+                                nogami jako sztywne (0) przepuszczając do kolejnej linii tylko "Mowa O Opowieściach
+                                Pozytywnych"! Matematyka przyspiesza naukę.</div>
+                        </div>
+                    </div>
+
+                    <div class="anim-box">
+                        <div class="dense-web">
+                            <div class="col-nodes">
+                                <div class="node"></div>
+                                <div class="node"></div>
+                            </div>
+                            <div class="lines-conn"></div>
+                            <div class="col-nodes">
+                                <div class="node"></div>
+                                <div class="node"></div>
+                                <div class="node"></div>
+                                <div class="node"></div>
+                            </div>
+                        </div>
+                        <p class="anim-desc">To Gęsta Pajęczyna (Dense)! Każdy z wejściowych "kwiatków Irysa" przechodzi
+                            kablem po ułamku swojej istoty w każdym z 64 "ukrytych myślicieli" pośrodku.</p>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Softmax - DALEJ ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- M3: SOFTMAX -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-blue">MLP 4 / 9</span>
+                    <h1>Softmax to Opowieść <span>o Szansach Prawdopodobieństw...</span></h1>
+                    <p>Po przepuszczeniu przez wyżymaczki na finiszu dostajesz brutalny rzut abstrakcyjnych wibracji
+                        ułamkowych.</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header"> <span class="keyword">self</span>.wyjscie =
+                                keras.layers.Dense(<span class="number">3</span>, activation=<span
+                                    class="string">'softmax'</span>)</div>
+                            <div class="code-desc">Końcowe gęste ujęcie neuronów musi szpilkowo liczyć Tyle sztuk wyjść
+                                ILE GATUNKÓW ŚWIAT PODAŁ! Irys miał wpisane (3). Dodajemy magiczne słowo filtru:
+                                <b>softmax</b>! Matematyczna machina sumująca Eulerem e^z miażdżąca każdy rzucony,
+                                kosmiczny niezrównoważony cyfrowy ciąg abstraktów z węzłów w grzeczną, idealną pulę
+                                UŁAMKOWYCH wariantów Prawdopodobieństw procentowych... ZAWSZE sumując pomyłki i prawdy
+                                do rygorystycznych łącznych 100%! Będzie pewny w wariancie A i podkradał niewiedzę
+                                drugiemu.</div>
+                        </div>
+                    </div>
+
+                    <div class="anim-box">
+                        <div class="softmax-anim">
+                            <div class="sm-raw"><span>Val: 12.5</span> <span>Val: -3.2</span> <span>Val: 0.1</span>
+                            </div>
+                            <span style="color:#60a5fa;"> ➔ Softmax(e) ➔ </span>
+                            <div class="sm-perc"><span>96.2%</span> <span>0.2%</span> <span>3.6%</span></div>
+                        </div>
+                        <p class="anim-desc">Dziwne abstrakcje stają się gwarancją ludzkiej czytelności wyników pewności
+                            na poszczególny gatunek dla notatnika.</p>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Kompilacja Adama ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- M4: COMPILE ADAM & LOSS -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-blue">MLP 5 / 9</span>
+                    <h1>Składnica Win Winowajcy <span>(Compile)</span></h1>
+                    <p>Zanim zaczniemy cokolwiek wciskać do w/o klasy, TF z Kerasem muszą uzbroić maszynerię C++ w
+                        pamięć RAM alokacją dyrektywy Compile.</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header">model.compile(<br> optimizer=<span
+                                    class="string">'adam'</span>,<br> loss=<span
+                                    class="string">'sparse_categorical_crossentropy'</span>,<br> metrics=[<span
+                                    class="string">'accuracy'</span>]<br>)</div>
+                            <div class="code-desc"><b>Adam (Adaptive Moment Estimation):</b> Złoty rydwan zstępujący na
+                                ratunek starej Reguły Perceptronu ("Podawaj suche Error pomnożone przez Wzór 0.1 w
+                                próżnie!"). Przestań! Mówimy tu o tysiącu wag u MLP, a nie trzech na rower z zeszytu!
+                                Adam za pomocą logiki pędu uczy sieć schodzić adaptacyjnie z Góry Błędów, przyhamowując
+                                tuż przed doliną by przypadniem jej w poślizgu nie minąć i zniwelować gubienie nauki.
+                                Śmiertelnie przydatny.<br><br><b>Loss: Sparse_Categorical:</b> Krwawa chłosta straty
+                                błędu logarytmicznie wyczulonej! Skoro daliśmy tam softmaxa na procenciki, a gatunki to
+                                `y=0, 1, 2` (Liczbowy układ zwany Sparse z ang. Rzadki) i sieć strzela na gatunek 0
+                                ledwo 3% a na chybiony 97%, bicz uderzy ją z impetem by niezwłocznie spuchły logarytmy i
+                                wywaliło błąd i odszukało drogi korekty. </div>
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Jak Działa Skaler? ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- M5: SCALER -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-blue">MLP 6 / 9</span>
+                    <h1>Magia Skalowania <span>(StandardScaler)</span></h1>
+                    <p>Ten fragment Twojego badawczego kodu zrywa z naiwnymi przypisaniami po wybuchowych masach miary w
+                        rzeczywistości!</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header">scaler = <span class="class">StandardScaler</span>()<br>X_train =
+                                scaler.fit_transform(X_train)<br>X_test = scaler.transform(X_test)</div>
+                            <div class="code-desc">Przy powołaniu Skalera i poleceniem przeliczenia transformacji
+                                (`fit_transform`) cała tabela kwiatów Irysa zmienia swe formy. Jeżeli długość liścia w
+                                metrach wynosi `1850.5` a średnica ziarna pęknięcia głębi to jedyne szczupłe `0.02` –
+                                Sieć podczas zderzeń potraktowała by ogromne wielkości jako najważniejszy punkt
+                                odniesienia do sztywnych odrzuceń! Skaler bierze wszystkie cyferki w kolumnie bez
+                                względu na wagę, ściąga ich ułożenie do średniej z zera i wygładza odchylenie standardu
+                                na 1. Uczy sieci bez rasisztowskich uprzedzeń co do rzędu miary liczbowej. Kropka.</div>
+                        </div>
+                    </div>
+
+                    <div class="anim-box" style="background:#0f172a;">
+                        <div class="scaler-anim">
+                            <div class="bar-big">180</div>
+                            <div class="bar-small">2</div>
+                            <div style="font-size:30px; margin-bottom: 20px;"> ➔ </div>
+                            <div class="bar-small" style="background:#a78bfa; height:60px;">0.3</div>
+                            <div class="bar-small" style="background:#a78bfa; height:50px;">-0.1</div>
+                        </div>
+                        <p class="anim-desc">Dysproprocje i dominacje liczbowe zostają ujarzmione do zdrowych wahań
+                            blisko 0. Uczy obydwu tak samo solidnie.</p>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Epoch, Fit & History ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- M6: FIT -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-blue">MLP 7 / 9</span>
+                    <h1>Pochłonięci Epokami <span>(fit)</span></h1>
+                    <p>Tak samo jak w ręcznym Perceptronie lecimy z nauką w wielkiej iteracji, by minimalizować Stratę i
+                        maksymalizować Trafność. Lecz Keras jest gadatliwy...</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header">history = model.fit(<br> X_train, y_train,<br> epochs=<span
+                                    class="number">100</span>, batch_size=<span class="number">16</span>,<br>
+                                validation_split=<span class="number">0.1</span>, verbose=<span class="number">1</span>)
+                            </div>
+                            <div class="code-desc"><b>history</b> służy do radosnego zachomikowania ocen z każdego
+                                semetru naukowego by na końcu wyrzucić zgrabny <code>plt.plot(history)</code> pod ładne
+                                obrazki z linii krzywych wykresu.<br><b>epochs:</b> Przeleci pulszujący strumień
+                                sygnałowy kwiatów 100razy dla wycyzelowania matmy.<br><b>batch_size:</b> Paczka. Sieć
+                                oszaleje od pojedynczej aktualizacji uchybienia, jeśli ułoży wsad z 10 tys kwiatów
+                                jednocześnie pod 1 uśrednieniem straci precyzję rzeźbionego rowu. My podajemy jej
+                                odmierzone 16 kwiatków, ona na tej podstawie uśrednia wygiętą w pędzie parabolę
+                                uaktualnień propagacji powrotnej na wagi ze zderzaka! Potem leci do paczki numer
+                                Dwa!<br><b>validation:</b> Tajny zbiór wykradany na starcie. Żeby Keras po drodze
+                                raportował o uczciwości w obcowaniu ze skreśloną masą z 0.1 (tj 10% bazy!) na
+                                prawdomówność - patrz wskaźniki val_loss.<br><b>verbose=1:</b> Wkuwa nam do oczu widok
+                                logów z pasek ładujących iteracji na surowej ekranie konsoli komputującej.</div>
+                        </div>
+                    </div>
+
+                    <div class="anim-box">
+                        <div class="train-sim">
+                            <div class="t-metric"><span class="m-loss">Loss: 1.5</span> <span class="m-acc">Acc:
+                                    12%</span></div>
+                            <div class="t-metric"><span class="m-loss" style="animation-delay:1s;">Loss: 0.8</span>
+                                <span class="m-acc" style="animation-delay:1s;">Acc: 55%</span></div>
+                            <div class="t-metric"><span class="m-loss" style="animation-delay:2s;">Loss: 0.2</span>
+                                <span class="m-acc" style="animation-delay:2s;">Acc: 94%</span></div>
+                        </div>
+                        <p class="anim-desc">Ewolucja spadających strat uderzeniowych z Cross-Entropy i rosnącej
+                            nieubłaganie skali celności modelu symulowana odczytem Logów Kerasa.</p>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Prawdziwa Predykcja ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- M7: ARGMAX -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-blue">MLP 8 / 9</span>
+                    <h1>Decyzja nad przepaścią <span>(argmax)</span></h1>
+                    <p>Na samym końcu, Twoja sieć MLP dysponuje oknem wypyerdolonym na Softmax. Należy zebrać listę
+                        rzuconych ułamków od 0.00 do 1.00 i przypisać do cyfrowej tabeli werdykt klasyfikujący na `y` z
+                        opcji 0, 1 i 2.</p>
+
+                    <div class="line-by-line">
+                        <div class="code-row">
+                            <div class="code-header">y_pred_probs = model.predict(X_test)</div>
+                            <div class="code-desc">Funkcja z notatników. Dla każdej pacnięto-odłożonej testowej próbki
+                                (20%), program pluje nam nie jedną dumnie pewną wariantową odpowiedzią "to gatunek 1!".
+                                On pluje gównianą pozycjonowaną listą wektorów rzędu <code>[0.10, 0.81, 0.09]</code> do
+                                każdej komórki macierzystej w wywołanej strefie Probabilities (Probs).</div>
+                        </div>
+                        <div class="code-row">
+                            <div class="code-header">y_pred = np.argmax(y_pred_probs, axis=<span
+                                    class="number">1</span>)</div>
+                            <div class="code-desc">Python (NumPy a dokładniej <code>np.argmax</code>) wjeżdża niczym
+                                taranujący pług. Omiata każdą oddzielną linijkę osobnego obiektywnego kwiatka (komenda
+                                terytorialna pozioma za pośrednictwem osi argumentu <b>axis=1</b>). Odczytuje na liście
+                                poszczególną absolutnie najcięższą ułamkową formę (np 0.81) i wypisuje zamiast niej
+                                wyłącznie odniesiony INDEKS numeryczny miejsca jej spoczynku! Wariant 0.81 stał na
+                                podanym środku, stąd Indeks [1] wygrywając z [0] i [2]. Gatunek = 1. Model ukończył
+                                zadanie przewidywania!</div>
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-primary next-btn">Idziemy na Plac Zabaw ➔</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- M8: PLAYGROUND -->
+            <section class="card glass-effect hidden">
+                <div class="card-content">
+                    <span class="badge b-blue">MLP 9 / 9</span>
+                    <h1>Interaktywny Plac Zabaw <span>(Zrozumieć MLP)</span></h1>
+                    <p>Widziałeś Softmax. Widziałeś klasyfikator wyboru w osi poziomej rzędem z `argmax(axis=1)`.
+                        Skrzynie biegów TensorFlow nie będą dla Ciebie już tabu w laboratoriach na obronie przedmiotu!
+                        Przetestuj swą naoczną wyobraźnię manipulując zbiorem symulowanego Irysa za pomocą uczyć
+                        neuronów na ułamku poniżej.</p>
+
+                    <div class="playground-wrap">
+                        <label class="slider-lbl">Długość Testowa Płatka (Centymetry Skali NumPy): <span id="pl-val"
+                                style="color:#60a5fa">4.0</span> cm</label>
+                        <input type="range" id="pl-slider" min="1.0" max="7.0" step="0.1" value="4.0">
+
+                        <div style="background:rgba(0,0,0,0.5); padding:15px; border-radius:12px; margin-bottom:15px;">
+                            <div style="color:#94a3b8; font-size:14px; margin-bottom:8px;">
+                                <code>model.predict(X_test)</code> - Wynik Softmax (Na żywo z wycinka 1 kwiatu):</div>
+                            <div id="probs-list" class="code-inline"
+                                style="font-size:18px; letter-spacing:1px; color:#3b82f6;">[0.01, 0.94, 0.05]</div>
+                            <div style="font-size:12px; font-weight:bold; color:#f43f5e; margin-top:8px;">Σ Łącznie
+                                Procentowych Szans = Zawsze 1.0 (100%)</div>
+                        </div>
+
+                        <div style="color:#cbd5e1; font-size:15px; margin: 20px 0;"><span style="color:#fcd34d">➔ Zrzut
+                                na NumPy wyplwa największy indeks tablicowy funkcyjnie argmax na axis=1! ➔</span></div>
+
+                        <div class="result-box" id="final-choice"
+                            style="background:#1e293b; border-left:4px solid #10b981;">y_pred: Gatunek 1</div>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn btn-secondary prev-btn">🡠 Wróć</button>
+                        <button class="btn btn-success go-home-btn">Gratulacje! Zakończ Moduł Skutecznie 🏠</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+
+</html>
