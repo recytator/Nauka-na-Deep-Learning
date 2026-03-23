@@ -198,13 +198,13 @@ document.addEventListener('DOMContentLoaded', () => {
             bResult.style.background = 'rgba(16, 185, 129, 0.2)';
             bResult.style.border = '2px solid #10b981';
             bResult.style.color = '#10b981';
-            bResult.innerText = `Suma: ${s.toFixed(2)} ≥ 0 ➔ Jedziesz na Rower! 🚴‍♂️`;
+            bResult.innerText = `Potencjał wyjścia: ${s.toFixed(2)} ≥ 0 ➔ Aktywacja Perceptronu (Klasa Pozytywna)`;
         } else {
             bResult.classList.add('no-go');
             bResult.style.background = 'rgba(239, 68, 68, 0.2)';
             bResult.style.border = '2px solid #ef4444';
             bResult.style.color = '#fca5a5';
-            bResult.innerText = `Suma: ${s.toFixed(2)} < 0 ➔ Zostajesz w domu... ⛔`;
+            bResult.innerText = `Potencjał wyjścia: ${s.toFixed(2)} < 0 ➔ Brak Aktywacji (Klasa Negatywna)`;
         }
     }
 

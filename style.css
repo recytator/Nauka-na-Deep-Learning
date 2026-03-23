@@ -5,7 +5,7 @@
 }
 
 body {
-    background: #0b1121; color: #f8fafc; min-height: 100vh;
+    background: #050505; color: #f9fafb; min-height: 100vh;
     display: flex; flex-direction: column; align-items: center;
     overflow-x: hidden; position: relative; padding-bottom: 60px;
 }
@@ -13,9 +13,9 @@ body {
 /* Beautiful Animated Backgrounds */
 .bg-mesh {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;
-    background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-                      radial-gradient(at 50% 0%, hsla(225,39%,30%,0.2) 0, transparent 50%), 
-                      radial-gradient(at 100% 0%, hsla(339,49%,30%,0.2) 0, transparent 50%);
+    background-image: radial-gradient(at 0% 0%, rgba(20,20,20,1) 0, transparent 50%), 
+                      radial-gradient(at 50% 0%, rgba(30,30,30,0.4) 0, transparent 50%), 
+                      radial-gradient(at 100% 0%, rgba(15,15,15,0.5) 0, transparent 50%);
 }
 .globe { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: float 10s infinite alternate ease-in-out; }
 .globe-1 { width: 450px; height: 450px; background: #3b82f6; top: -100px; left: -100px; }
@@ -25,11 +25,11 @@ body {
 /* Navbar */
 .navbar {
     width: 100%; padding: 25px 50px; display: flex; align-items: center;
-    backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     margin-bottom: 40px; justify-content: space-between; position: sticky; top:0; z-index: 100;
-    background: rgba(11, 17, 33, 0.7);
+    background: rgba(10, 10, 10, 0.8);
 }
-.logo { font-size: 26px; font-weight: 800; background: linear-gradient(135deg, #60a5fa, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
+.logo { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: 1px; }
 
 .container { width: 100%; max-width: 950px; padding: 0 20px; display: flex; flex-direction: column; align-items: center; }
 
@@ -39,8 +39,8 @@ body {
 .main-title { font-size: 38px; font-weight: 800; text-align: center; margin-bottom: 50px; text-shadow: 0 4px 20px rgba(0,0,0,0.5); }
 .menu-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; width: 100%; }
 .menu-card {
-    background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08); padding: 40px 30px; border-radius: 24px;
+    background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15); padding: 40px 30px; border-radius: 24px;
     cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center;
     position: relative; overflow: hidden;
 }
@@ -50,7 +50,7 @@ body {
     transform: skewX(-20deg); transition: 0.5s;
 }
 .menu-card:hover::before { left: 150%; }
-.menu-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2); border-color: rgba(96, 165, 250, 0.4); }
+.menu-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.4); }
 .menu-icon { font-size: 60px; margin-bottom: 20px; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
 .menu-card h2 { font-size: 26px; color: #e2e8f0; margin-bottom: 15px; font-weight: 700; }
 .menu-card p { font-size: 15px; color: #94a3b8; margin-bottom: 25px; line-height: 1.6; }
@@ -66,13 +66,13 @@ body {
 @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
 .glass-effect {
-    background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px;
-    padding: 40px; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6); margin-bottom: 40px;
+    background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 24px;
+    padding: 40px; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8); margin-bottom: 40px;
 }
 .card-content h1 { font-size: 32px; font-weight: 800; margin-bottom: 15px; letter-spacing: -0.5px; }
-.card-content h1 span { color: #60a5fa; }
-.card-content > p { font-size: 16px; line-height: 1.7; color: #cbd5e1; margin-bottom: 25px; font-weight: 400; }
+.card-content h1 span { color: #f3f4f6; opacity: 0.7; }
+.card-content > p { font-size: 16px; line-height: 1.7; color: #d1d5db; margin-bottom: 25px; font-weight: 400; }
 
 /* Buttons */
 .btn { padding: 14px 28px; border-radius: 12px; font-weight: 600; font-size: 15px; cursor: pointer; border: none; transition: all 0.3s ease; outline: none; }
@@ -87,20 +87,20 @@ body {
 /* Exam Mode: Line-by-Line Breakdown */
 .line-by-line { display: flex; flex-direction: column; gap: 16px; margin: 30px 0; }
 .code-row { 
-    display: flex; flex-direction: column; background: rgba(0,0,0,0.4); 
-    border-radius: 12px; overflow: hidden; border-left: 4px solid #6366f1;
-    transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex; flex-direction: column; background: rgba(0,0,0,0.6); 
+    border-radius: 12px; overflow: hidden; border-left: 4px solid #444;
+    transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
-.code-row:hover { transform: translateX(5px); border-left-color: #8b5cf6; }
+.code-row:hover { transform: translateX(5px); border-left-color: #8b5cf6; /* Color accent on hover */ }
 .code-header {
-    background: #111827; padding: 16px 20px; font-family: 'Fira Code', monospace;
+    background: #111; padding: 16px 20px; font-family: 'Fira Code', monospace;
     font-size: 15px; color: #e5e7eb; white-space: pre-wrap; font-weight: 500;
 }
 .code-desc {
-    padding: 18px 20px; font-size: 14.5px; color: #cbd5e1; background: rgba(255,255,255,0.02);
+    padding: 18px 20px; font-size: 14.5px; color: #d1d5db; background: rgba(255,255,255,0.02);
     border-top: 1px solid rgba(255,255,255,0.05); line-height: 1.7;
 }
-.code-desc b { color: #fca5a5; font-weight: 700; background: rgba(244, 63, 94, 0.1); padding: 3px 6px; border-radius: 4px; }
+.code-desc b { color: #fff; font-weight: 700; background: rgba(255, 255, 255, 0.1); padding: 3px 6px; border-radius: 4px; }
 
 /* Syntax */
 .keyword { color: #c678dd; } .string { color: #98c379; } .comment { color: #64748b; font-style: italic; }
@@ -109,9 +109,9 @@ body {
 
 /* Animations Container */
 .anim-box {
-    background: linear-gradient(to bottom right, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8));
-    border-radius: 16px; padding: 30px; margin: 30px 0; border: 1px solid rgba(255, 255, 255, 0.05); 
-    text-align: center; box-shadow: inset 0 2px 20px rgba(0,0,0,0.5);
+    background: linear-gradient(to bottom right, rgba(20, 20, 20, 0.9), rgba(10, 10, 10, 0.9));
+    border-radius: 16px; padding: 30px; margin: 30px 0; border: 1px solid rgba(255, 255, 255, 0.1); 
+    text-align: center; box-shadow: inset 0 2px 20px rgba(0,0,0,0.6);
     display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px;
 }
 .anim-desc { font-size: 14px !important; color: #94a3b8 !important; margin-top: 25px !important; margin-bottom: 0 !important; font-weight:500; }
