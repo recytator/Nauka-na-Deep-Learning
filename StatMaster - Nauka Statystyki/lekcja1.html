@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="light">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<!-- Perplexity Computer Attribution — SEO Meta Tags -->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lekcja 1 — Zmienne losowe | StatMaster</title>
+<meta name="description" content="Lekcja 1: Zmienne losowe — eksperyment losowy, zdarzenia elementarne, prawdopodobieństwo, rozkłady, wartość oczekiwana, wariancja. Kurs statystyki do egzaminu.">
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="shared.js"></script>
+</head>
+<body>
+
+<!-- ===== PROGRESS BAR ===== -->
+<div class="progress-bar"><div class="progress-bar-fill"></div></div>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="StatMaster logo">
+        <rect x="2" y="18" width="6" height="12" rx="1.5" fill="currentColor" opacity="0.3"/>
+        <rect x="10" y="12" width="6" height="18" rx="1.5" fill="currentColor" opacity="0.5"/>
+        <rect x="18" y="6" width="6" height="24" rx="1.5" fill="currentColor" opacity="0.7"/>
+        <rect x="26" y="2" width="6" height="28" rx="1.5" fill="currentColor"/>
+        <path d="M5 17 L13 11 L21 5 L29 2" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" fill="none"/>
+      </svg>
+      StatMaster
+    </a>
+    <ul class="nav-links">
+      <li><a href="lekcja1.html" class="active">Lekcja 1</a></li>
+      <li><a href="lekcja2.html">Lekcja 2</a></li>
+      <li><a href="lekcja3.html">Lekcja 3</a></li>
+      <li><a href="lekcja4.html">Lekcja 4</a></li>
+    </ul>
+    <button class="theme-toggle" data-theme-toggle aria-label="Przełącz motyw"></button>
+    <button class="mobile-menu-btn" aria-label="Menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav">
+  <button class="mobile-nav-close" aria-label="Zamknij menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <a href="lekcja1.html">Lekcja 1 — Zmienne losowe</a>
+  <a href="lekcja2.html">Lekcja 2 — Rozkłady</a>
+  <a href="lekcja3.html">Lekcja 3 — Estymacja</a>
+  <a href="lekcja4.html">Lekcja 4 — Testowanie hipotez</a>
+</div>
+
+<!-- ===== LESSON HERO ===== -->
+<header class="lesson-hero">
+  <div class="lesson-hero-content">
+    <span class="lesson-badge">📐 Lekcja 1</span>
+    <h1>Zmienne losowe i&nbsp;podstawy&nbsp;rachunku prawdopodobieństwa</h1>
+    <p class="lesson-desc">Od eksperymentu losowego, przez rozkłady prawdopodobieństwa, po wartość oczekiwaną i&nbsp;wariancję — wszystko, czego potrzebujesz do egzaminu, wyjaśnione krok po kroku z&nbsp;interaktywnymi wizualizacjami.</p>
+  </div>
+</header>
+
+<!-- ===== MAIN LAYOUT ===== -->
+<div class="lesson-layout">
+
+  <!-- Sidebar TOC -->
+  <aside class="lesson-sidebar">
+    <div class="toc-wrapper">
+      <div class="toc-title">Spis treści</div>
+      <ol class="toc-list">
+        <li><a href="#eksperyment">1. Eksperyment losowy</a></li>
+        <li><a href="#zdarzenie">2. Zdarzenie elementarne</a></li>
+        <li><a href="#przestrzen">3. Przestrzeń zdarzeń</a></li>
+        <li><a href="#zmienna">4. Zmienna losowa</a></li>
+        <li><a href="#prawdopodobienstwo">5. Prawdopodobieństwo</a></li>
+        <li><a href="#rozklad">6. Rozkład prawdopodobieństwa</a></li>
+        <li><a href="#gestosc">7. Funkcja gęstości</a></li>
+        <li><a href="#dystrybuanta">8. Dystrybuanta</a></li>
+        <li><a href="#wartosc-oczekiwana">9. Wartość oczekiwana</a></li>
+        <li><a href="#wariancja">10. Wariancja</a></li>
+        <li><a href="#typy-cech">11. Typy cech</a></li>
+        <li><a href="#quiz">Quiz końcowy</a></li>
+      </ol>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="lesson-content">
+
+    <!-- ============================== -->
+    <!-- SECTION 1: EKSPERYMENT LOSOWY -->
+    <!-- ============================== -->
+    <section id="eksperyment" class="content-section fade-in">
+      <h2>1. Eksperyment losowy</h2>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p><strong>Eksperyment losowy</strong> (doświadczenie losowe) to kontrolowane doświadczenie, którego wynik nie jest z&nbsp;góry zdeterminowany — za każdym razem, gdy je powtarzamy w&nbsp;tych samych warunkach, możemy uzyskać różny rezultat.</p>
+      </div>
+
+      <p>Kluczowe cechy eksperymentu losowego:</p>
+      <ul style="margin: var(--space-3) 0 var(--space-3) var(--space-6); list-style: disc;">
+        <li>Można go powtarzać (przynajmniej teoretycznie) w&nbsp;identycznych warunkach.</li>
+        <li>Znamy wszystkie możliwe wyniki <strong>przed</strong> przeprowadzeniem doświadczenia.</li>
+        <li>Nie wiemy, który konkretny wynik otrzymamy.</li>
+      </ul>
+
+      <div class="info-box example">
+        <div class="info-box-title">✅ Przykłady z życia</div>
+        <ul style="list-style: disc; padding-left: var(--space-6);">
+          <li><strong>Rzut kostką</strong> — nie wiemy, która ścianka wypadnie (1–6).</li>
+          <li><strong>Ankieta</strong> — odpowiedź losowo wybranej osoby jest nieprzewidywalna.</li>
+          <li><strong>Pomiar temperatury</strong> — wartość zmienia się losowo w&nbsp;zależności od warunków atmosferycznych.</li>
+        </ul>
+      </div>
+
+      <div class="real-life fade-in">
+        <h4>Kontekst AI / drony</h4>
+        <p><strong>Model klasyfikujący obrazy:</strong> podajemy zdjęcie, a&nbsp;sieć neuronowa zwraca prawdopodobieństwa klas — za każdym razem (przy losowym augmentowaniu danych) wynik może się nieznacznie różnić. To eksperyment losowy.</p>
+        <p style="margin-top:var(--space-3)"><strong>Pomiar wysokości drona:</strong> czujnik barometryczny zwraca wartość obarczoną szumem — każdy odczyt to realizacja eksperymentu losowego, nawet jeśli dron stoi w&nbsp;miejscu.</p>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 2: ZDARZENIE ELEMENTARNE -->
+    <!-- ============================== -->
+    <section id="zdarzenie" class="content-section fade-in">
+      <h2>2. Zdarzenie elementarne (ω)</h2>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p><strong>Zdarzenie elementarne</strong> (oznaczane <span class="katex-inline">\(\omega\)</span>) to pojedynczy, niepodzielny wynik eksperymentu losowego. Każde doświadczenie kończy się dokładnie jednym zdarzeniem elementarnym.</p>
+      </div>
+
+      <p>Przykład: przy rzucie kostką zdarzeniami elementarnymi są: wypadnięcie 1, wypadnięcie 2, …, wypadnięcie 6. Każdy z&nbsp;tych wyników to jedno <em>ω</em>.</p>
+
+      <h3>Zdarzenia niezależne</h3>
+      <p>Dwa zdarzenia są <strong>niezależne</strong>, gdy wystąpienie jednego nie wpływa na prawdopodobieństwo drugiego. Np. wynik pierwszego rzutu kostką nie ma wpływu na wynik drugiego rzutu.</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Wzór na niezależność zdarzeń A i B</div>
+        $$P(A \cap B) = P(A) \cdot P(B)$$
+      </div>
+
+      <!-- Interactive dice -->
+      <div class="viz-container scale-in">
+        <div class="viz-title"><span class="icon">🎲</span> Interaktywny rzut kostką</div>
+        <p class="text-muted mb-4" style="font-size:var(--text-sm)">Kliknij przycisk, aby „rzucić" kostką. Każdy wynik to zdarzenie elementarne ω.</p>
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:var(--space-4);">
+          <button class="btn-primary" id="diceRollBtn">🎲 Rzuć kostką</button>
+          <div id="diceResult" style="font-size:var(--text-2xl); font-weight:700; min-width:60px; text-align:center; transition: transform 0.3s ease;">—</div>
+          <div id="diceHistory" style="font-size:var(--text-sm); color:var(--color-text-muted); flex:1;">Historia: </div>
+        </div>
+        <div style="margin-top:var(--space-4);">
+          <div style="position:relative; height:180px;"><canvas id="diceChart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 3: PRZESTRZEŃ ZDARZEŃ -->
+    <!-- ============================== -->
+    <section id="przestrzen" class="content-section fade-in">
+      <h2>3. Przestrzeń zdarzeń elementarnych (Ω)</h2>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p><strong>Przestrzeń zdarzeń elementarnych</strong> (oznaczana <span class="katex-inline">\(\Omega\)</span>) to zbiór <em>wszystkich</em> możliwych wyników (zdarzeń elementarnych) danego eksperymentu losowego. Każdy wynik musi należeć do Ω i&nbsp;żaden wynik spoza Ω nie może wystąpić.</p>
+      </div>
+
+      <div class="info-box example">
+        <div class="info-box-title">✅ Przykłady</div>
+        <table class="data-table" style="margin-top:var(--space-3)">
+          <thead><tr><th>Eksperyment</th><th>Przestrzeń Ω</th><th>Rozmiar |Ω|</th></tr></thead>
+          <tbody>
+            <tr><td>Rzut kostką</td><td>\(\Omega = \{1, 2, 3, 4, 5, 6\}\)</td><td>6</td></tr>
+            <tr><td>Rzut monetą</td><td>\(\Omega = \{O, R\}\) (orzeł, reszka)</td><td>2</td></tr>
+            <tr><td>Dwa rzuty monetą</td><td>\(\Omega = \{OO, OR, RO, RR\}\)</td><td>4</td></tr>
+            <tr><td>Pomiar temperatury</td><td>\(\Omega = (-\infty, +\infty)\) — zbiór ciągły</td><td>∞ (nieprzeliczalny)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box tip">
+        <div class="info-box-title">💡 Wskazówka egzaminacyjna</div>
+        <p>Przestrzeń Ω może być <strong>skończona</strong> (kostka, moneta), <strong>przeliczalna</strong> (liczba klientów w&nbsp;kolejce: 0, 1, 2, …) lub <strong>nieprzeliczalna</strong> (temperatura, czas). To rozróżnienie jest kluczowe przy wyborze typu zmiennej losowej.</p>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 4: ZMIENNA LOSOWA -->
+    <!-- ============================== -->
+    <section id="zmienna" class="content-section fade-in">
+      <h2>4. Zmienna losowa</h2>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p><strong>Zmienna losowa</strong> to funkcja, która każdemu zdarzeniu elementarnemu ω z&nbsp;przestrzeni Ω przypisuje liczbę rzeczywistą:</p>
+      </div>
+
+      <div class="formula-block">
+        <div class="formula-label">Definicja zmiennej losowej</div>
+        $$X = X(\omega) : \Omega \to \mathbb{R}$$
+      </div>
+
+      <p>Innymi słowy: zmienna losowa „tłumaczy" wynik doświadczenia na liczbę, którą możemy analizować matematycznie.</p>
+
+      <h3>Zmienna losowa dyskretna (skokowa)</h3>
+      <div class="info-box example">
+        <div class="info-box-title">✅ Definicja i przykłady</div>
+        <p>Zmienna losowa jest <strong>dyskretna</strong>, gdy przyjmuje <em>przeliczalnie wiele</em> wartości (skończenie wiele lub tyle co liczb naturalnych).</p>
+        <ul style="list-style:disc; padding-left:var(--space-6); margin-top:var(--space-2);">
+          <li>Liczba oczek na kostce: \(X \in \{1,2,3,4,5,6\}\)</li>
+          <li>Liczba obiektów wykrytych na zdjęciu przez model AI: \(X \in \{0,1,2,\ldots\}\)</li>
+          <li>Liczba klientów w&nbsp;sklepie w&nbsp;ciągu godziny</li>
+        </ul>
+      </div>
+
+      <h3>Zmienna losowa ciągła</h3>
+      <div class="info-box example">
+        <div class="info-box-title">✅ Definicja i przykłady</div>
+        <p>Zmienna losowa jest <strong>ciągła</strong>, gdy może przyjmować <em>dowolne</em> wartości z&nbsp;pewnego przedziału (lub całej prostej rzeczywistej).</p>
+        <ul style="list-style:disc; padding-left:var(--space-6); margin-top:var(--space-2);">
+          <li>Czas wykonania zadania: \(X \in [0, +\infty)\)</li>
+          <li>Temperatura powietrza: \(X \in (-\infty, +\infty)\)</li>
+          <li>Wysokość lotu drona: \(X \in [0, h_{\max}]\)</li>
+        </ul>
+      </div>
+
+      <div class="info-box warning">
+        <div class="info-box-title">⚠️ Ważne na egzaminie</div>
+        <p>Kluczowa różnica: dla zmiennej <strong>dyskretnej</strong> możemy wyznaczyć prawdopodobieństwo konkretnej wartości \(P(X = x_i) > 0\). Dla zmiennej <strong>ciągłej</strong> prawdopodobieństwo dokładnie jednej wartości wynosi <strong>zero</strong>: \(P(X = x) = 0\). Sens ma tylko prawdopodobieństwo przedziału!</p>
+      </div>
+
+      <!-- Interactive: random variable generator -->
+      <div class="viz-container scale-in">
+        <div class="viz-title"><span class="icon">⚡</span> Generator zmiennej losowej</div>
+        <p class="text-muted mb-4" style="font-size:var(--text-sm)">Wybierz typ zmiennej i kliknij, by wygenerować losowe wartości.</p>
+        <div class="controls">
+          <div class="control-group">
+            <label>Typ zmiennej</label>
+            <select id="rvType">
+              <option value="discrete">Dyskretna (kostka 1–6)</option>
+              <option value="continuous">Ciągła (temperatura 15–35°C)</option>
+            </select>
+          </div>
+          <button class="btn-primary" id="rvGenBtn">Generuj 10 wartości</button>
+        </div>
+        <div id="rvOutput" style="margin-top:var(--space-4); font-family:var(--font-mono); font-size:var(--text-sm); padding:var(--space-4); background:var(--color-surface-2); border-radius:var(--radius-md); min-height:40px;">
+          Kliknij przycisk powyżej…
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 5: PRAWDOPODOBIEŃSTWO -->
+    <!-- ============================== -->
+    <section id="prawdopodobienstwo" class="content-section fade-in">
+      <h2>5. Prawdopodobieństwo</h2>
+
+      <h3>Definicja aksjomatyczna (Kołmogorow)</h3>
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Aksjomaty prawdopodobieństwa</div>
+        <p>Prawdopodobieństwo to funkcja \(P\) przypisująca zdarzeniom liczby z&nbsp;[0,&nbsp;1], spełniająca trzy aksjomaty:</p>
+        <ol style="list-style:decimal; padding-left:var(--space-6); margin-top:var(--space-2);">
+          <li><strong>Nieujemność:</strong> \(0 \le P(\omega) \le 1\) — prawdopodobieństwo jest liczbą od 0 do 1.</li>
+          <li><strong>Normalizacja:</strong> \(P(\Omega) = 1\) — coś na pewno się wydarzy.</li>
+          <li><strong>Addytywność:</strong> Dla zdarzeń wykluczających się: \(P(A \cup B) = P(A) + P(B)\).</li>
+        </ol>
+      </div>
+
+      <h3>Prawdopodobieństwo klasyczne</h3>
+      <p>Gdy wszystkie zdarzenia elementarne są <em>jednakowo prawdopodobne</em>, stosujemy definicję klasyczną:</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Prawdopodobieństwo klasyczne</div>
+        $$P(A) = \frac{|A|}{|\Omega|}$$
+      </div>
+
+      <p>Gdzie \(|A|\) to liczba zdarzeń sprzyjających, a&nbsp;\(|\Omega|\) to liczba wszystkich zdarzeń elementarnych.</p>
+
+      <div class="info-box example">
+        <div class="info-box-title">✅ Przykład</div>
+        <p>Jaka jest szansa na wyrzucenie liczby parzystej na kostce?</p>
+        <p>\(A = \{2, 4, 6\}\), \(\Omega = \{1,2,3,4,5,6\}\)</p>
+        <p>\(P(A) = \frac{3}{6} = 0{,}5 = 50\%\)</p>
+      </div>
+
+      <!-- Interactive probability slider -->
+      <div class="viz-container scale-in">
+        <div class="viz-title"><span class="icon">📊</span> Symulacja prawdopodobieństwa</div>
+        <p class="text-muted mb-4" style="font-size:var(--text-sm)">Wybierz liczbę rzutów i&nbsp;obserwuj, jak częstość zbliża się do prawdopodobieństwa teoretycznego.</p>
+        <div class="controls">
+          <div class="control-group">
+            <label>Eksperyment</label>
+            <select id="probExperiment">
+              <option value="coin">Moneta (P = 0,5)</option>
+              <option value="dice6">Kostka — wyrzucenie 6 (P ≈ 0,167)</option>
+              <option value="diceEven">Kostka — parzysta (P = 0,5)</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Liczba prób: <span id="probCountLabel">100</span></label>
+            <input type="range" id="probCount" min="10" max="5000" value="100" step="10">
+          </div>
+          <button class="btn-primary" id="probRunBtn">Symuluj</button>
+        </div>
+        <div id="probResult" style="margin-top:var(--space-3); font-weight:600; font-size:var(--text-base);"></div>
+        <div style="position:relative; height:220px; margin-top:var(--space-4);"><canvas id="probChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 6: ROZKŁAD PRAWDOPODOBIEŃSTWA -->
+    <!-- ============================== -->
+    <section id="rozklad" class="content-section fade-in">
+      <h2>6. Rozkład prawdopodobieństwa</h2>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p><strong>Rozkład prawdopodobieństwa</strong> zmiennej losowej \(X\) to opis, jak prawdopodobieństwo jest „rozłożone" między poszczególne wartości (dyskretna) lub przedziały (ciągła).</p>
+      </div>
+
+      <h3>Rozkład dyskretny</h3>
+      <p>Dla zmiennej dyskretnej rozkład zadajemy tabelą wartości i&nbsp;ich prawdopodobieństw:</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Warunek normalizacji</div>
+        $$P(X = x_i) = p_i \ge 0, \quad \sum_{i} p_i = 1$$
+      </div>
+
+      <div class="info-box example">
+        <div class="info-box-title">✅ Przykład — rzut kostką</div>
+        <table class="data-table" style="margin-top:var(--space-3)">
+          <thead><tr><th>\(x_i\)</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>Σ</th></tr></thead>
+          <tbody><tr><td>\(p_i\)</td><td>1/6</td><td>1/6</td><td>1/6</td><td>1/6</td><td>1/6</td><td>1/6</td><td><strong>1</strong></td></tr></tbody>
+        </table>
+      </div>
+
+      <h3>Rozkład ciągły</h3>
+      <p>Dla zmiennej ciągłej nie możemy przypisać prawdopodobieństwa pojedynczej wartości (\(P(X = x) = 0\)). Rozkład opisuje <strong>funkcja gęstości</strong> \(f(x)\), o&nbsp;której więcej w&nbsp;kolejnej sekcji.</p>
+
+      <!-- Interactive chart: discrete distribution -->
+      <div class="viz-container scale-in">
+        <div class="viz-title"><span class="icon">📊</span> Rozkład prawdopodobieństwa — kostka do gry</div>
+        <p class="text-muted mb-4" style="font-size:var(--text-sm)">Wykres słupkowy rozkładu dyskretnego. Przeciągnij suwaki, by zmienić prawdopodobieństwa (suma musi = 1).</p>
+        <div style="position:relative; height:260px;"><canvas id="discreteDistChart"></canvas></div>
+        <div id="distSumWarning" style="margin-top:var(--space-2); font-size:var(--text-sm); color:var(--color-error); display:none;">⚠️ Suma prawdopodobieństw ≠ 1!</div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 7: FUNKCJA GĘSTOŚCI -->
+    <!-- ============================== -->
+    <section id="gestosc" class="content-section fade-in">
+      <h2>7. Funkcja gęstości f(x)</h2>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p><strong>Funkcja gęstości prawdopodobieństwa</strong> (PDF — probability density function) opisuje rozkład zmiennej losowej ciągłej. Nie jest to bezpośrednio prawdopodobieństwo, lecz „gęstość" — jak bardzo prawdopodobne są wartości w&nbsp;danym otoczeniu.</p>
+      </div>
+
+      <div class="formula-block">
+        <div class="formula-label">Warunki na funkcję gęstości</div>
+        $$f(x) \ge 0 \quad \text{dla każdego } x$$
+        $$\int_{-\infty}^{+\infty} f(x)\,dx = 1$$
+      </div>
+
+      <p>Prawdopodobieństwo, że zmienna przyjmie wartość z&nbsp;przedziału \([a, b]\):</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Prawdopodobieństwo z przedziału</div>
+        $$P(a < X < b) = \int_a^b f(x)\,dx$$
+      </div>
+
+      <p>Geometrycznie: prawdopodobieństwo to <strong>pole pod krzywą</strong> \(f(x)\) między \(a\) i&nbsp;\(b\).</p>
+
+      <div class="info-box tip">
+        <div class="info-box-title">💡 Wskazówka</div>
+        <p>Wartość \(f(x)\) <strong>może być większa od 1</strong> — ważne jest tylko, że całka z&nbsp;\(f(x)\) po całej prostej wynosi dokładnie 1. Np. rozkład jednostajny na \([0; 0{,}5]\) ma \(f(x) = 2\).</p>
+      </div>
+
+      <!-- Interactive: area under curve -->
+      <div class="viz-container scale-in">
+        <div class="viz-title"><span class="icon">📈</span> Pole pod krzywą gęstości (rozkład normalny)</div>
+        <p class="text-muted mb-4" style="font-size:var(--text-sm)">Zmień granice a i b, by zobaczyć, jak zmienia się P(a&lt;X&lt;b) — zacieniowane pole.</p>
+        <div class="controls">
+          <div class="control-group">
+            <label>a = <span id="densityALabel">-1.0</span></label>
+            <input type="range" id="densityA" min="-3" max="3" step="0.1" value="-1">
+          </div>
+          <div class="control-group">
+            <label>b = <span id="densityBLabel">1.0</span></label>
+            <input type="range" id="densityB" min="-3" max="3" step="0.1" value="1">
+          </div>
+          <div style="font-weight:700; font-size:var(--text-lg);" id="densityProbResult">P ≈ 0.6827</div>
+        </div>
+        <div style="position:relative; height:280px;"><canvas id="densityChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 8: DYSTRYBUANTA -->
+    <!-- ============================== -->
+    <section id="dystrybuanta" class="content-section fade-in">
+      <h2>8. Dystrybuanta F(x)</h2>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p><strong>Dystrybuanta</strong> (CDF — cumulative distribution function) zmiennej losowej \(X\) to funkcja określona jako:</p>
+      </div>
+
+      <div class="formula-block">
+        <div class="formula-label">Definicja dystrybuanty</div>
+        $$F(x) = P(X \le x)$$
+      </div>
+
+      <h3>Właściwości dystrybuanty</h3>
+      <div class="steps">
+        <div class="step" data-step="1">
+          <h4>Zakres wartości</h4>
+          <p>\(0 \le F(x) \le 1\) — zawsze między 0 a 1.</p>
+        </div>
+        <div class="step" data-step="2">
+          <h4>Niemalejąca</h4>
+          <p>Jeśli \(a < b\), to \(F(a) \le F(b)\) — dystrybuanta nigdy nie maleje.</p>
+        </div>
+        <div class="step" data-step="3">
+          <h4>Granice</h4>
+          <p>\(\lim_{x \to -\infty} F(x) = 0\), \(\lim_{x \to +\infty} F(x) = 1\).</p>
+        </div>
+      </div>
+
+      <h3>Przydatne wzory</h3>
+      <div class="formula-block">
+        $$P(X \le a) = F(a)$$
+        $$P(X > a) = 1 - F(a)$$
+        $$P(a < X \le b) = F(b) - F(a)$$
+      </div>
+
+      <div class="info-box warning">
+        <div class="info-box-title">⚠️ Ważne na egzaminie</div>
+        <p>Dla zmiennej <strong>dyskretnej</strong> dystrybuanta jest funkcją <strong>schodkową</strong> (skoki w&nbsp;punktach, gdzie \(P(X=x_i) > 0\)). Dla zmiennej <strong>ciągłej</strong> jest funkcją <strong>gładką</strong> (ciągłą).</p>
+      </div>
+
+      <!-- Interactive: CDF chart (both types) -->
+      <div class="viz-container scale-in">
+        <div class="viz-title"><span class="icon">📉</span> Dystrybuanta — dyskretna vs ciągła</div>
+        <div class="controls">
+          <div class="control-group">
+            <label>Typ</label>
+            <select id="cdfType">
+              <option value="discrete">Dyskretna (kostka)</option>
+              <option value="continuous">Ciągła (rozkład normalny)</option>
+            </select>
+          </div>
+        </div>
+        <div style="position:relative; height:280px;"><canvas id="cdfChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 9: WARTOŚĆ OCZEKIWANA -->
+    <!-- ============================== -->
+    <section id="wartosc-oczekiwana" class="content-section fade-in">
+      <h2>9. Wartość oczekiwana E(X)</h2>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p><strong>Wartość oczekiwana</strong> (oznaczana \(E(X)\), \(\mu\) lub \(\bar{x}\)) to „średnia ważona" wartości zmiennej losowej, gdzie wagami są prawdopodobieństwa. Intuicyjnie: to wartość, wokół której skupiają się wyniki po wielu powtórzeniach eksperymentu.</p>
+      </div>
+
+      <h3>Dla zmiennej dyskretnej</h3>
+      <div class="formula-block">
+        <div class="formula-label">Wartość oczekiwana — zmienna dyskretna</div>
+        $$E(X) = \sum_{i} x_i \cdot p_i$$
+      </div>
+
+      <h3>Dla zmiennej ciągłej</h3>
+      <div class="formula-block">
+        <div class="formula-label">Wartość oczekiwana — zmienna ciągła</div>
+        $$E(X) = \int_{-\infty}^{+\infty} x \cdot f(x)\,dx$$
+      </div>
+
+      <h3>Właściwości wartości oczekiwanej</h3>
+      <div class="accordion">
+        <div class="accordion-item">
+          <button class="accordion-header">E(a) = a — wartość oczekiwana stałej <span class="arrow">▼</span></button>
+          <div class="accordion-body"><div class="accordion-body-inner">
+            <p>Jeśli zmienna zawsze przyjmuje tę samą wartość \(a\), to jej wartość oczekiwana to po prostu \(a\).</p>
+          </div></div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header">E(bX) = b·E(X) — mnożenie przez stałą <span class="arrow">▼</span></button>
+          <div class="accordion-body"><div class="accordion-body-inner">
+            <p>Stałą możemy wyciągnąć przed operator wartości oczekiwanej. Jeśli podwoimy wszystkie wyniki, wartość oczekiwana też się podwoi.</p>
+          </div></div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header">E(X + a) = E(X) + a — przesunięcie <span class="arrow">▼</span></button>
+          <div class="accordion-body"><div class="accordion-body-inner">
+            <p>Dodanie stałej do zmiennej przesuwa wartość oczekiwaną o tę samą stałą.</p>
+          </div></div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header">E(X + Y) = E(X) + E(Y) — liniowość <span class="arrow">▼</span></button>
+          <div class="accordion-body"><div class="accordion-body-inner">
+            <p>Wartość oczekiwana sumy zmiennych to suma ich wartości oczekiwanych — <strong>zawsze</strong>, niezależnie od tego, czy zmienne są zależne czy nie!</p>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="real-life slide-in-left">
+        <h4>Przykład z życia — sklep internetowy</h4>
+        <p>Sklep sprzedaje produkt w&nbsp;3 wariantach. Cenę \(X\) i&nbsp;prawdopodobieństwo zakupu danego wariantu zestawiono w&nbsp;tabeli:</p>
+        <table class="data-table" style="margin-top:var(--space-3)">
+          <thead><tr><th>Wariant</th><th>Cena \(x_i\) [zł]</th><th>Prawdop. \(p_i\)</th></tr></thead>
+          <tbody>
+            <tr><td>Basic</td><td>49</td><td>0,60</td></tr>
+            <tr><td>Standard</td><td>99</td><td>0,30</td></tr>
+            <tr><td>Premium</td><td>199</td><td>0,10</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:var(--space-3)">\(E(X) = 49 \cdot 0{,}60 + 99 \cdot 0{,}30 + 199 \cdot 0{,}10 = 29{,}4 + 29{,}7 + 19{,}9 = 79{,}0\) zł</p>
+        <p>Średni przychód z&nbsp;jednej transakcji wynosi <strong>79 zł</strong>.</p>
+      </div>
+
+      <!-- Interactive E(X) calculator -->
+      <div class="viz-container scale-in" id="calcContainer">
+        <div class="viz-title"><span class="icon">🧮</span> Kalkulator E(X) i D²(X)</div>
+        <p class="text-muted mb-4" style="font-size:var(--text-sm)">Wprowadź wartości i prawdopodobieństwa zmiennej dyskretnej (od 2 do 8 wartości).</p>
+        <div id="calcInputs">
+          <div style="display:flex; gap:var(--space-2); margin-bottom:var(--space-2); font-weight:600; font-size:var(--text-sm);">
+            <span style="width:80px">Wartość xᵢ</span>
+            <span style="width:100px">Prawdop. pᵢ</span>
+          </div>
+          <div id="calcRows"></div>
+          <div style="display:flex; gap:var(--space-2); margin-top:var(--space-3);">
+            <button class="btn-primary" id="calcAddRow" style="background:var(--color-surface-2); color:var(--color-text);">+ Dodaj wiersz</button>
+            <button class="btn-primary" id="calcCompute">Oblicz E(X) i D²(X)</button>
+          </div>
+        </div>
+        <div id="calcResult" style="margin-top:var(--space-4); padding:var(--space-4); background:var(--color-surface-2); border-radius:var(--radius-md); display:none;"></div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 10: WARIANCJA -->
+    <!-- ============================== -->
+    <section id="wariancja" class="content-section fade-in">
+      <h2>10. Wariancja D²(X) i odchylenie standardowe</h2>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p><strong>Wariancja</strong> mierzy, jak bardzo wartości zmiennej losowej „rozrzucone" są wokół wartości oczekiwanej. Im większa wariancja, tym większy rozrzut wyników.</p>
+      </div>
+
+      <div class="formula-block">
+        <div class="formula-label">Wariancja — definicja</div>
+        $$D^2(X) = E\bigl[(X - E(X))^2\bigr]$$
+      </div>
+
+      <div class="formula-block">
+        <div class="formula-label">Wariancja — wzór obliczeniowy (łatwiejszy do obliczeń)</div>
+        $$D^2(X) = E(X^2) - [E(X)]^2$$
+      </div>
+
+      <h3>Właściwości wariancji</h3>
+      <div class="steps">
+        <div class="step" data-step="1">
+          <h4>\(D^2(X) \ge 0\) — ZAWSZE</h4>
+          <p>Wariancja nigdy nie jest ujemna. Jeśli \(D^2(X) = 0\), zmienna jest stałą.</p>
+        </div>
+        <div class="step" data-step="2">
+          <h4>\(D^2(X + a) = D^2(X)\)</h4>
+          <p>Dodanie stałej do zmiennej <strong>nie zmienia</strong> wariancji — przesunięcie nie wpływa na rozrzut.</p>
+        </div>
+        <div class="step" data-step="3">
+          <h4>\(D^2(bX) = b^2 \cdot D^2(X)\)</h4>
+          <p>Pomnożenie zmiennej przez stałą \(b\) powoduje pomnożenie wariancji przez \(b^2\). Uwaga: kwadrat!</p>
+        </div>
+      </div>
+
+      <h3>Odchylenie standardowe</h3>
+      <div class="formula-block">
+        <div class="formula-label">Odchylenie standardowe</div>
+        $$\sigma = \sigma(X) = \sqrt{D^2(X)}$$
+      </div>
+
+      <p>Odchylenie standardowe ma tę samą jednostkę co zmienna losowa (np. zł, cm, °C), dlatego jest bardziej intuicyjne niż wariancja (która ma jednostkę do kwadratu).</p>
+
+      <div class="real-life slide-in-right">
+        <h4>Przykład — porównanie dwóch akcji</h4>
+        <p>Akcja A: oczekiwany zwrot 10%, odchylenie \(\sigma = 2\%\) — mały rozrzut, stabilna inwestycja.</p>
+        <p>Akcja B: oczekiwany zwrot 10%, odchylenie \(\sigma = 15\%\) — duży rozrzut, ryzykowna inwestycja.</p>
+        <p>Obie mają ten sam \(E(X)\), ale <strong>zupełnie różne ryzyko</strong> mierzone odchyleniem standardowym!</p>
+      </div>
+
+      <!-- Interactive: variance animation -->
+      <div class="viz-container scale-in">
+        <div class="viz-title"><span class="icon">🎯</span> Wizualizacja wariancji — rozrzut punktów</div>
+        <p class="text-muted mb-4" style="font-size:var(--text-sm)">Zmień wariancję suwakiem i zobacz, jak punkty rozpraszają się wokół średniej.</p>
+        <div class="controls">
+          <div class="control-group">
+            <label>Wariancja σ² = <span id="varValueLabel">1.0</span></label>
+            <input type="range" id="varSlider" min="0.1" max="5" step="0.1" value="1">
+          </div>
+          <button class="btn-primary" id="varAnimBtn">Animuj ponownie</button>
+        </div>
+        <canvas id="varianceCanvas" height="200"></canvas>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- SECTION 11: TYPY CECH -->
+    <!-- ============================== -->
+    <section id="typy-cech" class="content-section fade-in">
+      <h2>11. Typy cech statystycznych</h2>
+
+      <p>W statystyce klasyfikujemy badane cechy (zmienne) według tego, jak je mierzymy. Podział ten wpływa na wybór narzędzi statystycznych.</p>
+
+      <h3>Cechy mierzalne (ilościowe)</h3>
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p>Cechy, których wartości wyrażamy liczbami i&nbsp;na których możemy wykonywać działania arytmetyczne (dodawanie, średnia itp.).</p>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-item">
+          <button class="accordion-header">Skokowe (dyskretne) <span class="arrow">▼</span></button>
+          <div class="accordion-body"><div class="accordion-body-inner">
+            <p>Przyjmują wartości ze zbioru przeliczalnego (zwykle liczby całkowite).</p>
+            <p><strong>Przykłady:</strong> liczba dzieci w&nbsp;rodzinie, liczba awarii maszyny, ilość sztuk na magazynie, liczba wykrytych obiektów na zdjęciu.</p>
+          </div></div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header">Ciągłe <span class="arrow">▼</span></button>
+          <div class="accordion-body"><div class="accordion-body-inner">
+            <p>Mogą przyjmować dowolne wartości z&nbsp;przedziału (nieskończenie wiele wartości między dowolnymi dwoma punktami).</p>
+            <p><strong>Przykłady:</strong> wzrost, waga, temperatura, czas reakcji, napięcie elektryczne.</p>
+          </div></div>
+        </div>
+      </div>
+
+      <h3>Cechy niemierzalne (jakościowe)</h3>
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p>Cechy, których wartości to kategorie lub etykiety. Nie można na nich wykonywać standardowych działań arytmetycznych.</p>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-item">
+          <button class="accordion-header">Nominalne <span class="arrow">▼</span></button>
+          <div class="accordion-body"><div class="accordion-body-inner">
+            <p>Kategorie bez naturalnego porządku — nie da się ich sensownie uszeregować.</p>
+            <p><strong>Przykłady:</strong> kolor oczu, płeć, grupa krwi, marka samochodu, typ systemu operacyjnego.</p>
+          </div></div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header">Porządkowe (ordinalne) <span class="arrow">▼</span></button>
+          <div class="accordion-body"><div class="accordion-body-inner">
+            <p>Kategorie z&nbsp;naturalnym porządkiem, ale odległości między nimi nie są równe ani jednoznaczne.</p>
+            <p><strong>Przykłady:</strong> ocena szkolna (2–5), poziom satysfakcji (niski/średni/wysoki), wykształcenie (podstawowe/średnie/wyższe).</p>
+          </div></div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header">Dychotomiczne (binarne) <span class="arrow">▼</span></button>
+          <div class="accordion-body"><div class="accordion-body-inner">
+            <p>Specjalny przypadek — cecha przyjmuje <strong>dokładnie dwie</strong> wartości.</p>
+            <p><strong>Przykłady:</strong> tak/nie, zdany/niezdany, zdrowy/chory, 0/1, prawda/fałsz.</p>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="info-box tip">
+        <div class="info-box-title">💡 Podsumowanie — schemat</div>
+        <div style="overflow-x:auto;">
+          <table class="data-table" style="margin-top:var(--space-3);">
+            <thead>
+              <tr><th>Rodzaj cechy</th><th>Podtyp</th><th>Przykład</th><th>Można liczyć średnią?</th></tr>
+            </thead>
+            <tbody>
+              <tr><td rowspan="2"><strong>Mierzalna</strong></td><td>Skokowa</td><td>Liczba punktów</td><td>Tak ✓</td></tr>
+              <tr><td>Ciągła</td><td>Wzrost [cm]</td><td>Tak ✓</td></tr>
+              <tr><td rowspan="3"><strong>Niemierzalna</strong></td><td>Nominalna</td><td>Kolor</td><td>Nie ✗</td></tr>
+              <tr><td>Porządkowa</td><td>Ocena</td><td>Ostrożnie</td></tr>
+              <tr><td>Dychotomiczna</td><td>Tak/Nie</td><td>Można (0/1)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- QUIZ -->
+    <!-- ============================== -->
+    <section id="quiz" class="content-section fade-in">
+      <h2>Quiz końcowy</h2>
+
+      <div class="quiz-container" id="lesson1Quiz">
+        <h3>🎓 Sprawdź swoją wiedzę</h3>
+        <p class="text-muted mt-2">5 pytań z materiału Lekcji 1. Wybierz poprawną odpowiedź.</p>
+
+        <!-- Q1 -->
+        <div class="quiz-question">
+          <p><strong>1.</strong> Przestrzeń zdarzeń elementarnych Ω dla rzutu dwiema monetami to:</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">\(\{O, R\}\)</div>
+            <div class="quiz-option" data-correct="true">\(\{OO, OR, RO, RR\}\)</div>
+            <div class="quiz-option" data-correct="false">\(\{0, 1, 2\}\)</div>
+            <div class="quiz-option" data-correct="false">\(\{O, R, OO, RR\}\)</div>
+          </div>
+          <div class="quiz-feedback" data-success="Brawo! Każda kombinacja to osobne zdarzenie elementarne." data-error="Niestety. Pamiętaj: liczymy wszystkie możliwe pary wyników."></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-question">
+          <p><strong>2.</strong> Która z poniższych zmiennych jest ciągła?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">Liczba studentów na wykładzie</div>
+            <div class="quiz-option" data-correct="false">Liczba oczek na kostce</div>
+            <div class="quiz-option" data-correct="true">Temperatura powietrza w °C</div>
+            <div class="quiz-option" data-correct="false">Numer PESEL</div>
+          </div>
+          <div class="quiz-feedback" data-success="Poprawnie! Temperatura może przyjmować dowolne wartości z przedziału." data-error="Nie. Temperatura jest ciągła — może przyjmować np. 21,37°C."></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-question">
+          <p><strong>3.</strong> Jeśli \(E(X) = 5\), to \(E(3X + 2) = \)?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">15</div>
+            <div class="quiz-option" data-correct="true">17</div>
+            <div class="quiz-option" data-correct="false">21</div>
+            <div class="quiz-option" data-correct="false">7</div>
+          </div>
+          <div class="quiz-feedback" data-success="Świetnie! E(3X+2) = 3·E(X)+2 = 3·5+2 = 17." data-error="Przypomnij sobie: E(bX+a) = b·E(X)+a = 3·5+2 = 17."></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-question">
+          <p><strong>4.</strong> Wariancja \(D^2(X+7)\) jest równa:</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="true">\(D^2(X)\)</div>
+            <div class="quiz-option" data-correct="false">\(D^2(X) + 7\)</div>
+            <div class="quiz-option" data-correct="false">\(D^2(X) + 49\)</div>
+            <div class="quiz-option" data-correct="false">\(7 \cdot D^2(X)\)</div>
+          </div>
+          <div class="quiz-feedback" data-success="Dokładnie! Dodanie stałej nie zmienia wariancji." data-error="Pamiętaj: D²(X+a) = D²(X). Przesunięcie nie wpływa na rozrzut."></div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-question">
+          <p><strong>5.</strong> Cecha „ocena z egzaminu (2, 3, 3.5, 4, 4.5, 5)" to cecha:</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">Nominalna</div>
+            <div class="quiz-option" data-correct="true">Porządkowa</div>
+            <div class="quiz-option" data-correct="false">Ciągła</div>
+            <div class="quiz-option" data-correct="false">Dychotomiczna</div>
+          </div>
+          <div class="quiz-feedback" data-success="Tak! Oceny mają naturalny porządek, ale odległości nie są równe." data-error="Oceny są uporządkowane (2 < 3 < ... < 5), ale różnice nie muszą być równe — to cecha porządkowa."></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== LESSON NAVIGATION ===== -->
+    <div class="lesson-nav">
+      <div></div>
+      <a href="lekcja2.html" class="next">
+        <span class="nav-label">Następna lekcja →</span>
+        <span class="nav-title">Lekcja 2 — Rozkłady zmiennych losowych</span>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <p>StatMaster — Kurs statystyki do egzaminu &copy; 2025</p>
+  <p style="margin-top:var(--space-2);">
+    <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+  </p>
+</footer>
+
+<!-- ============================================================ -->
+<!-- SCRIPTS — All interactives in vanilla JS                     -->
+<!-- ============================================================ -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // ===== KaTeX auto-render =====
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false},
+        {left: '\\[', right: '\\]', display: true}
+      ],
+      throwOnError: false
+    });
+  }
+
+  // Wait briefly for KaTeX to load if deferred
+  setTimeout(() => {
+    if (typeof renderMathInElement === 'function') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+  }, 500);
+
+  // ===== Chart.js global config =====
+  const getCSSColor = (varName) => getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+
+  function chartColors() {
+    return {
+      primary: getCSSColor('--color-primary'),
+      accent: getCSSColor('--color-accent'),
+      text: getCSSColor('--color-text'),
+      textMuted: getCSSColor('--color-text-muted'),
+      border: getCSSColor('--color-divider'),
+      surface: getCSSColor('--color-surface'),
+      primaryLight: getCSSColor('--color-primary-light'),
+    };
+  }
+
+  Chart.defaults.color = getCSSColor('--color-text-muted');
+  Chart.defaults.borderColor = getCSSColor('--color-divider');
+  Chart.defaults.font.family = "'Space Grotesk', system-ui, sans-serif";
+
+  // ============================================================
+  // 1. DICE ROLL INTERACTIVE
+  // ============================================================
+  const diceBtn = document.getElementById('diceRollBtn');
+  const diceResult = document.getElementById('diceResult');
+  const diceHistory = document.getElementById('diceHistory');
+  const diceCounts = [0,0,0,0,0,0];
+  let diceRolls = [];
+  let diceChart = null;
+
+  function initDiceChart() {
+    const ctx = document.getElementById('diceChart');
+    if (!ctx) return;
+    const c = chartColors();
+    diceChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['1','2','3','4','5','6'],
+        datasets: [{
+          label: 'Ilość wyrzuceń',
+          data: [0,0,0,0,0,0],
+          backgroundColor: [c.primary, c.accent, c.primary, c.accent, c.primary, c.accent],
+          borderRadius: 6,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: c.border } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  if (diceBtn) {
+    initDiceChart();
+    diceBtn.addEventListener('click', () => {
+      const val = Math.floor(Math.random() * 6) + 1;
+      diceCounts[val - 1]++;
+      diceRolls.push(val);
+
+      diceResult.textContent = val;
+      diceResult.style.transform = 'scale(1.3)';
+      setTimeout(() => diceResult.style.transform = 'scale(1)', 200);
+
+      const last10 = diceRolls.slice(-10);
+      diceHistory.textContent = 'Historia (ostatnie 10): ' + last10.join(', ') + '  |  Łącznie: ' + diceRolls.length;
+
+      if (diceChart) {
+        diceChart.data.datasets[0].data = [...diceCounts];
+        diceChart.update();
+      }
+    });
+  }
+
+  // ============================================================
+  // 2. RANDOM VARIABLE GENERATOR
+  // ============================================================
+  const rvGenBtn = document.getElementById('rvGenBtn');
+  const rvType = document.getElementById('rvType');
+  const rvOutput = document.getElementById('rvOutput');
+
+  if (rvGenBtn) {
+    rvGenBtn.addEventListener('click', () => {
+      const type = rvType.value;
+      let values = [];
+      for (let i = 0; i < 10; i++) {
+        if (type === 'discrete') {
+          values.push(Math.floor(Math.random() * 6) + 1);
+        } else {
+          values.push((15 + Math.random() * 20).toFixed(2));
+        }
+      }
+      const label = type === 'discrete' ? 'X (kostka)' : 'X (temp °C)';
+      rvOutput.innerHTML = `<strong>${label}:</strong> [${values.join(', ')}]`;
+    });
+  }
+
+  // ============================================================
+  // 3. PROBABILITY SIMULATION
+  // ============================================================
+  const probRunBtn = document.getElementById('probRunBtn');
+  const probExperiment = document.getElementById('probExperiment');
+  const probCount = document.getElementById('probCount');
+  const probCountLabel = document.getElementById('probCountLabel');
+  const probResultEl = document.getElementById('probResult');
+  let probChart = null;
+
+  if (probCount) {
+    probCount.addEventListener('input', () => {
+      probCountLabel.textContent = probCount.value;
+    });
+  }
+
+  if (probRunBtn) {
+    probRunBtn.addEventListener('click', () => {
+      const exp = probExperiment.value;
+      const n = parseInt(probCount.value);
+      let theoreticalP, successFn, label;
+
+      if (exp === 'coin') {
+        theoreticalP = 0.5;
+        label = 'Orzeł na monecie';
+        successFn = () => Math.random() < 0.5;
+      } else if (exp === 'dice6') {
+        theoreticalP = 1/6;
+        label = 'Wyrzucenie 6';
+        successFn = () => Math.floor(Math.random()*6)+1 === 6;
+      } else {
+        theoreticalP = 0.5;
+        label = 'Parzysta na kostce';
+        successFn = () => {
+          const v = Math.floor(Math.random()*6)+1;
+          return v % 2 === 0;
+        };
+      }
+
+      // Run simulation and track running frequency
+      const points = [];
+      let successes = 0;
+      const step = Math.max(1, Math.floor(n / 200));
+      for (let i = 1; i <= n; i++) {
+        if (successFn()) successes++;
+        if (i % step === 0 || i === n) {
+          points.push({ x: i, y: successes / i });
+        }
+      }
+
+      const finalFreq = successes / n;
+      probResultEl.innerHTML = `Wynik: ${successes}/${n} sukcesów → <strong>częstość = ${finalFreq.toFixed(4)}</strong> (teoretyczne P = ${theoreticalP.toFixed(4)})`;
+
+      // Chart
+      const ctx = document.getElementById('probChart');
+      const c = chartColors();
+      if (probChart) probChart.destroy();
+
+      probChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          datasets: [
+            {
+              label: 'Częstość empiryczna',
+              data: points,
+              borderColor: c.primary,
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.1
+            },
+            {
+              label: 'P teoretyczne',
+              data: [{ x: 1, y: theoreticalP }, { x: n, y: theoreticalP }],
+              borderColor: c.accent,
+              borderWidth: 2,
+              borderDash: [8, 4],
+              pointRadius: 0,
+              backgroundColor: 'transparent'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'top' } },
+          scales: {
+            x: { type: 'linear', title: { display: true, text: 'Liczba prób' }, grid: { color: c.border } },
+            y: { min: 0, max: 1, title: { display: true, text: 'Częstość' }, grid: { color: c.border } }
+          }
+        }
+      });
+    });
+  }
+
+  // ============================================================
+  // 4. DISCRETE DISTRIBUTION CHART
+  // ============================================================
+  (function() {
+    const ctx = document.getElementById('discreteDistChart');
+    if (!ctx) return;
+    const c = chartColors();
+    const probs = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6];
+    const chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['x₁=1', 'x₂=2', 'x₃=3', 'x₄=4', 'x₅=5', 'x₆=6'],
+        datasets: [{
+          label: 'P(X = xᵢ)',
+          data: probs.map(p => parseFloat(p.toFixed(4))),
+          backgroundColor: c.primary + '99',
+          borderColor: c.primary,
+          borderWidth: 2,
+          borderRadius: 6,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => 'P = ' + ctx.parsed.y.toFixed(4)
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, max: 0.5, title: { display: true, text: 'Prawdopodobieństwo' }, grid: { color: c.border } },
+          x: { title: { display: true, text: 'Wartości zmiennej X' }, grid: { display: false } }
+        }
+      }
+    });
+  })();
+
+  // ============================================================
+  // 5. DENSITY FUNCTION (NORMAL) — AREA UNDER CURVE
+  // ============================================================
+  (function() {
+    const canvas = document.getElementById('densityChart');
+    if (!canvas) return;
+
+    const aSlider = document.getElementById('densityA');
+    const bSlider = document.getElementById('densityB');
+    const aLabel = document.getElementById('densityALabel');
+    const bLabel = document.getElementById('densityBLabel');
+    const probResult = document.getElementById('densityProbResult');
+
+    // Normal PDF
+    function normalPDF(x, mu, sigma) {
+      return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((x - mu) / sigma) ** 2);
+    }
+
+    // Approximate CDF using error function approximation
+    function normalCDF(x, mu, sigma) {
+      const z = (x - mu) / sigma;
+      const t = 1 / (1 + 0.2316419 * Math.abs(z));
+      const d = 0.3989422804014327;
+      const p = d * Math.exp(-z * z / 2) * (t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.8212560 + t * 1.3302744)))));
+      return z > 0 ? 1 - p : p;
+    }
+
+    let densityChart = null;
+
+    function updateDensity() {
+      const a = parseFloat(aSlider.value);
+      const b = parseFloat(bSlider.value);
+      aLabel.textContent = a.toFixed(1);
+      bLabel.textContent = b.toFixed(1);
+
+      const aEff = Math.min(a, b);
+      const bEff = Math.max(a, b);
+      const prob = normalCDF(bEff, 0, 1) - normalCDF(aEff, 0, 1);
+      probResult.textContent = `P(${aEff.toFixed(1)} < X < ${bEff.toFixed(1)}) ≈ ${prob.toFixed(4)}`;
+
+      // Generate curve data as {x,y} points
+      const curveData = [];
+      const shadedData = [];
+      for (let x = -4; x <= 4; x += 0.05) {
+        const xr = parseFloat(x.toFixed(2));
+        const y = normalPDF(xr, 0, 1);
+        curveData.push({ x: xr, y });
+        shadedData.push({ x: xr, y: (xr >= aEff && xr <= bEff) ? y : 0 });
+      }
+
+      const c = chartColors();
+
+      if (densityChart) {
+        densityChart.data.datasets[0].data = curveData;
+        densityChart.data.datasets[1].data = shadedData;
+        densityChart.update('none');
+        return;
+      }
+
+      densityChart = new Chart(canvas, {
+        type: 'line',
+        data: {
+          datasets: [
+            {
+              label: 'f(x)',
+              data: curveData,
+              borderColor: c.primary,
+              borderWidth: 2.5,
+              pointRadius: 0,
+              fill: false,
+              tension: 0.4
+            },
+            {
+              label: 'Zacieniowanie',
+              data: shadedData,
+              borderColor: 'transparent',
+              backgroundColor: c.primary + '44',
+              borderWidth: 0,
+              pointRadius: 0,
+              fill: 'origin',
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false }
+          },
+          scales: {
+            y: { beginAtZero: true, max: 0.45, title: { display: true, text: 'f(x)' }, grid: { color: c.border } },
+            x: {
+              type: 'linear',
+              min: -4,
+              max: 4,
+              title: { display: true, text: 'x' },
+              ticks: { stepSize: 1 },
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    aSlider.addEventListener('input', updateDensity);
+    bSlider.addEventListener('input', updateDensity);
+    updateDensity();
+  })();
+
+  // ============================================================
+  // 6. CDF CHART (DISCRETE vs CONTINUOUS)
+  // ============================================================
+  (function() {
+    const ctx = document.getElementById('cdfChart');
+    if (!ctx) return;
+    const cdfTypeSelect = document.getElementById('cdfType');
+    let cdfChart = null;
+
+    function normalCDF(x) {
+      const z = x;
+      const t = 1 / (1 + 0.2316419 * Math.abs(z));
+      const d = 0.3989422804014327;
+      const p = d * Math.exp(-z * z / 2) * (t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.8212560 + t * 1.3302744)))));
+      return z > 0 ? 1 - p : p;
+    }
+
+    function drawCDF() {
+      const type = cdfTypeSelect.value;
+      const c = chartColors();
+
+      if (cdfChart) cdfChart.destroy();
+
+      if (type === 'discrete') {
+        // Step function for dice
+        const data = [];
+        const cumProbs = [0, 1/6, 2/6, 3/6, 4/6, 5/6, 1];
+        // Build step data
+        data.push({ x: 0, y: 0 });
+        for (let i = 1; i <= 6; i++) {
+          data.push({ x: i, y: cumProbs[i - 1] }); // just before jump
+          data.push({ x: i, y: cumProbs[i] });       // after jump
+        }
+        data.push({ x: 7, y: 1 });
+
+        cdfChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            datasets: [{
+              label: 'F(x) — kostka',
+              data: data,
+              borderColor: c.primary,
+              backgroundColor: c.primaryLight + '44',
+              borderWidth: 2.5,
+              pointRadius: 0,
+              fill: true,
+              stepped: 'before',
+              tension: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
+            scales: {
+              x: { type: 'linear', min: 0, max: 7, title: { display: true, text: 'x' }, grid: { color: c.border } },
+              y: { min: 0, max: 1.05, title: { display: true, text: 'F(x)' }, grid: { color: c.border } }
+            }
+          }
+        });
+      } else {
+        // Smooth CDF for normal
+        const data = [];
+        for (let x = -4; x <= 4; x += 0.1) {
+          data.push({ x: parseFloat(x.toFixed(1)), y: normalCDF(x) });
+        }
+
+        cdfChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            datasets: [{
+              label: 'F(x) — rozkład normalny N(0,1)',
+              data: data,
+              borderColor: c.accent,
+              backgroundColor: c.primaryLight + '33',
+              borderWidth: 2.5,
+              pointRadius: 0,
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
+            scales: {
+              x: { type: 'linear', min: -4, max: 4, title: { display: true, text: 'x' }, grid: { color: c.border } },
+              y: { min: 0, max: 1.05, title: { display: true, text: 'F(x)' }, grid: { color: c.border } }
+            }
+          }
+        });
+      }
+    }
+
+    cdfTypeSelect.addEventListener('change', drawCDF);
+    drawCDF();
+  })();
+
+  // ============================================================
+  // 7. E(X) and D²(X) CALCULATOR
+  // ============================================================
+  (function() {
+    const rowsContainer = document.getElementById('calcRows');
+    const addBtn = document.getElementById('calcAddRow');
+    const computeBtn = document.getElementById('calcCompute');
+    const resultDiv = document.getElementById('calcResult');
+    if (!rowsContainer) return;
+
+    let rowCount = 0;
+
+    function addRow(xVal, pVal) {
+      rowCount++;
+      const row = document.createElement('div');
+      row.className = 'calc-row';
+      row.style.cssText = 'display:flex; gap:var(--space-2); margin-bottom:var(--space-2); align-items:center;';
+      row.innerHTML = `
+        <input type="number" step="any" value="${xVal ?? ''}" placeholder="xᵢ" style="width:80px; padding:var(--space-2); border:1px solid var(--color-border); border-radius:var(--radius-md); background:var(--color-surface); font-size:var(--text-sm);" class="calc-x">
+        <input type="number" step="any" min="0" max="1" value="${pVal ?? ''}" placeholder="pᵢ" style="width:100px; padding:var(--space-2); border:1px solid var(--color-border); border-radius:var(--radius-md); background:var(--color-surface); font-size:var(--text-sm);" class="calc-p">
+        <button onclick="this.parentElement.remove()" style="color:var(--color-error); font-weight:700; background:none; border:none; cursor:pointer; font-size:var(--text-lg);">×</button>
+      `;
+      rowsContainer.appendChild(row);
+    }
+
+    // Start with 3 rows (dice example)
+    addRow(1, '0.1667');
+    addRow(2, '0.1667');
+    addRow(3, '0.1667');
+    addRow(4, '0.1667');
+    addRow(5, '0.1667');
+    addRow(6, '0.1665');
+
+    addBtn.addEventListener('click', () => { if (rowCount < 8) addRow(); });
+
+    computeBtn.addEventListener('click', () => {
+      const xs = [...document.querySelectorAll('.calc-x')].map(el => parseFloat(el.value));
+      const ps = [...document.querySelectorAll('.calc-p')].map(el => parseFloat(el.value));
+
+      if (xs.some(isNaN) || ps.some(isNaN)) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = '<span style="color:var(--color-error)">Uzupełnij wszystkie pola liczbami.</span>';
+        return;
+      }
+
+      const sumP = ps.reduce((a, b) => a + b, 0);
+      const ex = xs.reduce((acc, x, i) => acc + x * ps[i], 0);
+      const ex2 = xs.reduce((acc, x, i) => acc + x * x * ps[i], 0);
+      const variance = ex2 - ex * ex;
+      const sigma = Math.sqrt(Math.max(0, variance));
+
+      let html = '';
+      if (Math.abs(sumP - 1) > 0.01) {
+        html += `<p style="color:var(--color-warning); font-weight:600;">⚠️ Σpᵢ = ${sumP.toFixed(4)} ≠ 1 (wynik może być niepoprawny)</p>`;
+      }
+      html += `<p><strong>Σpᵢ =</strong> ${sumP.toFixed(4)}</p>`;
+      html += `<p><strong>E(X) = Σ xᵢ·pᵢ =</strong> ${ex.toFixed(4)}</p>`;
+      html += `<p><strong>E(X²) = Σ xᵢ²·pᵢ =</strong> ${ex2.toFixed(4)}</p>`;
+      html += `<p><strong>D²(X) = E(X²) − [E(X)]² =</strong> ${ex2.toFixed(4)} − ${(ex*ex).toFixed(4)} = <strong>${variance.toFixed(4)}</strong></p>`;
+      html += `<p><strong>σ(X) = √D²(X) =</strong> ${sigma.toFixed(4)}</p>`;
+
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = html;
+    });
+  })();
+
+  // ============================================================
+  // 8. VARIANCE ANIMATION (Canvas dots)
+  // ============================================================
+  (function() {
+    const canvas = document.getElementById('varianceCanvas');
+    if (!canvas) return;
+    const ctx2d = canvas.getContext('2d');
+    const slider = document.getElementById('varSlider');
+    const label = document.getElementById('varValueLabel');
+    const animBtn = document.getElementById('varAnimBtn');
+
+    const MEAN = 0;
+    const N = 80;
+    let points = [];
+    let animId = null;
+
+    function generatePoints(variance) {
+      const sigma = Math.sqrt(variance);
+      return Array.from({ length: N }, () => {
+        // Box-Muller transform
+        const u1 = Math.random();
+        const u2 = Math.random();
+        const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        return MEAN + sigma * z;
+      });
+    }
+
+    function draw(targetPoints, progress) {
+      const w = canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+      const h = canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
+      ctx2d.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+      const cw = canvas.offsetWidth;
+      const ch = canvas.offsetHeight;
+
+      ctx2d.clearRect(0, 0, cw, ch);
+
+      const colors = chartColors();
+
+      // Draw mean line
+      const meanX = cw / 2;
+      ctx2d.beginPath();
+      ctx2d.strokeStyle = colors.accent;
+      ctx2d.lineWidth = 2;
+      ctx2d.setLineDash([6, 4]);
+      ctx2d.moveTo(meanX, 10);
+      ctx2d.lineTo(meanX, ch - 10);
+      ctx2d.stroke();
+      ctx2d.setLineDash([]);
+
+      // Label
+      ctx2d.fillStyle = colors.textMuted;
+      ctx2d.font = '12px Space Grotesk, sans-serif';
+      ctx2d.textAlign = 'center';
+      ctx2d.fillText('μ (średnia)', meanX, ch - 2);
+
+      // Draw points
+      const scale = cw / 10; // -5 to 5 maps to 0 to cw
+      targetPoints.forEach((val, i) => {
+        const targetX = meanX + val * scale;
+        const startX = meanX;
+        const x = startX + (targetX - startX) * progress;
+        const y = 20 + (i % 4) * ((ch - 40) / 4) + (Math.random() * 0.5); // slight row spread
+
+        ctx2d.beginPath();
+        ctx2d.arc(x, y, 5, 0, Math.PI * 2);
+        ctx2d.fillStyle = colors.primary + 'bb';
+        ctx2d.fill();
+      });
+    }
+
+    function animate() {
+      const variance = parseFloat(slider.value);
+      label.textContent = variance.toFixed(1);
+      const targetPoints = generatePoints(variance);
+
+      let start = null;
+      const duration = 800;
+
+      if (animId) cancelAnimationFrame(animId);
+
+      function step(timestamp) {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        draw(targetPoints, eased);
+        if (progress < 1) {
+          animId = requestAnimationFrame(step);
+        }
+      }
+      animId = requestAnimationFrame(step);
+    }
+
+    slider.addEventListener('input', () => {
+      label.textContent = parseFloat(slider.value).toFixed(1);
+      animate();
+    });
+    if (animBtn) animBtn.addEventListener('click', animate);
+
+    // Initial
+    animate();
+    window.addEventListener('resize', animate);
+  })();
+
+  // ============================================================
+  // QUIZ INIT
+  // ============================================================
+  if (typeof initQuiz === 'function') {
+    initQuiz('lesson1Quiz');
+  }
+
+  // ===== Theme change: update charts =====
+  const themeToggle = document.querySelector('[data-theme-toggle]');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      setTimeout(() => {
+        Chart.defaults.color = getCSSColor('--color-text-muted');
+        Chart.defaults.borderColor = getCSSColor('--color-divider');
+        // Charts will use current CSS variables on next update
+      }, 100);
+    });
+  }
+});
+</script>
+
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

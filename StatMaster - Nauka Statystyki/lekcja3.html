@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<!-- Perplexity Computer Attribution — SEO Meta Tags -->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lekcja 3 – Testowanie normalności | Statystyka</title>
+<meta name="description" content="Testowanie normalności rozkładu: testy skośności, kurtozy, Kołmogorowa-Smirnowa, Lillieforsa, chi-kwadrat Pearsona, Shapiro-Wilka, wykresy Q-Q.">
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="shared.js"></script>
+
+<style>
+  .interactive-table-wrapper { overflow-x: auto; margin: var(--space-4) 0; }
+  .interactive-table-wrapper table { min-width: 600px; }
+  .highlight-row td { background: var(--color-primary-lighter) !important; font-weight: 600; }
+  .canvas-wrapper { position: relative; width: 100%; }
+  .canvas-wrapper canvas { width: 100% !important; border-radius: var(--radius-lg); }
+  .toggle-group { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+  .toggle-btn {
+    padding: var(--space-2) var(--space-4);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    background: var(--color-surface);
+    cursor: pointer;
+    transition: all var(--transition-interactive);
+  }
+  .toggle-btn:hover { border-color: var(--color-primary); }
+  .toggle-btn.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-4);
+    margin: var(--space-4) 0;
+  }
+  .comparison-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    text-align: center;
+  }
+  .comparison-card h4 { font-size: var(--text-sm); margin-bottom: var(--space-2); color: var(--color-primary); }
+  .comparison-card p { font-size: var(--text-sm); color: var(--color-text-muted); }
+  .stat-result {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: var(--text-sm);
+  }
+  .stat-result.accept { background: var(--color-success-light); color: var(--color-success); }
+  .stat-result.reject { background: var(--color-error-light); color: var(--color-error); }
+  .slider-value {
+    display: inline-block;
+    min-width: 3ch;
+    text-align: center;
+    font-weight: 700;
+    color: var(--color-primary);
+    font-family: var(--font-mono);
+  }
+  /* Mobile overflow fixes */
+  @media (max-width: 768px) {
+    .lesson-content { overflow-x: hidden; min-width: 0; }
+    .formula-block { padding: var(--space-4) var(--space-3); overflow-x: auto; }
+    .info-box { overflow-x: auto; }
+    .katex-display { overflow-x: auto; overflow-y: hidden; }
+    .viz-container { padding: var(--space-4); }
+    .controls { flex-direction: column; align-items: stretch; }
+    .toggle-group { flex-direction: column; }
+    .comparison-grid { grid-template-columns: 1fr; }
+    .steps { padding-left: var(--space-6); }
+    .step { padding: var(--space-3) var(--space-4); }
+    .content-section h2 { font-size: var(--text-lg); }
+    .lesson-content { max-width: 100%; }
+    body { overflow-x: hidden; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="site-nav" aria-label="Nawigacja główna">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="2" y="6" width="4" height="20" rx="2" fill="currentColor" opacity="0.3"/>
+        <rect x="10" y="10" width="4" height="16" rx="2" fill="currentColor" opacity="0.5"/>
+        <rect x="18" y="4" width="4" height="22" rx="2" fill="currentColor" opacity="0.7"/>
+        <rect x="26" y="8" width="4" height="18" rx="2" fill="currentColor"/>
+      </svg>
+      Statystyka
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Strona główna</a></li>
+      <li><a href="lekcja1.html">Lekcja 1</a></li>
+      <li><a href="lekcja2.html">Lekcja 2</a></li>
+      <li><a href="lekcja3.html" class="active">Lekcja 3</a></li>
+      <li><a href="lekcja4.html">Lekcja 4</a></li>
+    </ul>
+    <button class="theme-toggle" data-theme-toggle aria-label="Zmień motyw"></button>
+    <button class="mobile-menu-btn" aria-label="Menu mobilne">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile nav -->
+<div class="mobile-nav" aria-label="Menu mobilne">
+  <button class="mobile-nav-close" aria-label="Zamknij menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+  <a href="index.html">Strona główna</a>
+  <a href="lekcja1.html">Lekcja 1</a>
+  <a href="lekcja2.html">Lekcja 2</a>
+  <a href="lekcja3.html">Lekcja 3</a>
+  <a href="lekcja4.html">Lekcja 4</a>
+</div>
+
+<!-- ===== PROGRESS BAR ===== -->
+<div class="progress-bar"><div class="progress-bar-fill"></div></div>
+
+<!-- ===== LESSON HERO ===== -->
+<section class="lesson-hero">
+  <div class="lesson-hero-content">
+    <span class="lesson-badge">📊 Lekcja 3</span>
+    <h1>Testowanie normalności</h1>
+    <p class="lesson-desc">Jak sprawdzić, czy dane mają rozkład normalny? Poznasz testy skośności, kurtozy, Kołmogorowa-Smirnowa, Lillieforsa, chi-kwadrat Pearsona, Shapiro-Wilka oraz metody graficzne.</p>
+  </div>
+</section>
+
+<!-- ===== LESSON LAYOUT ===== -->
+<div class="lesson-layout">
+
+  <!-- SIDEBAR TOC -->
+  <aside class="lesson-sidebar">
+    <div class="toc-wrapper">
+      <div class="toc-title">Spis treści</div>
+      <ul class="toc-list">
+        <li><a href="#dlaczego">Dlaczego testujemy normalność?</a></li>
+        <li><a href="#skosnosc">Testy skośności</a></li>
+        <li><a href="#kurtoza">Testy kurtozy</a></li>
+        <li><a href="#kolmogorow">Test Kołmogorowa-Smirnowa</a></li>
+        <li><a href="#lilliefors">Test Lillieforsa</a></li>
+        <li><a href="#chi2">Test chi-kwadrat Pearsona</a></li>
+        <li><a href="#shapiro">Test Shapiro-Wilka</a></li>
+        <li><a href="#graficzne">Metody graficzne</a></li>
+        <li><a href="#quiz">Quiz</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="lesson-content">
+
+    <!-- ==================== SECTION 1: DLACZEGO ==================== -->
+    <section id="dlaczego" class="content-section fade-in">
+      <h2>1. Dlaczego testujemy normalność?</h2>
+
+      <p>Wiele testów statystycznych (test t-Studenta, ANOVA, regresja liniowa) zakłada, że dane pochodzą z populacji o <strong>rozkładzie normalnym</strong>. Jeśli to założenie nie jest spełnione, wyniki tych testów mogą być <strong>niewiarygodne</strong>.</p>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p><strong>Testowanie normalności</strong> to procedura weryfikacji hipotezy, że dane pochodzą z rozkładu normalnego. Hipoteza zerowa brzmi: <em>„rozkład populacji jest normalny"</em>.</p>
+      </div>
+
+      <p>Przed zastosowaniem testów parametrycznych zawsze musimy sprawdzić to założenie. Mamy do dyspozycji wiele narzędzi — od prostych testów opartych na momentach (skośność, kurtoza), przez testy oparte na dystrybuancie (Kołmogorow, Lilliefors), po uniwersalny test chi-kwadrat i najpopularniejszy test Shapiro-Wilka.</p>
+
+      <div class="real-life">
+        <h4>Przykład z życia: wyniki egzaminu</h4>
+        <p>Wykładowca chce porównać średnie wyniki z egzaminu w dwóch grupach testem t-Studenta. Zanim to zrobi, musi sprawdzić, czy wyniki w każdej grupie mają rozkład zbliżony do normalnego. Jeśli nie — powinien użyć testu nieparametrycznego (np. testu Manna-Whitneya).</p>
+      </div>
+
+      <div class="info-box warning">
+        <div class="info-box-title">⚠️ Uwaga</div>
+        <p>Żaden test nie udowodni, że dane <em>mają</em> rozkład normalny. Testy mogą jedynie <strong>nie odrzucić</strong> hipotezy o normalności. Przy małych próbach moc testów jest niska — mogą nie wykryć odstępstw od normalności.</p>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 2: SKOŚNOŚĆ ==================== -->
+    <section id="skosnosc" class="content-section fade-in">
+      <h2>2. Testy skośności (asymetrii)</h2>
+
+      <p>Rozkład normalny jest <strong>symetryczny</strong>, co oznacza, że jego współczynnik skośności wynosi zero. Test skośności sprawdza, czy dane wykazują istotną asymetrię.</p>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Współczynnik skośności populacji</div>
+        <p>Współczynnik skośności populacji definiujemy jako stosunek trzeciego momentu centralnego do trzeciej potęgi odchylenia standardowego:</p>
+        <div class="formula-block">
+          <div class="formula-label">Współczynnik skośności populacji</div>
+          $$\gamma_1 = \frac{\mu_3}{\sigma^3}$$
+        </div>
+        <p>Gdzie \(\mu_3 = E[(X-\mu)^3]\) jest trzecim momentem centralnym.</p>
+      </div>
+
+      <h3>Estymator z próby</h3>
+      <p>Na podstawie próby losowej obliczamy estymator współczynnika skośności:</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Estymator skośności z próby</div>
+        $$g_1 = \frac{n}{(n-1)(n-2)} \cdot \frac{\sum_{i=1}^{n}(x_i - \bar{x})^3}{s^3}$$
+      </div>
+
+      <h3>Statystyka testowa</h3>
+      <p>Aby zweryfikować hipotezę \(H_0\!: \gamma_1 = 0\) przeciwko \(H_1\!: \gamma_1 \neq 0\), obliczamy statystykę:</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Statystyka testowa skośności</div>
+        $$u_1 = \frac{g_1}{s(g_1)}$$
+      </div>
+
+      <p>gdzie błąd standardowy estymatora skośności wynosi:</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Błąd standardowy skośności</div>
+        $$s(g_1) = \sqrt{\frac{6n(n-1)}{(n-2)(n+1)(n+3)}}$$
+      </div>
+
+      <div class="info-box tip">
+        <div class="info-box-title">💡 Przybliżenie</div>
+        <p>Dla dużych prób (\(n > 100\)) można stosować uproszczony wzór: \(s(g_1) \approx \sqrt{6/n}\). Statystykę \(u_1\) porównujemy z wartością krytyczną rozkładu normalnego (np. \(z_{0.025} = 1.96\) dla \(\alpha = 0.05\)).</p>
+      </div>
+
+      <!-- CANVAS: Skewness visualization -->
+      <div class="viz-container scale-in">
+        <div class="viz-title">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16c2-8 5-8 7-2s5 2 7-4"/></svg>
+          Interaktywna wizualizacja: rozkłady skośne vs symetryczny
+        </div>
+        <div class="controls">
+          <div class="toggle-group">
+            <button class="toggle-btn active" data-skew="symmetric">Symetryczny (\(\gamma_1=0\))</button>
+            <button class="toggle-btn" data-skew="right">Prawostronnie skośny (\(\gamma_1>0\))</button>
+            <button class="toggle-btn" data-skew="left">Lewostronnie skośny (\(\gamma_1<0\))</button>
+            <button class="toggle-btn" data-skew="all">Porównaj wszystkie</button>
+          </div>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="skewnessCanvas" width="700" height="350"></canvas>
+        </div>
+      </div>
+
+      <div class="real-life">
+        <h4>Przykład: rozkład dochodów</h4>
+        <p>Dochody gospodarstw domowych mają typowo rozkład prawostronnie skośny (\(\gamma_1 > 0\)) — większość osób zarabia średnio, ale niewielka grupa zarabia bardzo dużo, co „rozciąga" prawy ogon. Wyniki egzaminów bywają lewostronnie skośne, gdy egzamin jest łatwy i większość studentów uzyskuje wysokie oceny.</p>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 3: KURTOZA ==================== -->
+    <section id="kurtoza" class="content-section fade-in">
+      <h2>3. Testy kurtozy (spłaszczenia)</h2>
+
+      <p>Kurtoza mierzy „szczytowatoś" rozkładu w porównaniu do rozkładu normalnego. Stosujemy <strong>nadwyżkę kurtozy</strong> (excess kurtosis), dla której rozkład normalny ma wartość zero.</p>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Współczynnik kurtozy populacji</div>
+        <div class="formula-block">
+          <div class="formula-label">Nadwyżka kurtozy</div>
+          $$\gamma_2 = \frac{\mu_4}{\sigma^4} - 3$$
+        </div>
+        <p>Odejmujemy 3, ponieważ dla rozkładu normalnego \(\mu_4/\sigma^4 = 3\). Dzięki temu \(\gamma_2 = 0\) dla rozkładu normalnego.</p>
+      </div>
+
+      <h3>Estymator i statystyka testowa</h3>
+      <p>Z próby obliczamy estymator \(g_2\) i statystykę testową:</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Statystyka testowa kurtozy</div>
+        $$u_2 = \frac{g_2}{s(g_2)}, \quad s(g_2) = \sqrt{\frac{24n(n-1)^2}{(n-3)(n-2)(n+3)(n+5)}}$$
+      </div>
+
+      <p>Hipotezy: \(H_0\!: \gamma_2 = 0\) vs \(H_1\!: \gamma_2 \neq 0\). Statystykę porównujemy z wartością krytyczną rozkładu normalnego.</p>
+
+      <div class="comparison-grid">
+        <div class="comparison-card">
+          <h4>Leptokurtoza</h4>
+          <p>\(\gamma_2 > 0\)</p>
+          <p>Ostry szczyt, ciężkie ogony. Więcej wartości ekstremalnych niż w rozkładzie normalnym.</p>
+        </div>
+        <div class="comparison-card">
+          <h4>Mezokurtoza</h4>
+          <p>\(\gamma_2 = 0\)</p>
+          <p>Rozkład normalny — punkt odniesienia.</p>
+        </div>
+        <div class="comparison-card">
+          <h4>Platykurtoza</h4>
+          <p>\(\gamma_2 < 0\)</p>
+          <p>Płaski szczyt, lekkie ogony. Wartości skupione bliżej średniej.</p>
+        </div>
+      </div>
+
+      <!-- CANVAS: Kurtosis comparison -->
+      <div class="viz-container scale-in">
+        <div class="viz-title">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16c2-8 5-8 7-2s5 2 7-4"/></svg>
+          Interaktywna wizualizacja: porównanie kurtozy
+        </div>
+        <div class="controls">
+          <div class="control-group">
+            <label>Nadwyżka kurtozy</label>
+            <input type="range" id="kurtosisSlider" min="-2" max="6" step="0.5" value="0">
+            <span class="slider-value" id="kurtosisValue">0</span>
+          </div>
+          <button class="btn-primary" id="kurtosisCompareBtn">Porównaj wszystkie trzy</button>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="kurtosisCanvas" width="700" height="350"></canvas>
+        </div>
+      </div>
+
+      <div class="info-box warning">
+        <div class="info-box-title">⚠️ Uwaga</div>
+        <p>Testy skośności i kurtozy <strong>nie są odporne na obserwacje odstające</strong>. Pojedynczy outlier może znacząco wpłynąć na wartości \(g_1\) i \(g_2\), prowadząc do fałszywego odrzucenia hipotezy o normalności. Przed testowaniem warto sprawdzić dane pod kątem wartości ekstremalnych.</p>
+      </div>
+
+      <!-- EXAMPLE: Gorczyca -->
+      <div class="info-box example">
+        <div class="info-box-title">✅ Przykład: nasiona gorczycy (n = 60)</div>
+        <p>Dla próby 60 obserwacji średnic nasion gorczycy obliczono:</p>
+        <ul>
+          <li>\(g_1 = 0{,}434\)</li>
+          <li>\(s(g_1) = \sqrt{6 \cdot 60 \cdot 59 / (58 \cdot 61 \cdot 63)} = 0{,}3087\)</li>
+          <li>\(u_1 = 0{,}434 / 0{,}3087 = 1{,}406\)</li>
+          <li>Wartość krytyczna przy \(\alpha = 0{,}025\): \(z_{0{,}0125} = 2{,}24\)</li>
+        </ul>
+        <p>Ponieważ \(|u_1| = 1{,}406 < 2{,}24 = z_{\text{kryt}}\), <strong>nie odrzucamy \(H_0\)</strong> — brak podstaw do stwierdzenia asymetrii rozkładu.</p>
+        <span class="stat-result accept">✓ Nie odrzucamy H₀</span>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 4: KOŁMOGOROW-SMIRNOW ==================== -->
+    <section id="kolmogorow" class="content-section fade-in">
+      <h2>4. Test Kołmogorowa-Smirnowa</h2>
+
+      <p>Test Kołmogorowa-Smirnowa (K-S) porównuje dystrybuantę empiryczną z teoretyczną. <strong>Kluczowe założenie:</strong> parametry rozkładu populacji muszą być <strong>znane</strong> (nie estymowane z próby).</p>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p>Statystyka testowa K-S to maksymalna bezwzględna różnica między dystrybuantą empiryczną \(F_n(x)\) a dystrybuantą teoretyczną \(F_0(x)\):</p>
+        <div class="formula-block">
+          <div class="formula-label">Statystyka Kołmogorowa-Smirnowa</div>
+          $$D_n = \max\left(D_n^+, \; D_n^-\right)$$
+        </div>
+        <p>gdzie:</p>
+        <ul>
+          <li>\(D_n^+ = \max_{i}\left[\frac{i}{n} - F_0(x_{(i)})\right]\) — maksymalna odchyłka „w górę"</li>
+          <li>\(D_n^- = \max_{i}\left[F_0(x_{(i)}) - \frac{i-1}{n}\right]\) — maksymalna odchyłka „w dół"</li>
+        </ul>
+      </div>
+
+      <div class="steps">
+        <div class="step" data-step="1">
+          <h4>Uporządkuj obserwacje</h4>
+          <p>Posortuj dane rosnąco: \(x_{(1)} \leq x_{(2)} \leq \ldots \leq x_{(n)}\)</p>
+        </div>
+        <div class="step" data-step="2">
+          <h4>Oblicz dystrybuantę empiryczną</h4>
+          <p>Dla każdej obserwacji \(x_{(i)}\): \(F_n(x_{(i)}) = i/n\)</p>
+        </div>
+        <div class="step" data-step="3">
+          <h4>Oblicz dystrybuantę teoretyczną</h4>
+          <p>Dla znanych parametrów \(\mu, \sigma\): \(F_0(x_{(i)}) = \Phi\left(\frac{x_{(i)}-\mu}{\sigma}\right)\)</p>
+        </div>
+        <div class="step" data-step="4">
+          <h4>Wyznacz statystykę \(D_n\)</h4>
+          <p>Oblicz \(D_n^+\) i \(D_n^-\), a następnie \(D_n = \max(D_n^+, D_n^-)\)</p>
+        </div>
+        <div class="step" data-step="5">
+          <h4>Porównaj z wartością krytyczną</h4>
+          <p>Jeśli \(D_n > D_{n,\alpha}\) z tablic Kołmogorowa, odrzucamy \(H_0\)</p>
+        </div>
+      </div>
+
+      <!-- CANVAS: Empirical vs Theoretical CDF -->
+      <div class="viz-container scale-in">
+        <div class="viz-title">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M3 17l4-4 4 2 4-6 6 4"/></svg>
+          Animacja: dystrybuanta empiryczna vs teoretyczna
+        </div>
+        <div class="controls">
+          <div class="control-group">
+            <label>Liczba obserwacji (n)</label>
+            <input type="range" id="cdfNSlider" min="5" max="100" step="5" value="20">
+            <span class="slider-value" id="cdfNValue">20</span>
+          </div>
+          <button class="btn-primary" id="cdfGenerateBtn">Generuj nową próbę</button>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="cdfCanvas" width="700" height="380"></canvas>
+        </div>
+      </div>
+
+      <div class="info-box warning">
+        <div class="info-box-title">⚠️ Ważne ograniczenie</div>
+        <p>Test K-S w wersji oryginalnej wymaga, by parametry rozkładu były znane <em>a priori</em>. Jeśli estymujemy \(\mu\) i \(\sigma\) z próby, tablice K-S dają <strong>zawyżone wartości krytyczne</strong>, przez co test traci moc. W takiej sytuacji należy stosować <strong>test Lillieforsa</strong>.</p>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 5: LILLIEFORS ==================== -->
+    <section id="lilliefors" class="content-section fade-in">
+      <h2>5. Test Lillieforsa</h2>
+
+      <p>Test Lillieforsa (1967) to modyfikacja testu Kołmogorowa-Smirnowa dla sytuacji, gdy parametry rozkładu normalnego <strong>nie są znane</strong> i muszą być estymowane z próby. Jest to najczęściej spotykana sytuacja w praktyce.</p>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Procedura</div>
+        <p>Standaryzujemy obserwacje średnią \(\bar{x}\) i odchyleniem standardowym \(s\) z próby:</p>
+        <div class="formula-block">
+          <div class="formula-label">Standaryzacja</div>
+          $$Z_i = \frac{x_{(i)} - \bar{x}}{s}$$
+        </div>
+        <p>Statystyka testowa Lillieforsa:</p>
+        <div class="formula-block">
+          <div class="formula-label">Statystyka Lillieforsa</div>
+          $$D_{nL} = \max\left(D_{nL}^+, \; D_{nL}^-\right)$$
+        </div>
+        <p>gdzie \(D_{nL}^+ = \max_i\left[\frac{i}{n} - \Phi(Z_i)\right]\) i \(D_{nL}^- = \max_i\left[\Phi(Z_i) - \frac{i-1}{n}\right]\)</p>
+      </div>
+
+      <div class="formula-block">
+        <div class="formula-label">Przybliżona wartość krytyczna (\(\alpha = 0{,}05\))</div>
+        $$F_{\text{kryt}} = \frac{0{,}886}{\sqrt{n}}$$
+      </div>
+
+      <p>Jeżeli \(D_{nL} > F_{\text{kryt}}\), odrzucamy hipotezę o normalności rozkładu.</p>
+
+      <!-- Interactive Lilliefors table -->
+      <div class="viz-container scale-in">
+        <div class="viz-title">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+          Interaktywna tabela: obliczenia Lillieforsa krok po kroku
+        </div>
+        <p class="text-muted mb-4" style="font-size:var(--text-sm)">Przykład: nasiona gorczycy (n = 60). Poniżej pokazujemy fragment obliczeń dla wybranych obserwacji.</p>
+        <div class="interactive-table-wrapper">
+          <table class="data-table" id="lillieTable">
+            <thead>
+              <tr>
+                <th>i</th>
+                <th>\(x_{(i)}\)</th>
+                <th>\(Z_i\)</th>
+                <th>\(\Phi(Z_i)\)</th>
+                <th>\(i/n\)</th>
+                <th>\(D_i^+\)</th>
+                <th>\((i-1)/n\)</th>
+                <th>\(D_i^-\)</th>
+              </tr>
+            </thead>
+            <tbody id="lillieBody">
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+        </div>
+        <div class="controls" style="justify-content: space-between;">
+          <button class="btn-primary" id="lillieRevealBtn">Pokaż kolejny krok</button>
+          <button class="btn-primary" id="lillieResetBtn" style="background: var(--color-text-muted);">Resetuj</button>
+        </div>
+      </div>
+
+      <div class="info-box example">
+        <div class="info-box-title">✅ Przykład: nasiona gorczycy</div>
+        <p>Dla próby n = 60 obserwacji:</p>
+        <ul>
+          <li>\(D_{nL}^+ = 0{,}0926\), \(D_{nL}^- = 0{,}0742\)</li>
+          <li>\(D_{nL} = \max(0{,}0926;\; 0{,}0742) = 0{,}0926\)</li>
+          <li>\(F_{\text{kryt}} = 0{,}886 / \sqrt{60} = 0{,}1144\) (lub z tablic: \(0{,}1756\) dla specjalnych tablic Lillieforsa)</li>
+        </ul>
+        <p>Ponieważ \(D_{nL} = 0{,}0926 < 0{,}1144 = F_{\text{kryt}}\), <strong>nie odrzucamy \(H_0\)</strong> — brak podstaw do odrzucenia normalności.</p>
+        <span class="stat-result accept">✓ Nie odrzucamy H₀</span>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 6: CHI-KWADRAT ==================== -->
+    <section id="chi2" class="content-section fade-in">
+      <h2>6. Test chi-kwadrat Pearsona</h2>
+
+      <p>Test chi-kwadrat (\(\chi^2\)) Pearsona to <strong>uniwersalny test dopasowania</strong>, który pozwala sprawdzić zgodność danych z dowolnym rozkładem teoretycznym. Wymaga danych pogrupowanych w szereg rozdzielczy (przedziały klasowe).</p>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Statystyka testowa</div>
+        <div class="formula-block">
+          <div class="formula-label">Statystyka chi-kwadrat</div>
+          $$\chi^2 = \sum_{i=1}^{k'} \frac{(n_i - np_i)^2}{np_i}$$
+        </div>
+        <p>gdzie:</p>
+        <ul>
+          <li>\(n_i\) — liczność obserwowana w \(i\)-tym przedziale</li>
+          <li>\(np_i\) — liczność oczekiwana (teoretyczna)</li>
+          <li>\(k'\) — liczba przedziałów (po ewentualnym łączeniu)</li>
+        </ul>
+      </div>
+
+      <div class="formula-block">
+        <div class="formula-label">Stopnie swobody</div>
+        $$df = k' - s - 1$$
+      </div>
+      <p>Gdzie \(s\) to liczba parametrów estymowanych z próby (dla rozkładu normalnego: \(s = 2\), bo estymujemy \(\mu\) i \(\sigma\)).</p>
+
+      <div class="info-box warning">
+        <div class="info-box-title">⚠️ Warunek łączenia przedziałów</div>
+        <p>Jeśli \(np_i \leq 10\) (niektóre źródła: \(np_i \leq 5\)), należy <strong>łączyć sąsiednie przedziały</strong>, aż warunek będzie spełniony. Zbyt małe liczności oczekiwane powodują niestabilność statystyki \(\chi^2\).</p>
+      </div>
+
+      <!-- Interactive chi-square table -->
+      <div class="viz-container scale-in">
+        <div class="viz-title">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+          Interaktywna tabela: szereg rozdzielczy z obliczeniami \(\chi^2\)
+        </div>
+        <div class="interactive-table-wrapper">
+          <table class="data-table" id="chi2Table">
+            <thead>
+              <tr>
+                <th>Przedział</th>
+                <th>\(n_i\)</th>
+                <th>\(p_i\)</th>
+                <th>\(np_i\)</th>
+                <th>\(n_i - np_i\)</th>
+                <th>\(\frac{(n_i-np_i)^2}{np_i}\)</th>
+              </tr>
+            </thead>
+            <tbody id="chi2Body">
+              <!-- Filled by JS -->
+            </tbody>
+            <tfoot>
+              <tr class="highlight-row">
+                <td><strong>Σ</strong></td>
+                <td id="chi2SumN">—</td>
+                <td id="chi2SumP">—</td>
+                <td id="chi2SumNP">—</td>
+                <td>—</td>
+                <td id="chi2SumStat">—</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="controls">
+          <button class="btn-primary" id="chi2AnimateBtn">Animuj obliczenia</button>
+          <button class="btn-primary" id="chi2ResetBtn" style="background: var(--color-text-muted);">Resetuj</button>
+        </div>
+        <div id="chi2Result" style="margin-top: var(--space-4); display: none;">
+          <p><strong>Wynik:</strong> <span id="chi2ResultText"></span></p>
+        </div>
+      </div>
+
+      <div class="real-life">
+        <h4>Kiedy stosować test chi-kwadrat?</h4>
+        <p>Test \(\chi^2\) jest szczególnie przydatny, gdy mamy <strong>duże próby</strong> i dane już pogrupowane w klasy (np. histogram). Jest uniwersalny — może testować zgodność z dowolnym rozkładem (normalnym, wykładniczym, Poissona itp.). Wymaga jednak wystarczająco dużych liczności oczekiwanych w każdym przedziale.</p>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 7: SHAPIRO-WILKA ==================== -->
+    <section id="shapiro" class="content-section fade-in">
+      <h2>7. Test Shapiro-Wilka</h2>
+
+      <p>Test Shapiro-Wilka (1965) jest uważany za <strong>najpotężniejszy test normalności</strong>, szczególnie dla małych i średnich prób. Jest rekomendowany jako test pierwszego wyboru.</p>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Statystyka W</div>
+        <div class="formula-block">
+          <div class="formula-label">Statystyka Shapiro-Wilka</div>
+          $$W = \frac{\left(\sum_{i=1}^{m} a_i \cdot y_{(i)}\right)^2}{\sum_{i=1}^{n}(y_i - \bar{y})^2}$$
+        </div>
+        <p>gdzie \(y_{(i)}\) to statystyki pozycyjne (uporządkowane obserwacje), a \(a_i\) to współczynniki zależne od \(n\) (odczytywane z tablic), \(m = n/2\) (lub \((n-1)/2\) dla nieparzystych).</p>
+      </div>
+
+      <p>Statystyka \(W\) przyjmuje wartości z przedziału \((0, 1]\). Im bliżej 1, tym lepsze dopasowanie do rozkładu normalnego.</p>
+
+      <div class="info-box tip">
+        <div class="info-box-title">💡 Reguła decyzyjna</div>
+        <p><strong>Małe wartości \(W\)</strong> przemawiają za odrzuceniem hipotezy o normalności. Odrzucamy \(H_0\) gdy \(W < W_{\alpha,n}\) (wartość krytyczna z tablic).</p>
+      </div>
+
+      <h3>Aproksymacja Roystona (1992)</h3>
+      <p>Dla ułatwienia obliczania wartości \(p\), Royston zaproponował transformację do rozkładu normalnego:</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Transformacja Roystona</div>
+        $$Z = \frac{W - \mu_W}{\sigma_W} \sim N(0,1)$$
+      </div>
+
+      <p>Dzięki tej aproksymacji możemy łatwo wyznaczyć wartość \(p\) ze standardowych tablic rozkładu normalnego.</p>
+
+      <div class="info-box example">
+        <div class="info-box-title">✅ Przykład</div>
+        <p>Dla pewnej próby obliczono:</p>
+        <ul>
+          <li>\(W = 0{,}978\)</li>
+          <li>Po transformacji Roystona: \(Z = 0{,}391\)</li>
+          <li>Wartość \(p = 0{,}432\)</li>
+        </ul>
+        <p>Ponieważ \(p = 0{,}432 > 0{,}05 = \alpha\), <strong>nie ma podstaw do odrzucenia \(H_0\)</strong> o normalności rozkładu.</p>
+        <span class="stat-result accept">✓ Nie odrzucamy H₀ (p = 0,432)</span>
+      </div>
+
+      <!-- Accordion: porównanie testów -->
+      <div class="accordion">
+        <div class="accordion-item">
+          <button class="accordion-header">
+            Kiedy który test wybrać?
+            <svg class="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              <table class="data-table">
+                <thead>
+                  <tr><th>Test</th><th>Zalety</th><th>Wady</th><th>Kiedy stosować</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>Shapiro-Wilka</strong></td><td>Najwyższa moc</td><td>Tylko normalność, \(n \leq 5000\)</td><td>Pierwszy wybór</td></tr>
+                  <tr><td><strong>Lillieforsa</strong></td><td>Nie wymaga znanych parametrów</td><td>Mniejsza moc niż S-W</td><td>Parametry nieznane</td></tr>
+                  <tr><td><strong>K-S</strong></td><td>Prosty, dowolny rozkład</td><td>Parametry muszą być znane</td><td>Znane parametry</td></tr>
+                  <tr><td><strong>Chi-kwadrat</strong></td><td>Uniwersalny, duże próby</td><td>Wymaga grupowania</td><td>Duże próby, dane pogrupowane</td></tr>
+                  <tr><td><strong>Skośność/Kurtoza</strong></td><td>Proste, szybkie</td><td>Wrażliwe na outlier'y</td><td>Wstępna diagnoza</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-header">
+            Co jeśli test odrzuci normalność?
+            <svg class="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              <p>Gdy test odrzuci hipotezę o normalności, mamy kilka opcji:</p>
+              <ol>
+                <li><strong>Transformacja danych</strong> — np. logarytmiczna, pierwiastkowa, Boxa-Coxa</li>
+                <li><strong>Testy nieparametryczne</strong> — nie wymagają założenia normalności (Mann-Whitney, Kruskal-Wallis, Wilcoxon)</li>
+                <li><strong>Metody odporne (robust)</strong> — np. ucinane średnie, regresja odporna</li>
+                <li><strong>Bootstrap</strong> — resampling, nie wymaga założeń o rozkładzie</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 8: METODY GRAFICZNE ==================== -->
+    <section id="graficzne" class="content-section fade-in">
+      <h2>8. Metody graficzne</h2>
+
+      <p>Metody graficzne to intuicyjne narzędzie diagnostyczne. Nie dają formalnego rozstrzygnięcia (wartości \(p\)), ale pozwalają <strong>wizualnie ocenić</strong> normalność i zidentyfikować charakter odchyleń.</p>
+
+      <h3>Wykres Q-Q (kwantyl-kwantyl)</h3>
+      <p>Na wykresie Q-Q oś X reprezentuje kwantyle teoretyczne rozkładu normalnego, a oś Y — kwantyle empiryczne (uporządkowane obserwacje). Jeżeli punkty leżą <strong>blisko prostej</strong>, dane mają rozkład zbliżony do normalnego.</p>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Interpretacja wykresu Q-Q</div>
+        <ul>
+          <li><strong>Punkty na prostej</strong> → rozkład normalny</li>
+          <li><strong>Odchylenie w górę na końcach</strong> → ciężkie ogony (leptokurtoza)</li>
+          <li><strong>Odchylenie w dół na końcach</strong> → lekkie ogony (platykurtoza)</li>
+          <li><strong>Krzywizna w kształcie litery S</strong> → skośność</li>
+        </ul>
+      </div>
+
+      <h3>Wykres P-P (prawdopodobieństwo-prawdopodobieństwo)</h3>
+      <p>Na wykresie P-P oś X to wartości dystrybuanty teoretycznej, a oś Y — dystrybuanty empirycznej. Podobnie jak w Q-Q, punkty blisko przekątnej świadczą o dobrym dopasowaniu.</p>
+
+      <!-- CANVAS: Interactive Q-Q plot -->
+      <div class="viz-container scale-in">
+        <div class="viz-title">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="17" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="17" cy="7" r="2"/><path d="M3 20L21 4" stroke-dasharray="4"/></svg>
+          Interaktywny wykres Q-Q
+        </div>
+        <div class="controls">
+          <div class="control-group">
+            <label>Typ rozkładu</label>
+            <select id="qqDistSelect">
+              <option value="normal">Normalny</option>
+              <option value="skewed">Skośny (prawo)</option>
+              <option value="heavy">Ciężkie ogony</option>
+              <option value="uniform">Jednostajny</option>
+              <option value="bimodal">Dwumodalny</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Liczba obserwacji</label>
+            <input type="range" id="qqNSlider" min="10" max="200" step="10" value="50">
+            <span class="slider-value" id="qqNValue">50</span>
+          </div>
+          <button class="btn-primary" id="qqGenerateBtn">Generuj dane</button>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="qqCanvas" width="700" height="500"></canvas>
+        </div>
+      </div>
+
+      <div class="real-life">
+        <h4>Jak czytać wykres Q-Q na egzaminie?</h4>
+        <p>Na egzaminie często dostaniesz gotowy wykres Q-Q i pytanie o interpretację. Pamiętaj: jeśli punkty leżą blisko linii prostej — dane są w przybliżeniu normalne. Odchylenia systematyczne (np. kształt litery S lub „banana") wskazują na konkretny typ odstępstwa. Wykres Q-Q to szybka i niezawodna metoda wstępnej oceny.</p>
+      </div>
+    </section>
+
+    <!-- ==================== QUIZ ==================== -->
+    <section id="quiz" class="content-section fade-in">
+      <h2>Quiz — sprawdź się!</h2>
+      <div class="quiz-container" id="quizLekcja3">
+        <h3>🧠 Test wiedzy z Lekcji 3</h3>
+
+        <div class="quiz-question">
+          <p><strong>1.</strong> Dlaczego testujemy normalność danych?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">Aby udowodnić, że dane mają rozkład normalny</div>
+            <div class="quiz-option" data-correct="true">Aby sprawdzić założenia testów parametrycznych</div>
+            <div class="quiz-option" data-correct="false">Aby obliczyć średnią i odchylenie standardowe</div>
+            <div class="quiz-option" data-correct="false">Aby wyznaczyć przedziały ufności</div>
+          </div>
+          <div class="quiz-feedback" data-success="Dokładnie! Testy parametryczne (t-Studenta, ANOVA) wymagają normalności danych." data-error="Nie — testujemy normalność, by sprawdzić, czy możemy stosować testy parametryczne."></div>
+        </div>
+
+        <div class="quiz-question">
+          <p><strong>2.</strong> Czym różni się test Lillieforsa od testu Kołmogorowa-Smirnowa?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">Test Lillieforsa jest starszy</div>
+            <div class="quiz-option" data-correct="false">Test K-S pozwala na estymację parametrów z próby</div>
+            <div class="quiz-option" data-correct="true">Test Lillieforsa stosujemy gdy parametry rozkładu są nieznane</div>
+            <div class="quiz-option" data-correct="false">Nie ma żadnej różnicy, to te same testy</div>
+          </div>
+          <div class="quiz-feedback" data-success="Tak! Lilliefors (1967) zmodyfikował test K-S właśnie na potrzeby nieznanych parametrów." data-error="Główna różnica: Lilliefors pozwala estymować parametry z próby, K-S wymaga ich znajomości a priori."></div>
+        </div>
+
+        <div class="quiz-question">
+          <p><strong>3.</strong> Który test normalności jest uważany za najsilniejszy?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">Test chi-kwadrat Pearsona</div>
+            <div class="quiz-option" data-correct="false">Test Kołmogorowa-Smirnowa</div>
+            <div class="quiz-option" data-correct="false">Test skośności</div>
+            <div class="quiz-option" data-correct="true">Test Shapiro-Wilka</div>
+          </div>
+          <div class="quiz-feedback" data-success="Zgadza się! Test Shapiro-Wilka (1965) ma najwyższą moc statystyczną." data-error="Najsilniejszym testem normalności jest test Shapiro-Wilka."></div>
+        </div>
+
+        <div class="quiz-question">
+          <p><strong>4.</strong> Na wykresie Q-Q punkty leżące blisko prostej oznaczają, że:</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="true">Dane mają rozkład zbliżony do normalnego</div>
+            <div class="quiz-option" data-correct="false">Dane mają rozkład jednostajny</div>
+            <div class="quiz-option" data-correct="false">Dane zawierają obserwacje odstające</div>
+            <div class="quiz-option" data-correct="false">Dane wykazują silną skośność</div>
+          </div>
+          <div class="quiz-feedback" data-success="Właśnie tak — punkty na prostej = dobra zgodność z rozkładem normalnym." data-error="Na wykresie Q-Q punkty blisko prostej świadczą o normalności."></div>
+        </div>
+
+        <div class="quiz-question">
+          <p><strong>5.</strong> Kiedy w teście chi-kwadrat łączymy przedziały?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">Gdy jest za dużo przedziałów (więcej niż 20)</div>
+            <div class="quiz-option" data-correct="true">Gdy liczność oczekiwana \(np_i\) jest zbyt mała (≤ 10)</div>
+            <div class="quiz-option" data-correct="false">Gdy próba jest mniejsza niż 30</div>
+            <div class="quiz-option" data-correct="false">Zawsze łączymy pierwszy i ostatni przedział</div>
+          </div>
+          <div class="quiz-feedback" data-success="Poprawnie! Zbyt małe np_i powodują niestabilność statystyki χ²." data-error="Łączymy przedziały, gdy oczekiwana liczność np_i ≤ 10 (lub ≤ 5)."></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== LESSON NAV ===== -->
+    <div class="lesson-nav">
+      <a href="lekcja2.html" class="prev">
+        <span class="nav-label">← Poprzednia</span>
+        <span class="nav-title">Lekcja 2</span>
+      </a>
+      <a href="lekcja4.html" class="next">
+        <span class="nav-label">Następna →</span>
+        <span class="nav-title">Lekcja 4</span>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <p>© 2025 Statystyka — Materiały do nauki. Wszelkie prawa zastrzeżone.</p>
+  <p style="margin-top: var(--space-2);">
+    <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">
+      Created with Perplexity Computer
+    </a>
+  </p>
+</footer>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // --- KaTeX auto-render ---
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '\\[', right: '\\]', display: true },
+        { left: '\\(', right: '\\)', display: false },
+        { left: '$', right: '$', display: false }
+      ],
+      throwOnError: false
+    });
+  } else {
+    // KaTeX might not be loaded yet (defer), try again
+    window.addEventListener('load', () => {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '\\[', right: '\\]', display: true },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    });
+  }
+
+  // --- Init quiz ---
+  initQuiz('quizLekcja3');
+
+  // =================================================================
+  //  HELPERS
+  // =================================================================
+  const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark' ||
+    (!document.documentElement.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+
+  const colors = () => {
+    const d = isDark();
+    return {
+      text: d ? '#e2e8f0' : '#1a2332',
+      muted: d ? '#94a3b8' : '#5a6577',
+      grid: d ? '#2e3f5f' : '#e2e7f0',
+      primary: d ? '#60a5fa' : '#2563eb',
+      accent: d ? '#a78bfa' : '#7c3aed',
+      success: d ? '#34d399' : '#059669',
+      error: d ? '#f87171' : '#dc2626',
+      warning: d ? '#fbbf24' : '#d97706',
+      bg: d ? '#1a2744' : '#ffffff',
+    };
+  };
+
+  // Normal PDF
+  function normalPDF(x, mu = 0, sigma = 1) {
+    const z = (x - mu) / sigma;
+    return Math.exp(-0.5 * z * z) / (sigma * Math.sqrt(2 * Math.PI));
+  }
+
+  // Approximate normal CDF (Abramowitz & Stegun)
+  function normalCDF(x) {
+    const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429;
+    const p = 0.3275911;
+    const sign = x < 0 ? -1 : 1;
+    x = Math.abs(x) / Math.sqrt(2);
+    const t = 1.0 / (1.0 + p * x);
+    const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+    return 0.5 * (1.0 + sign * y);
+  }
+
+  // Inverse normal CDF (rational approximation)
+  function normalQuantile(p) {
+    if (p <= 0) return -Infinity;
+    if (p >= 1) return Infinity;
+    if (p === 0.5) return 0;
+    const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02,
+               1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
+    const b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
+               6.680131188771972e+01, -1.328068155288572e+01];
+    const c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
+               -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
+    const d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00];
+    const plow = 0.02425, phigh = 1 - plow;
+    let q, r;
+    if (p < plow) {
+      q = Math.sqrt(-2 * Math.log(p));
+      return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+    } else if (p <= phigh) {
+      q = p - 0.5; r = q * q;
+      return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+    } else {
+      q = Math.sqrt(-2 * Math.log(1 - p));
+      return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+    }
+  }
+
+  // Random normal (Box-Muller)
+  function randNormal(mu = 0, sigma = 1) {
+    let u1, u2;
+    do { u1 = Math.random(); } while (u1 === 0);
+    u2 = Math.random();
+    return mu + sigma * Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  }
+
+  // =================================================================
+  //  1) SKEWNESS CANVAS
+  // =================================================================
+  const skewCanvas = document.getElementById('skewnessCanvas');
+  const skewCtx = skewCanvas.getContext('2d');
+  let currentSkew = 'symmetric';
+
+  // Skewed normal approximation using sinh-arcsinh transform
+  function skewedPDF(x, skewness) {
+    if (skewness === 0) return normalPDF(x, 0, 1);
+    // Use simple skew-normal approximation
+    const delta = skewness / Math.sqrt(1 + skewness * skewness);
+    const alpha = skewness * 1.5;
+    const pdf = normalPDF(x, 0, 1);
+    const cdf = normalCDF(alpha * x);
+    return 2 * pdf * cdf;
+  }
+
+  function drawSkewness() {
+    const c = colors();
+    const W = skewCanvas.width, H = skewCanvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    skewCanvas.width = skewCanvas.offsetWidth * dpr;
+    skewCanvas.height = 350 * dpr;
+    skewCtx.scale(dpr, dpr);
+    const w = skewCanvas.offsetWidth, h = 350;
+    skewCtx.clearRect(0, 0, w, h);
+
+    const pad = { l: 50, r: 20, t: 30, b: 50 };
+    const pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
+
+    // Axes
+    skewCtx.strokeStyle = c.grid;
+    skewCtx.lineWidth = 1;
+    skewCtx.beginPath();
+    skewCtx.moveTo(pad.l, pad.t); skewCtx.lineTo(pad.l, h - pad.b);
+    skewCtx.lineTo(w - pad.r, h - pad.b);
+    skewCtx.stroke();
+
+    // X axis labels
+    skewCtx.fillStyle = c.muted;
+    skewCtx.font = '12px "Space Grotesk", sans-serif';
+    skewCtx.textAlign = 'center';
+    for (let x = -4; x <= 4; x++) {
+      const px = pad.l + ((x + 4) / 8) * pw;
+      skewCtx.fillText(x.toString(), px, h - pad.b + 20);
+      if (x !== -4) {
+        skewCtx.strokeStyle = c.grid;
+        skewCtx.globalAlpha = 0.3;
+        skewCtx.beginPath(); skewCtx.moveTo(px, pad.t); skewCtx.lineTo(px, h - pad.b); skewCtx.stroke();
+        skewCtx.globalAlpha = 1;
+      }
+    }
+
+    const curves = [];
+    if (currentSkew === 'symmetric' || currentSkew === 'all') {
+      curves.push({ skew: 0, color: c.primary, label: 'Symetryczny (γ₁=0)' });
+    }
+    if (currentSkew === 'right' || currentSkew === 'all') {
+      curves.push({ skew: 2, color: c.success, label: 'Prawostronnie skośny (γ₁>0)' });
+    }
+    if (currentSkew === 'left' || currentSkew === 'all') {
+      curves.push({ skew: -2, color: c.accent, label: 'Lewostronnie skośny (γ₁<0)' });
+    }
+
+    const maxY = 0.55;
+
+    curves.forEach(curve => {
+      skewCtx.strokeStyle = curve.color;
+      skewCtx.lineWidth = 2.5;
+      skewCtx.beginPath();
+      for (let px = 0; px <= pw; px++) {
+        const x = -4 + (px / pw) * 8;
+        const y = skewedPDF(x, curve.skew);
+        const cy = h - pad.b - (y / maxY) * ph;
+        if (px === 0) skewCtx.moveTo(pad.l + px, cy);
+        else skewCtx.lineTo(pad.l + px, cy);
+      }
+      skewCtx.stroke();
+
+      // Fill area
+      skewCtx.globalAlpha = 0.08;
+      skewCtx.fillStyle = curve.color;
+      skewCtx.lineTo(pad.l + pw, h - pad.b);
+      skewCtx.lineTo(pad.l, h - pad.b);
+      skewCtx.closePath();
+      skewCtx.fill();
+      skewCtx.globalAlpha = 1;
+    });
+
+    // Legend
+    let ly = pad.t + 10;
+    curves.forEach(curve => {
+      skewCtx.fillStyle = curve.color;
+      skewCtx.fillRect(pad.l + 10, ly, 16, 3);
+      skewCtx.fillStyle = c.text;
+      skewCtx.font = '12px "Space Grotesk", sans-serif';
+      skewCtx.textAlign = 'left';
+      skewCtx.fillText(curve.label, pad.l + 32, ly + 5);
+      ly += 20;
+    });
+
+    // Y axis label
+    skewCtx.save();
+    skewCtx.fillStyle = c.muted;
+    skewCtx.font = '12px "Space Grotesk", sans-serif';
+    skewCtx.translate(15, h / 2);
+    skewCtx.rotate(-Math.PI / 2);
+    skewCtx.textAlign = 'center';
+    skewCtx.fillText('f(x)', 0, 0);
+    skewCtx.restore();
+  }
+
+  // Skewness toggle buttons
+  document.querySelectorAll('[data-skew]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-skew]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentSkew = btn.dataset.skew;
+      drawSkewness();
+    });
+  });
+
+  drawSkewness();
+
+  // =================================================================
+  //  2) KURTOSIS CANVAS
+  // =================================================================
+  const kurtCanvas = document.getElementById('kurtosisCanvas');
+  const kurtCtx = kurtCanvas.getContext('2d');
+  let kurtMode = 'slider'; // 'slider' or 'compare'
+
+  // Approximate kurtosis-varying distribution using Student-t / scaled beta
+  function kurtPDF(x, excessKurt) {
+    if (excessKurt <= -1.8) excessKurt = -1.8;
+    if (excessKurt <= 0) {
+      // Platykurtic: use a wider, flatter distribution
+      const sigma = 1 + Math.abs(excessKurt) * 0.35;
+      return normalPDF(x, 0, sigma) * (1 - Math.abs(excessKurt) * 0.05);
+    } else {
+      // Leptokurtic: use a Student-t-like distribution
+      const nu = Math.max(4.001, 6 / excessKurt + 4);
+      const coeff = gamma_approx((nu + 1) / 2) / (Math.sqrt(nu * Math.PI) * gamma_approx(nu / 2));
+      return coeff * Math.pow(1 + x * x / nu, -(nu + 1) / 2);
+    }
+  }
+
+  // Stirling approximation for gamma function
+  function gamma_approx(z) {
+    if (z < 0.5) return Math.PI / (Math.sin(Math.PI * z) * gamma_approx(1 - z));
+    z -= 1;
+    const g = 7;
+    const c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+              771.32342877765313, -176.61502916214059, 12.507343278686905,
+              -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    let x = c[0];
+    for (let i = 1; i < g + 2; i++) x += c[i] / (z + i);
+    const t = z + g + 0.5;
+    return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+  }
+
+  function drawKurtosis() {
+    const c = colors();
+    const dpr = window.devicePixelRatio || 1;
+    kurtCanvas.width = kurtCanvas.offsetWidth * dpr;
+    kurtCanvas.height = 350 * dpr;
+    kurtCtx.scale(dpr, dpr);
+    const w = kurtCanvas.offsetWidth, h = 350;
+    kurtCtx.clearRect(0, 0, w, h);
+
+    const pad = { l: 50, r: 20, t: 30, b: 50 };
+    const pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
+
+    // Axes
+    kurtCtx.strokeStyle = c.grid;
+    kurtCtx.lineWidth = 1;
+    kurtCtx.beginPath();
+    kurtCtx.moveTo(pad.l, pad.t); kurtCtx.lineTo(pad.l, h - pad.b);
+    kurtCtx.lineTo(w - pad.r, h - pad.b);
+    kurtCtx.stroke();
+
+    for (let x = -4; x <= 4; x++) {
+      const px = pad.l + ((x + 4) / 8) * pw;
+      kurtCtx.fillStyle = c.muted;
+      kurtCtx.font = '12px "Space Grotesk", sans-serif';
+      kurtCtx.textAlign = 'center';
+      kurtCtx.fillText(x.toString(), px, h - pad.b + 20);
+    }
+
+    let curves;
+    if (kurtMode === 'compare') {
+      curves = [
+        { k: 0, color: c.primary, label: 'Normalny (γ₂=0)' },
+        { k: 4, color: c.error, label: 'Leptokurtyczny (γ₂=4)' },
+        { k: -1.5, color: c.success, label: 'Platykurtyczny (γ₂=-1.5)' },
+      ];
+    } else {
+      const kVal = parseFloat(document.getElementById('kurtosisSlider').value);
+      curves = [
+        { k: 0, color: c.grid, label: 'Normalny (ref.)' },
+        { k: kVal, color: c.primary, label: `γ₂ = ${kVal}` },
+      ];
+    }
+
+    const maxY = 0.6;
+
+    curves.forEach(curve => {
+      kurtCtx.strokeStyle = curve.color;
+      kurtCtx.lineWidth = curve.k === 0 && kurtMode === 'slider' ? 1.5 : 2.5;
+      if (curve.k === 0 && kurtMode === 'slider') {
+        kurtCtx.setLineDash([5, 5]);
+      } else {
+        kurtCtx.setLineDash([]);
+      }
+      kurtCtx.beginPath();
+      for (let px = 0; px <= pw; px++) {
+        const x = -4 + (px / pw) * 8;
+        const y = kurtPDF(x, curve.k);
+        const cy = h - pad.b - (y / maxY) * ph;
+        if (px === 0) kurtCtx.moveTo(pad.l + px, cy);
+        else kurtCtx.lineTo(pad.l + px, cy);
+      }
+      kurtCtx.stroke();
+      kurtCtx.setLineDash([]);
+
+      // Fill
+      kurtCtx.globalAlpha = 0.06;
+      kurtCtx.fillStyle = curve.color;
+      kurtCtx.lineTo(pad.l + pw, h - pad.b);
+      kurtCtx.lineTo(pad.l, h - pad.b);
+      kurtCtx.closePath();
+      kurtCtx.fill();
+      kurtCtx.globalAlpha = 1;
+    });
+
+    // Legend
+    let ly = pad.t + 10;
+    curves.forEach(curve => {
+      kurtCtx.fillStyle = curve.color;
+      kurtCtx.fillRect(pad.l + 10, ly, 16, 3);
+      kurtCtx.fillStyle = c.text;
+      kurtCtx.font = '12px "Space Grotesk", sans-serif';
+      kurtCtx.textAlign = 'left';
+      kurtCtx.fillText(curve.label, pad.l + 32, ly + 5);
+      ly += 20;
+    });
+  }
+
+  document.getElementById('kurtosisSlider').addEventListener('input', function() {
+    document.getElementById('kurtosisValue').textContent = this.value;
+    kurtMode = 'slider';
+    drawKurtosis();
+  });
+  document.getElementById('kurtosisCompareBtn').addEventListener('click', () => {
+    kurtMode = 'compare';
+    drawKurtosis();
+  });
+  drawKurtosis();
+
+  // =================================================================
+  //  3) CDF CANVAS — Empirical vs Theoretical
+  // =================================================================
+  const cdfCanvas = document.getElementById('cdfCanvas');
+  const cdfCtx = cdfCanvas.getContext('2d');
+  let cdfData = [];
+  let cdfAnimFrame = 0;
+  let cdfAnimId = null;
+
+  function generateCDFData() {
+    const n = parseInt(document.getElementById('cdfNSlider').value);
+    cdfData = [];
+    for (let i = 0; i < n; i++) cdfData.push(randNormal(0, 1));
+    cdfData.sort((a, b) => a - b);
+    cdfAnimFrame = 0;
+    animateCDF();
+  }
+
+  function animateCDF() {
+    if (cdfAnimId) cancelAnimationFrame(cdfAnimId);
+    const target = cdfData.length;
+    function step() {
+      cdfAnimFrame = Math.min(cdfAnimFrame + Math.max(1, Math.floor(target / 40)), target);
+      drawCDF();
+      if (cdfAnimFrame < target) cdfAnimId = requestAnimationFrame(step);
+    }
+    step();
+  }
+
+  function drawCDF() {
+    const c = colors();
+    const n = cdfData.length;
+    const dpr = window.devicePixelRatio || 1;
+    cdfCanvas.width = cdfCanvas.offsetWidth * dpr;
+    cdfCanvas.height = 380 * dpr;
+    cdfCtx.scale(dpr, dpr);
+    const w = cdfCanvas.offsetWidth, h = 380;
+    cdfCtx.clearRect(0, 0, w, h);
+
+    const pad = { l: 55, r: 20, t: 30, b: 55 };
+    const pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
+    const xmin = -3.5, xmax = 3.5;
+
+    // Grid
+    cdfCtx.strokeStyle = c.grid;
+    cdfCtx.lineWidth = 1;
+    cdfCtx.beginPath();
+    cdfCtx.moveTo(pad.l, pad.t); cdfCtx.lineTo(pad.l, h - pad.b);
+    cdfCtx.lineTo(w - pad.r, h - pad.b);
+    cdfCtx.stroke();
+
+    // X ticks
+    cdfCtx.fillStyle = c.muted;
+    cdfCtx.font = '11px "Space Grotesk", sans-serif';
+    cdfCtx.textAlign = 'center';
+    for (let x = -3; x <= 3; x++) {
+      const px = pad.l + ((x - xmin) / (xmax - xmin)) * pw;
+      cdfCtx.fillText(x.toString(), px, h - pad.b + 18);
+      cdfCtx.globalAlpha = 0.2;
+      cdfCtx.strokeStyle = c.grid;
+      cdfCtx.beginPath(); cdfCtx.moveTo(px, pad.t); cdfCtx.lineTo(px, h - pad.b); cdfCtx.stroke();
+      cdfCtx.globalAlpha = 1;
+    }
+    // Y ticks
+    cdfCtx.textAlign = 'right';
+    for (let y = 0; y <= 1; y += 0.2) {
+      const py = h - pad.b - y * ph;
+      cdfCtx.fillText(y.toFixed(1), pad.l - 8, py + 4);
+      cdfCtx.globalAlpha = 0.2;
+      cdfCtx.strokeStyle = c.grid;
+      cdfCtx.beginPath(); cdfCtx.moveTo(pad.l, py); cdfCtx.lineTo(w - pad.r, py); cdfCtx.stroke();
+      cdfCtx.globalAlpha = 1;
+    }
+
+    // Theoretical CDF (smooth)
+    cdfCtx.strokeStyle = c.primary;
+    cdfCtx.lineWidth = 2.5;
+    cdfCtx.beginPath();
+    for (let px = 0; px <= pw; px++) {
+      const x = xmin + (px / pw) * (xmax - xmin);
+      const y = normalCDF(x);
+      const cy = h - pad.b - y * ph;
+      if (px === 0) cdfCtx.moveTo(pad.l + px, cy);
+      else cdfCtx.lineTo(pad.l + px, cy);
+    }
+    cdfCtx.stroke();
+
+    // Empirical CDF (step function)
+    const frameCnt = Math.min(cdfAnimFrame, n);
+    cdfCtx.strokeStyle = c.accent;
+    cdfCtx.lineWidth = 2;
+    cdfCtx.beginPath();
+    // Start from left
+    let prevY = 0;
+    const startPx = pad.l;
+    cdfCtx.moveTo(startPx, h - pad.b);
+    for (let i = 0; i < frameCnt; i++) {
+      const x = cdfData[i];
+      const px = pad.l + ((x - xmin) / (xmax - xmin)) * pw;
+      const oldCy = h - pad.b - (i / n) * ph;
+      const newCy = h - pad.b - ((i + 1) / n) * ph;
+      cdfCtx.lineTo(px, oldCy);
+      cdfCtx.lineTo(px, newCy);
+    }
+    if (frameCnt > 0) {
+      cdfCtx.lineTo(w - pad.r, h - pad.b - (frameCnt / n) * ph);
+    }
+    cdfCtx.stroke();
+
+    // Dn annotation
+    if (frameCnt === n && n > 0) {
+      let maxD = 0, maxI = 0, maxType = '+';
+      for (let i = 0; i < n; i++) {
+        const Fn = (i + 1) / n;
+        const F0 = normalCDF(cdfData[i]);
+        const dp = Fn - F0;
+        const dm = F0 - i / n;
+        if (dp > maxD) { maxD = dp; maxI = i; maxType = '+'; }
+        if (dm > maxD) { maxD = dm; maxI = i; maxType = '-'; }
+      }
+      const xVal = cdfData[maxI];
+      const px = pad.l + ((xVal - xmin) / (xmax - xmin)) * pw;
+      const empY = maxType === '+' ? (maxI + 1) / n : maxI / n;
+      const theoY = normalCDF(xVal);
+      const py1 = h - pad.b - empY * ph;
+      const py2 = h - pad.b - theoY * ph;
+
+      cdfCtx.strokeStyle = c.error;
+      cdfCtx.lineWidth = 2;
+      cdfCtx.setLineDash([4, 4]);
+      cdfCtx.beginPath(); cdfCtx.moveTo(px, py1); cdfCtx.lineTo(px, py2); cdfCtx.stroke();
+      cdfCtx.setLineDash([]);
+
+      cdfCtx.fillStyle = c.error;
+      cdfCtx.font = 'bold 12px "Space Grotesk", sans-serif';
+      cdfCtx.textAlign = 'left';
+      cdfCtx.fillText(`Dₙ = ${maxD.toFixed(4)}`, px + 6, (py1 + py2) / 2 + 4);
+    }
+
+    // Legend
+    cdfCtx.font = '12px "Space Grotesk", sans-serif';
+    cdfCtx.textAlign = 'left';
+    cdfCtx.fillStyle = c.primary;
+    cdfCtx.fillRect(pad.l + 10, pad.t + 5, 16, 3);
+    cdfCtx.fillStyle = c.text;
+    cdfCtx.fillText('Φ(x) — dystrybuanta teoretyczna', pad.l + 32, pad.t + 10);
+    cdfCtx.fillStyle = c.accent;
+    cdfCtx.fillRect(pad.l + 10, pad.t + 22, 16, 3);
+    cdfCtx.fillStyle = c.text;
+    cdfCtx.fillText(`Fₙ(x) — dystrybuanta empiryczna (n=${n})`, pad.l + 32, pad.t + 27);
+
+    // Axis labels
+    cdfCtx.fillStyle = c.muted;
+    cdfCtx.textAlign = 'center';
+    cdfCtx.fillText('x', w / 2, h - 8);
+    cdfCtx.save();
+    cdfCtx.translate(12, h / 2);
+    cdfCtx.rotate(-Math.PI / 2);
+    cdfCtx.fillText('F(x)', 0, 0);
+    cdfCtx.restore();
+  }
+
+  document.getElementById('cdfNSlider').addEventListener('input', function() {
+    document.getElementById('cdfNValue').textContent = this.value;
+  });
+  document.getElementById('cdfGenerateBtn').addEventListener('click', generateCDFData);
+  generateCDFData();
+
+  // =================================================================
+  //  4) LILLIEFORS TABLE
+  // =================================================================
+  const lillieData = [
+    { i: 1, x: 2.51 }, { i: 5, x: 2.67 }, { i: 10, x: 2.75 },
+    { i: 15, x: 2.81 }, { i: 20, x: 2.87 }, { i: 25, x: 2.91 },
+    { i: 30, x: 2.96 }, { i: 35, x: 3.01 }, { i: 40, x: 3.06 },
+    { i: 45, x: 3.11 }, { i: 50, x: 3.18 }, { i: 55, x: 3.25 },
+    { i: 60, x: 3.42 },
+  ];
+  const lillieMean = 2.998; // approximate
+  const lillieStd = 0.192;  // approximate
+  let lillieStep = 0;
+
+  function renderLillieTable() {
+    const body = document.getElementById('lillieBody');
+    body.innerHTML = '';
+    lillieData.forEach((row, idx) => {
+      const z = (row.x - lillieMean) / lillieStd;
+      const phi = normalCDF(z);
+      const fn = row.i / 60;
+      const fn1 = (row.i - 1) / 60;
+      const dp = fn - phi;
+      const dm = phi - fn1;
+      const tr = document.createElement('tr');
+      if (idx >= lillieStep) tr.style.opacity = '0.15';
+      tr.innerHTML = `
+        <td>${row.i}</td>
+        <td>${row.x.toFixed(2)}</td>
+        <td>${idx < lillieStep ? z.toFixed(4) : '—'}</td>
+        <td>${idx < lillieStep ? phi.toFixed(4) : '—'}</td>
+        <td>${idx < lillieStep ? fn.toFixed(4) : '—'}</td>
+        <td>${idx < lillieStep ? dp.toFixed(4) : '—'}</td>
+        <td>${idx < lillieStep ? fn1.toFixed(4) : '—'}</td>
+        <td>${idx < lillieStep ? dm.toFixed(4) : '—'}</td>
+      `;
+      body.appendChild(tr);
+    });
+  }
+
+  document.getElementById('lillieRevealBtn').addEventListener('click', () => {
+    if (lillieStep < lillieData.length) {
+      lillieStep++;
+      renderLillieTable();
+    }
+  });
+  document.getElementById('lillieResetBtn').addEventListener('click', () => {
+    lillieStep = 0;
+    renderLillieTable();
+  });
+  renderLillieTable();
+
+  // =================================================================
+  //  5) CHI-SQUARE TABLE
+  // =================================================================
+  const chi2Data = [
+    { interval: '2.3 – 2.5', ni: 2, pi: 0.0122, npi: 0.73 },
+    { interval: '2.5 – 2.7', ni: 7, pi: 0.0606, npi: 3.64 },
+    { interval: '2.7 – 2.9', ni: 14, pi: 0.1747, npi: 10.48 },
+    { interval: '2.9 – 3.1', ni: 19, pi: 0.2902, npi: 17.41 },
+    { interval: '3.1 – 3.3', ni: 12, pi: 0.2637, npi: 15.82 },
+    { interval: '3.3 – 3.5', ni: 4, pi: 0.1475, npi: 8.85 },
+    { interval: '3.5 – 3.7', ni: 2, pi: 0.0511, npi: 3.07 },
+  ];
+  let chi2Step = 0;
+
+  function renderChi2Table() {
+    const body = document.getElementById('chi2Body');
+    body.innerHTML = '';
+    let sumN = 0, sumP = 0, sumNP = 0, sumStat = 0;
+    chi2Data.forEach((row, idx) => {
+      const diff = row.ni - row.npi;
+      const contrib = (diff * diff) / row.npi;
+      sumN += row.ni;
+      sumP += row.pi;
+      sumNP += row.npi;
+      sumStat += contrib;
+      const tr = document.createElement('tr');
+      if (idx >= chi2Step) tr.style.opacity = '0.15';
+      tr.innerHTML = `
+        <td>${row.interval}</td>
+        <td>${row.ni}</td>
+        <td>${idx < chi2Step ? row.pi.toFixed(4) : '—'}</td>
+        <td>${idx < chi2Step ? row.npi.toFixed(2) : '—'}</td>
+        <td>${idx < chi2Step ? diff.toFixed(2) : '—'}</td>
+        <td>${idx < chi2Step ? contrib.toFixed(4) : '—'}</td>
+      `;
+      body.appendChild(tr);
+    });
+    if (chi2Step > 0) {
+      const shown = Math.min(chi2Step, chi2Data.length);
+      let partN = 0, partP = 0, partNP = 0, partS = 0;
+      for (let i = 0; i < shown; i++) {
+        partN += chi2Data[i].ni;
+        partP += chi2Data[i].pi;
+        partNP += chi2Data[i].npi;
+        const d = chi2Data[i].ni - chi2Data[i].npi;
+        partS += (d * d) / chi2Data[i].npi;
+      }
+      document.getElementById('chi2SumN').textContent = partN;
+      document.getElementById('chi2SumP').textContent = partP.toFixed(4);
+      document.getElementById('chi2SumNP').textContent = partNP.toFixed(2);
+      document.getElementById('chi2SumStat').textContent = partS.toFixed(4);
+    }
+
+    if (chi2Step >= chi2Data.length) {
+      const resultEl = document.getElementById('chi2Result');
+      resultEl.style.display = 'block';
+      document.getElementById('chi2ResultText').innerHTML =
+        `χ² = ${sumStat.toFixed(4)}, df = ${chi2Data.length} - 2 - 1 = ${chi2Data.length - 3}. ` +
+        `Wartość krytyczna χ²<sub>${chi2Data.length - 3},0.05</sub> = 9.49. ` +
+        (sumStat < 9.49
+          ? '<span class="stat-result accept">✓ Nie odrzucamy H₀</span>'
+          : '<span class="stat-result reject">✗ Odrzucamy H₀</span>');
+    }
+  }
+
+  document.getElementById('chi2AnimateBtn').addEventListener('click', () => {
+    chi2Step = 0;
+    document.getElementById('chi2Result').style.display = 'none';
+    const interval = setInterval(() => {
+      chi2Step++;
+      renderChi2Table();
+      if (chi2Step >= chi2Data.length) clearInterval(interval);
+    }, 500);
+  });
+  document.getElementById('chi2ResetBtn').addEventListener('click', () => {
+    chi2Step = 0;
+    document.getElementById('chi2Result').style.display = 'none';
+    renderChi2Table();
+  });
+  renderChi2Table();
+
+  // =================================================================
+  //  6) Q-Q PLOT CANVAS
+  // =================================================================
+  const qqCanvas = document.getElementById('qqCanvas');
+  const qqCtx = qqCanvas.getContext('2d');
+
+  function generateQQData() {
+    const dist = document.getElementById('qqDistSelect').value;
+    const n = parseInt(document.getElementById('qqNSlider').value);
+    let data = [];
+
+    switch (dist) {
+      case 'normal':
+        for (let i = 0; i < n; i++) data.push(randNormal(0, 1));
+        break;
+      case 'skewed':
+        // Chi-squared-like
+        for (let i = 0; i < n; i++) {
+          let s = 0;
+          for (let j = 0; j < 3; j++) { const z = randNormal(0, 1); s += z * z; }
+          data.push(s);
+        }
+        break;
+      case 'heavy':
+        // t-distribution approximation (df=3)
+        for (let i = 0; i < n; i++) {
+          const u = randNormal(0, 1);
+          let v = 0;
+          for (let j = 0; j < 3; j++) { const z = randNormal(0, 1); v += z * z; }
+          data.push(u / Math.sqrt(v / 3));
+        }
+        break;
+      case 'uniform':
+        for (let i = 0; i < n; i++) data.push(Math.random() * 6 - 3);
+        break;
+      case 'bimodal':
+        for (let i = 0; i < n; i++) {
+          data.push(Math.random() < 0.5 ? randNormal(-2, 0.7) : randNormal(2, 0.7));
+        }
+        break;
+    }
+
+    data.sort((a, b) => a - b);
+    drawQQ(data);
+  }
+
+  function drawQQ(data) {
+    const c = colors();
+    const n = data.length;
+    const dpr = window.devicePixelRatio || 1;
+    qqCanvas.width = qqCanvas.offsetWidth * dpr;
+    qqCanvas.height = 500 * dpr;
+    qqCtx.scale(dpr, dpr);
+    const w = qqCanvas.offsetWidth, h = 500;
+    qqCtx.clearRect(0, 0, w, h);
+
+    const pad = { l: 60, r: 30, t: 30, b: 60 };
+    const pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
+
+    // Theoretical quantiles
+    const theoretical = [];
+    for (let i = 0; i < n; i++) {
+      theoretical.push(normalQuantile((i + 0.5) / n));
+    }
+
+    const allVals = [...data, ...theoretical];
+    const minV = Math.min(...allVals), maxV = Math.max(...allVals);
+    const range = maxV - minV || 1;
+    const vmin = minV - range * 0.1, vmax = maxV + range * 0.1;
+    const vrange = vmax - vmin;
+
+    // Grid + axes
+    qqCtx.strokeStyle = c.grid;
+    qqCtx.lineWidth = 1;
+    qqCtx.beginPath();
+    qqCtx.moveTo(pad.l, pad.t); qqCtx.lineTo(pad.l, h - pad.b);
+    qqCtx.lineTo(w - pad.r, h - pad.b);
+    qqCtx.stroke();
+
+    // Ticks
+    qqCtx.fillStyle = c.muted;
+    qqCtx.font = '11px "Space Grotesk", sans-serif';
+    const step = Math.ceil(vrange / 5);
+    for (let v = Math.ceil(vmin); v <= Math.floor(vmax); v += Math.max(1, step)) {
+      const px = pad.l + ((v - vmin) / vrange) * pw;
+      const py = h - pad.b - ((v - vmin) / vrange) * ph;
+      qqCtx.textAlign = 'center';
+      qqCtx.fillText(v.toFixed(1), px, h - pad.b + 18);
+      qqCtx.textAlign = 'right';
+      qqCtx.fillText(v.toFixed(1), pad.l - 8, py + 4);
+
+      qqCtx.globalAlpha = 0.15;
+      qqCtx.strokeStyle = c.grid;
+      qqCtx.beginPath(); qqCtx.moveTo(px, pad.t); qqCtx.lineTo(px, h - pad.b); qqCtx.stroke();
+      qqCtx.beginPath(); qqCtx.moveTo(pad.l, py); qqCtx.lineTo(w - pad.r, py); qqCtx.stroke();
+      qqCtx.globalAlpha = 1;
+    }
+
+    // Reference line (y=x through Q1, Q3)
+    const q1i = Math.floor(n * 0.25), q3i = Math.floor(n * 0.75);
+    const thQ1 = theoretical[q1i], thQ3 = theoretical[q3i];
+    const dQ1 = data[q1i], dQ3 = data[q3i];
+    const slope = (dQ3 - dQ1) / (thQ3 - thQ1 || 1);
+    const intercept = dQ1 - slope * thQ1;
+
+    qqCtx.strokeStyle = c.error;
+    qqCtx.lineWidth = 1.5;
+    qqCtx.setLineDash([6, 4]);
+    qqCtx.beginPath();
+    const lineY1 = slope * vmin + intercept;
+    const lineY2 = slope * vmax + intercept;
+    qqCtx.moveTo(pad.l + ((vmin - vmin) / vrange) * pw, h - pad.b - ((lineY1 - vmin) / vrange) * ph);
+    qqCtx.lineTo(pad.l + ((vmax - vmin) / vrange) * pw, h - pad.b - ((lineY2 - vmin) / vrange) * ph);
+    qqCtx.stroke();
+    qqCtx.setLineDash([]);
+
+    // Points
+    for (let i = 0; i < n; i++) {
+      const px = pad.l + ((theoretical[i] - vmin) / vrange) * pw;
+      const py = h - pad.b - ((data[i] - vmin) / vrange) * ph;
+      qqCtx.fillStyle = c.primary;
+      qqCtx.globalAlpha = 0.75;
+      qqCtx.beginPath();
+      qqCtx.arc(px, py, 4, 0, 2 * Math.PI);
+      qqCtx.fill();
+      qqCtx.globalAlpha = 1;
+    }
+
+    // Labels
+    qqCtx.fillStyle = c.text;
+    qqCtx.font = '13px "Space Grotesk", sans-serif';
+    qqCtx.textAlign = 'center';
+    qqCtx.fillText('Kwantyle teoretyczne (rozkład normalny)', w / 2, h - 10);
+    qqCtx.save();
+    qqCtx.translate(15, h / 2);
+    qqCtx.rotate(-Math.PI / 2);
+    qqCtx.fillText('Kwantyle empiryczne (próba)', 0, 0);
+    qqCtx.restore();
+
+    // Legend
+    qqCtx.fillStyle = c.error;
+    qqCtx.setLineDash([6, 4]);
+    qqCtx.strokeStyle = c.error;
+    qqCtx.lineWidth = 1.5;
+    qqCtx.beginPath(); qqCtx.moveTo(pad.l + 10, pad.t + 10); qqCtx.lineTo(pad.l + 30, pad.t + 10); qqCtx.stroke();
+    qqCtx.setLineDash([]);
+    qqCtx.fillStyle = c.text;
+    qqCtx.font = '12px "Space Grotesk", sans-serif';
+    qqCtx.textAlign = 'left';
+    qqCtx.fillText('Prosta referencyjna', pad.l + 35, pad.t + 14);
+
+    qqCtx.fillStyle = c.primary;
+    qqCtx.beginPath(); qqCtx.arc(pad.l + 20, pad.t + 30, 4, 0, 2 * Math.PI); qqCtx.fill();
+    qqCtx.fillStyle = c.text;
+    qqCtx.fillText('Dane z próby', pad.l + 35, pad.t + 34);
+
+    // Distribution label
+    const distLabel = {
+      'normal': 'Rozkład normalny — punkty na prostej',
+      'skewed': 'Rozkład skośny — krzywizna (S-kształt)',
+      'heavy': 'Ciężkie ogony — odchylenia na końcach',
+      'uniform': 'Rozkład jednostajny — plateau na końcach',
+      'bimodal': 'Rozkład dwumodalny — kształt schodkowy'
+    };
+    qqCtx.fillStyle = c.muted;
+    qqCtx.font = 'italic 12px "Space Grotesk", sans-serif';
+    qqCtx.textAlign = 'right';
+    qqCtx.fillText(distLabel[document.getElementById('qqDistSelect').value] || '', w - pad.r - 10, pad.t + 14);
+  }
+
+  document.getElementById('qqNSlider').addEventListener('input', function() {
+    document.getElementById('qqNValue').textContent = this.value;
+  });
+  document.getElementById('qqGenerateBtn').addEventListener('click', generateQQData);
+  document.getElementById('qqDistSelect').addEventListener('change', generateQQData);
+  generateQQData();
+
+  // =================================================================
+  //  REDRAW ON THEME CHANGE
+  // =================================================================
+  const themeObs = new MutationObserver(() => {
+    drawSkewness();
+    drawKurtosis();
+    drawCDF();
+    generateQQData();
+  });
+  themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // Resize handler
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      drawSkewness();
+      drawKurtosis();
+      drawCDF();
+      generateQQData();
+    }, 200);
+  });
+});
+</script>
+
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

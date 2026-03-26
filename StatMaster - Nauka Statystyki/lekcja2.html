@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<!-- Perplexity Computer Attribution — SEO Meta Tags -->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lekcja 2 – Estymacja przedziałowa | Statystyka</title>
+<meta name="description" content="Przedziały ufności dla średniej, wariancji i proporcji. Interaktywne kalkulatory, wizualizacje i przykłady z życia.">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="shared.js"></script>
+</head>
+<body>
+<!-- ===== NAVIGATION ===== -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Statystyka logo">
+        <rect x="2" y="18" width="6" height="12" rx="1" fill="currentColor" opacity="0.3"/>
+        <rect x="10" y="12" width="6" height="18" rx="1" fill="currentColor" opacity="0.5"/>
+        <rect x="18" y="6" width="6" height="24" rx="1" fill="currentColor" opacity="0.7"/>
+        <rect x="26" y="2" width="4" height="28" rx="1" fill="currentColor"/>
+      </svg>
+      Statystyka
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Start</a></li>
+      <li><a href="lekcja1.html">Lekcja 1</a></li>
+      <li><a href="lekcja2.html" class="active">Lekcja 2</a></li>
+      <li><a href="lekcja3.html">Lekcja 3</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:var(--space-2);">
+      <button data-theme-toggle class="theme-toggle" aria-label="Zmień motyw"></button>
+      <button class="mobile-menu-btn" aria-label="Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile nav -->
+<div class="mobile-nav">
+  <button class="mobile-nav-close" aria-label="Zamknij menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+  <a href="index.html">Start</a>
+  <a href="lekcja1.html">Lekcja 1</a>
+  <a href="lekcja2.html">Lekcja 2</a>
+  <a href="lekcja3.html">Lekcja 3</a>
+</div>
+
+<!-- Progress bar -->
+<div class="progress-bar"><div class="progress-bar-fill"></div></div>
+
+<!-- ===== LESSON HERO ===== -->
+<header class="lesson-hero">
+  <div class="lesson-hero-content">
+    <span class="lesson-badge">📐 Lekcja 2</span>
+    <h1>Estymacja przedziałowa</h1>
+    <p class="lesson-desc">Przedziały ufności — jak podać nie tylko wartość parametru, ale też miarę niepewności. Wzory, kalkulatory i interaktywne wizualizacje.</p>
+  </div>
+</header>
+
+<!-- ===== MAIN LAYOUT ===== -->
+<div class="lesson-layout">
+  <!-- Sidebar TOC -->
+  <aside class="lesson-sidebar">
+    <div class="toc-wrapper">
+      <div class="toc-title">Spis treści</div>
+      <ul class="toc-list">
+        <li><a href="#wprowadzenie">Wprowadzenie</a></li>
+        <li><a href="#definicja">Definicja formalna</a></li>
+        <li><a href="#wizualizacja-ci">Wizualizacja 100 przedziałów</a></li>
+        <li><a href="#srednia-sigma-nieznana">Średnia (σ nieznana)</a></li>
+        <li><a href="#srednia-duza-proba">Średnia (duża próba)</a></li>
+        <li><a href="#kalkulator-srednia">Kalkulator – średnia</a></li>
+        <li><a href="#wariancja">Wariancja σ²</a></li>
+        <li><a href="#odchylenie-duza">Odchylenie (duża próba)</a></li>
+        <li><a href="#proporcja">Proporcja p</a></li>
+        <li><a href="#kalkulator-proporcja">Kalkulator – proporcja</a></li>
+        <li><a href="#quiz">Quiz</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <main class="lesson-content">
+
+    <!-- ===== 1. WPROWADZENIE ===== -->
+    <section id="wprowadzenie" class="content-section fade-in">
+      <h2>1. Wprowadzenie do estymacji przedziałowej</h2>
+
+      <p>W estymacji punktowej podajemy jedną wartość — np.&nbsp;średnią z&nbsp;próby — jako przybliżenie parametru populacji. Problem? <strong>Nie wiemy, jak bardzo ta wartość może się mylić.</strong></p>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Definicja</div>
+        <p><strong>Przedział ufności</strong> to para wartości \((L, U)\), obliczona z&nbsp;próby, taka że prawdziwy parametr \(\theta\) znajduje się między nimi z&nbsp;zadanym prawdopodobieństwem (poziomem ufności).</p>
+      </div>
+
+      <p>Kluczowe pojęcia:</p>
+      <ul style="margin:var(--space-3) 0 var(--space-3) var(--space-6);display:flex;flex-direction:column;gap:var(--space-2);">
+        <li><strong>Długość przedziału</strong> = miara <em>precyzji</em> — im krótszy, tym dokładniejszy wynik.</li>
+        <li><strong>Współczynnik ufności \(1-\alpha\)</strong> = miara <em>wiarygodności</em> — im wyższy, tym pewniejszy wynik.</li>
+        <li><strong>Kompromis:</strong> większa ufność → dłuższy przedział → mniejsza precyzja.</li>
+      </ul>
+
+      <div class="info-box tip">
+        <div class="info-box-title">🔮 Kontekst historyczny</div>
+        <p>Koncepcję przedziału ufności wprowadził <strong>Jerzy Spława-Neyman</strong> w&nbsp;1933&nbsp;r. — polski matematyk i&nbsp;statystyk, jeden z&nbsp;twórców współczesnej statystyki.</p>
+      </div>
+
+      <div class="real-life">
+        <h4>Przykład z życia: średnia pensja w firmie</h4>
+        <p>Chcesz oszacować średnią pensję w firmie liczącej 500 osób. Pytasz 30 losowych pracowników — średnia z próby to 6 200 zł. Estymacja punktowa: „średnia to 6 200 zł." Estymacja przedziałowa: „średnia mieści się w przedziale <strong>(5 800 zł, 6 600 zł)</strong> z ufnością 95%."</p>
+        <p class="mt-2 text-muted" style="font-size:var(--text-sm);">Druga odpowiedź jest znacznie bardziej użyteczna — mówi nie tylko „ile", ale też „z jaką dokładnością".</p>
+      </div>
+    </section>
+
+    <!-- ===== 2. DEFINICJA FORMALNA ===== -->
+    <section id="definicja" class="content-section fade-in">
+      <h2>2. Przedział ufności — definicja formalna</h2>
+
+      <div class="formula-block">
+        <div class="formula-label">Definicja przedziału ufności</div>
+        $$P(L < \theta < U) = 1 - \alpha$$
+      </div>
+
+      <p>Gdzie:</p>
+      <ul style="margin:var(--space-3) 0 var(--space-3) var(--space-6);display:flex;flex-direction:column;gap:var(--space-2);">
+        <li>\(L\), \(U\) — dolna i&nbsp;górna granica przedziału (statystyki z&nbsp;próby)</li>
+        <li>\(\theta\) — szacowany parametr populacji</li>
+        <li>\(1 - \alpha\) — <strong>współczynnik ufności</strong> (np. 0,95)</li>
+        <li>\(\alpha\) — <strong>poziom istotności</strong> (np. 0,05)</li>
+      </ul>
+
+      <p>Mówimy wtedy o&nbsp;\((1-\alpha) \cdot 100\%\) przedziale ufności, np. <em>95% przedział ufności</em>.</p>
+
+      <div class="info-box warning">
+        <div class="info-box-title">⚠️ Ważna zależność</div>
+        <table class="data-table" style="max-width:100%;">
+          <thead>
+            <tr><th>Co robimy?</th><th>Długość przedziału</th><th>Precyzja</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>↑ Zwiększamy ufność \(1-\alpha\)</td><td>↑ Dłuższy</td><td>↓ Mniejsza</td></tr>
+            <tr><td>↑ Zwiększamy próbę \(n\)</td><td>↓ Krótszy</td><td>↑ Większa</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Slider: alpha vs interval width -->
+      <div class="viz-container scale-in">
+        <div class="viz-title"><span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M6 20V4M18 20v-6"/></svg>
+        </span>Wpływ poziomu ufności na szerokość przedziału</div>
+        <div class="controls">
+          <div class="control-group">
+            <label for="alphaSlider">Poziom ufności (1−α)</label>
+            <input type="range" id="alphaSlider" min="50" max="99" value="95" step="1">
+            <span id="alphaLabel" style="font-size:var(--text-sm);font-weight:600;color:var(--color-primary);">95%</span>
+          </div>
+          <div class="control-group">
+            <label>Wartość z<sub>α/2</sub></label>
+            <span id="zLabel" style="font-size:var(--text-sm);font-weight:600;">1.960</span>
+          </div>
+        </div>
+        <div style="position:relative;height:260px;"><canvas id="alphaChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ===== 3. WIZUALIZACJA 100 PRZEDZIAŁÓW ===== -->
+    <section id="wizualizacja-ci" class="content-section fade-in">
+      <h2>3. Wizualizacja: 100 przedziałów ufności</h2>
+
+      <p>Wyobraź sobie, że pobierasz 100 różnych prób z tej samej populacji i&nbsp;dla każdej obliczasz 95% przedział ufności. <strong>Około 95 z tych przedziałów zawiera prawdziwy parametr</strong>, a&nbsp;~5 — nie.</p>
+
+      <div class="viz-container scale-in">
+        <div class="viz-title"><span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18"/></svg>
+        </span>100 przedziałów ufności (95%)</div>
+        <div class="controls">
+          <div class="control-group">
+            <label for="ciConfLevel">Poziom ufności</label>
+            <select id="ciConfLevel">
+              <option value="0.90">90%</option>
+              <option value="0.95" selected>95%</option>
+              <option value="0.99">99%</option>
+            </select>
+          </div>
+          <button class="btn-primary" id="ciRegenBtn">🔄 Generuj nowe próby</button>
+          <span id="ciStats" style="font-size:var(--text-sm);color:var(--color-text-muted);margin-left:auto;"></span>
+        </div>
+        <canvas id="ciCanvas" height="420" style="width:100%;max-height:420px;"></canvas>
+      </div>
+    </section>
+
+    <!-- ===== 4. ŚREDNIA - SIGMA NIEZNANA ===== -->
+    <section id="srednia-sigma-nieznana" class="content-section fade-in">
+      <h2>4. Przedział ufności dla średniej μ — σ nieznana</h2>
+
+      <p>Najczęstszy przypadek w praktyce: nie znamy odchylenia standardowego populacji, więc szacujemy je z&nbsp;próby. Używamy <strong>rozkładu t-Studenta</strong>.</p>
+
+      <div class="info-box definition">
+        <div class="info-box-title">📘 Warunki stosowania</div>
+        <p>Populacja ma rozkład normalny (lub zbliżony), odchylenie standardowe \(\sigma\) jest nieznane, próba jest mała (\(n < 30\)).</p>
+      </div>
+
+      <div class="formula-block">
+        <div class="formula-label">Przedział ufności dla μ (σ nieznana, rozkład t)</div>
+        $$\bar{X} - t_{n-1,\,\alpha/2}\cdot\frac{s}{\sqrt{n}} \;<\; \mu \;<\; \bar{X} + t_{n-1,\,\alpha/2}\cdot\frac{s}{\sqrt{n}}$$
+      </div>
+
+      <p>Gdzie:</p>
+      <ul style="margin:var(--space-3) 0 var(--space-3) var(--space-6);display:flex;flex-direction:column;gap:var(--space-2);">
+        <li>\(\bar{X}\) — średnia z&nbsp;próby</li>
+        <li>\(s\) — odchylenie standardowe z&nbsp;próby</li>
+        <li>\(n\) — liczebność próby</li>
+        <li>\(t_{n-1,\,\alpha/2}\) — wartość krytyczna rozkładu t-Studenta o \(n-1\) stopniach swobody</li>
+      </ul>
+
+      <div class="info-box example">
+        <div class="info-box-title">✅ Przykład 1</div>
+        <p>Pewna miara jakości dla \(n = 20\) obserwacji dała dane:</p>
+        <p style="font-family:var(--font-mono);font-size:var(--text-sm);margin:var(--space-2) 0;">16, 0, 0, 2, 3, 6, 8, 2, 5, 0, 12, 10, 5, 7, 2, 3, 8, 17, 9, 1</p>
+
+        <div class="steps">
+          <div class="step" data-step="1">
+            <h4>Oblicz średnią</h4>
+            <p>\(\bar{X} = \frac{16+0+0+2+3+\ldots+1}{20} = \frac{116}{20} = 5{,}8\)</p>
+          </div>
+          <div class="step" data-step="2">
+            <h4>Oblicz odchylenie standardowe z próby</h4>
+            <p>\(s = \sqrt{\frac{\sum(x_i - \bar{X})^2}{n-1}} = 5{,}085\)</p>
+          </div>
+          <div class="step" data-step="3">
+            <h4>Znajdź wartość krytyczną</h4>
+            <p>Dla \(\alpha = 0{,}05\), \(n-1 = 19\) stopni swobody: \(t_{19,\,0{,}025} = 2{,}093\)</p>
+          </div>
+          <div class="step" data-step="4">
+            <h4>Oblicz granice przedziału</h4>
+            <p>\(5{,}8 \pm 2{,}093 \cdot \frac{5{,}085}{\sqrt{20}} = 5{,}8 \pm 2{,}38\)</p>
+            <p class="mt-2" style="font-weight:700;color:var(--color-primary);">\(\boxed{(3{,}42;\; 8{,}18)}\)</p>
+          </div>
+        </div>
+        <p><strong>Interpretacja:</strong> Z ufnością 95% średnia wartość cechy w populacji mieści się w przedziale od 3,42 do 8,18.</p>
+      </div>
+    </section>
+
+    <!-- ===== 5. ŚREDNIA - DUŻA PRÓBA ===== -->
+    <section id="srednia-duza-proba" class="content-section fade-in">
+      <h2>5. Przedział ufności dla średniej μ — duża próba</h2>
+
+      <p>Gdy \(n \geq 30\), rozkład t-Studenta zbliża się do rozkładu normalnego i&nbsp;możemy użyć wartości \(z_{\alpha/2}\):</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Przedział ufności dla μ (n ≥ 30)</div>
+        $$\bar{X} - z_{\alpha/2}\cdot\frac{s}{\sqrt{n}} \;<\; \mu \;<\; \bar{X} + z_{\alpha/2}\cdot\frac{s}{\sqrt{n}}$$
+      </div>
+
+      <div class="info-box tip">
+        <div class="info-box-title">💡 Popularne wartości z<sub>α/2</sub></div>
+        <table class="data-table" style="max-width:400px;">
+          <thead><tr><th>\(1-\alpha\)</th><th>\(\alpha\)</th><th>\(z_{\alpha/2}\)</th></tr></thead>
+          <tbody>
+            <tr><td>90%</td><td>0,10</td><td>1,645</td></tr>
+            <tr><td>95%</td><td>0,05</td><td>1,960</td></tr>
+            <tr><td>99%</td><td>0,01</td><td>2,576</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box example">
+        <div class="info-box-title">✅ Przykład 2: Minimalna liczebność próby</div>
+        <p>Chcemy, aby długość 95% przedziału ufności wynosiła co najwyżej \(0{,}01\), przy \(s = 2\).</p>
+        <p class="mt-2">Długość przedziału: \(2 \cdot z_{\alpha/2} \cdot \frac{s}{\sqrt{n}} \leq 0{,}01\)</p>
+        <p class="mt-2">\(2 \cdot 1{,}96 \cdot \frac{2}{\sqrt{n}} \leq 0{,}01 \Rightarrow \sqrt{n} \geq \frac{2 \cdot 1{,}96 \cdot 2}{0{,}01} = 784\)</p>
+        <p class="mt-2">\(n \geq 784^2 = \boxed{614\,656}\)</p>
+        <p class="mt-4 text-muted" style="font-size:var(--text-sm);">Potrzebna próba jest ogromna — to cena za bardzo wysoką precyzję.</p>
+      </div>
+
+      <!-- Chart: n vs interval width -->
+      <div class="viz-container scale-in">
+        <div class="viz-title"><span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </span>Wpływ n na szerokość przedziału</div>
+        <div style="position:relative;height:280px;"><canvas id="nEffectChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ===== 6. KALKULATOR - ŚREDNIA ===== -->
+    <section id="kalkulator-srednia" class="content-section fade-in">
+      <h2>6. Kalkulator przedziału ufności dla średniej</h2>
+
+      <div class="viz-container">
+        <div class="viz-title"><span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h4"/></svg>
+        </span>Kalkulator interaktywny</div>
+
+        <div class="controls" style="flex-wrap:wrap;">
+          <div class="control-group">
+            <label for="calcN">n (liczebność)</label>
+            <input type="number" id="calcN" value="20" min="2" max="100000" style="width:100px;">
+          </div>
+          <div class="control-group">
+            <label for="calcXbar">x̄ (średnia)</label>
+            <input type="number" id="calcXbar" value="5.8" step="0.01" style="width:100px;">
+          </div>
+          <div class="control-group">
+            <label for="calcS">s (odch. std.)</label>
+            <input type="number" id="calcS" value="5.085" step="0.001" min="0.001" style="width:100px;">
+          </div>
+          <div class="control-group">
+            <label for="calcAlpha">α (poziom ist.)</label>
+            <select id="calcAlpha">
+              <option value="0.10">0,10 (90%)</option>
+              <option value="0.05" selected>0,05 (95%)</option>
+              <option value="0.02">0,02 (98%)</option>
+              <option value="0.01">0,01 (99%)</option>
+            </select>
+          </div>
+          <button class="btn-primary" id="calcMeanBtn">Oblicz</button>
+        </div>
+
+        <div id="calcMeanResult" style="padding:var(--space-4);background:var(--color-surface-2);border-radius:var(--radius-lg);margin-top:var(--space-4);font-size:var(--text-sm);display:none;"></div>
+        <div id="calcMeanChartWrap" style="position:relative;height:200px;margin-top:var(--space-4);display:none;"><canvas id="calcMeanChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ===== 7. WARIANCJA ===== -->
+    <section id="wariancja" class="content-section fade-in">
+      <h2>7. Przedział ufności dla wariancji σ²</h2>
+
+      <p>Do szacowania wariancji populacji wykorzystujemy <strong>rozkład chi-kwadrat</strong> (\(\chi^2\)). Wymaga założenia o&nbsp;normalności populacji.</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Przedział ufności dla σ² (populacja normalna)</div>
+        $$\frac{(n-1)s^2}{\chi^2_{n-1,\,\alpha/2}} \;<\; \sigma^2 \;<\; \frac{(n-1)s^2}{\chi^2_{n-1,\,1-\alpha/2}}$$
+      </div>
+
+      <div class="info-box warning">
+        <div class="info-box-title">⚠️ Uwaga</div>
+        <p>Rozkład \(\chi^2\) jest asymetryczny, dlatego przedział ufności dla wariancji <strong>nie jest symetryczny</strong> względem \(s^2\). Dolna granica używa kwantyla \(\chi^2_{n-1,\,\alpha/2}\) (prawy ogon), a&nbsp;górna — \(\chi^2_{n-1,\,1-\alpha/2}\) (lewy ogon).</p>
+      </div>
+
+      <div class="info-box example">
+        <div class="info-box-title">✅ Przykład 3: Czas retransmisji sygnału satelity</div>
+        <p>Zmierzono czas retransmisji sygnału satelitarnego w \(n = 25\) próbach. Odchylenie standardowe z próby: \(s = 10{,}4\). Wyznacz 90% przedział ufności dla wariancji i odchylenia.</p>
+
+        <div class="steps">
+          <div class="step" data-step="1">
+            <h4>Parametry</h4>
+            <p>\(n = 25\), \(s = 10{,}4\), \(s^2 = 108{,}16\), \(\alpha = 0{,}1\), \(n-1 = 24\)</p>
+          </div>
+          <div class="step" data-step="2">
+            <h4>Wartości krytyczne χ²</h4>
+            <p>\(\chi^2_{24,\,0{,}05} = 36{,}415\) (prawy ogon)</p>
+            <p>\(\chi^2_{24,\,0{,}95} = 13{,}848\) (lewy ogon)</p>
+          </div>
+          <div class="step" data-step="3">
+            <h4>Przedział dla wariancji</h4>
+            <p>\(\frac{24 \cdot 108{,}16}{36{,}415} < \sigma^2 < \frac{24 \cdot 108{,}16}{13{,}848}\)</p>
+            <p class="mt-2" style="font-weight:700;color:var(--color-primary);">\(\boxed{(71{,}28;\; 187{,}45)}\)</p>
+          </div>
+          <div class="step" data-step="4">
+            <h4>Przedział dla odchylenia standardowego</h4>
+            <p>\(\sqrt{71{,}28} < \sigma < \sqrt{187{,}45}\)</p>
+            <p class="mt-2" style="font-weight:700;color:var(--color-primary);">\(\boxed{(8{,}44;\; 13{,}69)}\)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart: chi-square distribution -->
+      <div class="viz-container scale-in">
+        <div class="viz-title"><span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20Q8 4 21 20"/></svg>
+        </span>Rozkład χ² i obszary krytyczne</div>
+        <div style="position:relative;height:280px;"><canvas id="chiSquareChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ===== 8. ODCHYLENIE DUŻA PRÓBA ===== -->
+    <section id="odchylenie-duza" class="content-section fade-in">
+      <h2>8. Odchylenie standardowe — duża próba</h2>
+
+      <p>Gdy próba jest duża, możemy użyć przybliżonego wzoru opartego na rozkładzie normalnym:</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Przedział ufności dla σ (duża próba)</div>
+        $$\frac{s}{1 + z_{\alpha/2}\big/\!\sqrt{2n}} \;<\; \sigma \;<\; \frac{s}{1 - z_{\alpha/2}\big/\!\sqrt{2n}}$$
+      </div>
+
+      <div class="info-box tip">
+        <div class="info-box-title">💡 Kiedy stosować?</div>
+        <p>Ten wzór stosujemy, gdy \(n\) jest na tyle duże (zwykle \(n \geq 30\)), że rozkład \(\chi^2\) można przybliżyć rozkładem normalnym. Jest prostszy obliczeniowo, bo nie wymaga tablic \(\chi^2\).</p>
+      </div>
+    </section>
+
+    <!-- ===== 9. PROPORCJA ===== -->
+    <section id="proporcja" class="content-section fade-in">
+      <h2>9. Przedział ufności dla proporcji p</h2>
+
+      <p>Proporcja (wskaźnik struktury) opisuje udział elementów o&nbsp;danej cesze w&nbsp;populacji. Warunek: \(n \geq 100\).</p>
+
+      <div class="formula-block">
+        <div class="formula-label">Przedział ufności dla p (n ≥ 100)</div>
+        $$\hat{p} - z_{\alpha/2}\sqrt{\frac{\hat{p}\hat{q}}{n}} \;<\; p \;<\; \hat{p} + z_{\alpha/2}\sqrt{\frac{\hat{p}\hat{q}}{n}}$$
+      </div>
+
+      <p>Gdzie \(\hat{p} = m/n\) (proporcja z próby), \(\hat{q} = 1 - \hat{p}\).</p>
+
+      <div class="info-box example">
+        <div class="info-box-title">✅ Przykład 4: Pliki GIF w sieci</div>
+        <p>Pobrano losowo \(n = 1000\) plików z sieci, \(m = 650\) z nich to pliki GIF. Oblicz przedziały ufności.</p>
+        <p class="mt-2">\(\hat{p} = 650/1000 = 0{,}65\), \(\hat{q} = 0{,}35\)</p>
+
+        <div class="steps">
+          <div class="step" data-step="1">
+            <h4>Dla α = 0,10 (90% ufności)</h4>
+            <p>\(z_{0{,}05} = 1{,}645\)</p>
+            <p>\(0{,}65 \pm 1{,}645 \cdot \sqrt{\frac{0{,}65 \cdot 0{,}35}{1000}} = 0{,}65 \pm 0{,}025\)</p>
+            <p class="mt-2" style="font-weight:700;color:var(--color-primary);">\(\boxed{(0{,}625;\; 0{,}675)}\)</p>
+          </div>
+          <div class="step" data-step="2">
+            <h4>Dla α = 0,05 (95% ufności)</h4>
+            <p>\(z_{0{,}025} = 1{,}960\)</p>
+            <p>\(0{,}65 \pm 1{,}96 \cdot \sqrt{\frac{0{,}65 \cdot 0{,}35}{1000}} = 0{,}65 \pm 0{,}030\)</p>
+            <p class="mt-2" style="font-weight:700;color:var(--color-primary);">\(\boxed{(0{,}620;\; 0{,}680)}\)</p>
+          </div>
+        </div>
+        <p class="mt-2 text-muted" style="font-size:var(--text-sm);">Wyższy poziom ufności (95% vs 90%) dał szerszy przedział — potwierdzenie kompromisu precyzja/ufność.</p>
+      </div>
+
+      <div class="real-life">
+        <h4>Przykład z życia: Badanie dronem</h4>
+        <p>Dron przeleciał nad polem. Z \(n = 6000\) wykonanych zdjęć, \(m = 658\) zawierało uszkodzone rośliny. Proporcja: \(\hat{p} = 658/6000 = 0{,}1097\).</p>
+        <p class="mt-2">95% przedział ufności: \(0{,}1097 \pm 1{,}96\sqrt{\frac{0{,}1097 \cdot 0{,}8903}{6000}} = 0{,}1097 \pm 0{,}0079\)</p>
+        <p class="mt-2" style="font-weight:700;">Wynik: <strong>(0,1018; 0,1176)</strong> — od 10,2% do 11,8% roślin jest uszkodzonych.</p>
+      </div>
+
+      <div class="info-box example">
+        <div class="info-box-title">✅ Przykład 6: Wymagany czas eksperymentu</div>
+        <p>Chcemy oszacować proporcję z dokładnością (marginesem błędu) \(\leq 0{,}5\%\) = 0,005 przy 95% ufności. Zakładamy \(\hat{p} \approx 0{,}5\) (najgorszy przypadek).</p>
+        <p class="mt-2">\(z_{\alpha/2}\sqrt{\frac{\hat{p}\hat{q}}{n}} \leq 0{,}005\)</p>
+        <p>\(1{,}96 \cdot \sqrt{\frac{0{,}25}{n}} \leq 0{,}005 \Rightarrow n \geq \left(\frac{1{,}96 \cdot 0{,}5}{0{,}005}\right)^2 = 38\,416\)</p>
+        <p class="mt-2">Jeśli każda obserwacja trwa 0,5 s: czas = \(\frac{38\,416 \cdot 0{,}5}{3600} \approx 5{,}34\) godzin.</p>
+        <p class="mt-2 text-muted" style="font-size:var(--text-sm);">Przy ostrzejszych założeniach z treści zadania (\(n = 1\,247\,102\)) czas wyniósłby ~3,46 h (przy krótszej obserwacji).</p>
+      </div>
+    </section>
+
+    <!-- ===== 10. KALKULATOR PROPORCJI ===== -->
+    <section id="kalkulator-proporcja" class="content-section fade-in">
+      <h2>10. Kalkulator przedziału ufności dla proporcji</h2>
+
+      <div class="viz-container">
+        <div class="viz-title"><span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </span>Kalkulator proporcji</div>
+
+        <div class="controls" style="flex-wrap:wrap;">
+          <div class="control-group">
+            <label for="propN">n (wielkość próby)</label>
+            <input type="number" id="propN" value="1000" min="100" style="width:110px;">
+          </div>
+          <div class="control-group">
+            <label for="propM">m (sukcesy)</label>
+            <input type="number" id="propM" value="650" min="0" style="width:110px;">
+          </div>
+          <div class="control-group">
+            <label for="propAlpha">α (poziom ist.)</label>
+            <select id="propAlpha">
+              <option value="0.10">0,10 (90%)</option>
+              <option value="0.05" selected>0,05 (95%)</option>
+              <option value="0.01">0,01 (99%)</option>
+            </select>
+          </div>
+          <button class="btn-primary" id="calcPropBtn">Oblicz</button>
+        </div>
+
+        <div id="calcPropResult" style="padding:var(--space-4);background:var(--color-surface-2);border-radius:var(--radius-lg);margin-top:var(--space-4);font-size:var(--text-sm);display:none;"></div>
+        <div id="calcPropChartWrap" style="position:relative;height:200px;margin-top:var(--space-4);display:none;"><canvas id="calcPropChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ===== 11. QUIZ ===== -->
+    <section id="quiz" class="content-section fade-in">
+      <h2>11. Quiz — sprawdź się!</h2>
+
+      <div class="quiz-container" id="quizLekcja2">
+        <h3>🧠 Test wiedzy z estymacji przedziałowej</h3>
+
+        <div class="quiz-question" data-q="1">
+          <p><strong>1.</strong> Zwiększenie poziomu ufności \(1-\alpha\) powoduje:</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">Skrócenie przedziału ufności</div>
+            <div class="quiz-option" data-correct="true">Wydłużenie przedziału ufności</div>
+            <div class="quiz-option" data-correct="false">Brak zmiany długości przedziału</div>
+            <div class="quiz-option" data-correct="false">Zmniejszenie liczebności próby</div>
+          </div>
+          <div class="quiz-feedback" data-success="Dokładnie! Wyższe 1−α oznacza szerszy przedział — tracimy precyzję na rzecz wiarygodności." data-error="Nie. Wyższy współczynnik ufności = szerszy przedział (mniejsza precyzja)."></div>
+        </div>
+
+        <div class="quiz-question" data-q="2">
+          <p><strong>2.</strong> Jakiego rozkładu używamy do budowy przedziału ufności dla średniej, gdy σ jest nieznane i próba mała?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">Rozkładu normalnego</div>
+            <div class="quiz-option" data-correct="true">Rozkładu t-Studenta</div>
+            <div class="quiz-option" data-correct="false">Rozkładu chi-kwadrat</div>
+            <div class="quiz-option" data-correct="false">Rozkładu Poissona</div>
+          </div>
+          <div class="quiz-feedback" data-success="Tak! Rozkład t-Studenta uwzględnia dodatkową niepewność wynikającą z szacowania σ." data-error="Nie — przy nieznanym σ i małej próbie stosujemy rozkład t-Studenta."></div>
+        </div>
+
+        <div class="quiz-question" data-q="3">
+          <p><strong>3.</strong> Do wyznaczania przedziału ufności dla wariancji σ² używamy:</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">Rozkładu normalnego N(0,1)</div>
+            <div class="quiz-option" data-correct="false">Rozkładu t-Studenta</div>
+            <div class="quiz-option" data-correct="true">Rozkładu chi-kwadrat (χ²)</div>
+            <div class="quiz-option" data-correct="false">Rozkładu F Snedecora</div>
+          </div>
+          <div class="quiz-feedback" data-success="Prawidłowo! Rozkład χ² to naturalny rozkład sumy kwadratów zmiennych normalnych." data-error="Nie — do wariancji używamy rozkładu chi-kwadrat (χ²)."></div>
+        </div>
+
+        <div class="quiz-question" data-q="4">
+          <p><strong>4.</strong> Kto wprowadził koncepcję przedziału ufności?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">Karl Pearson</div>
+            <div class="quiz-option" data-correct="false">Ronald Fisher</div>
+            <div class="quiz-option" data-correct="true">Jerzy Spława-Neyman</div>
+            <div class="quiz-option" data-correct="false">William Gosset (Student)</div>
+          </div>
+          <div class="quiz-feedback" data-success="Tak! Jerzy Spława-Neyman opublikował tę koncepcję w 1933 roku." data-error="Nie — to Jerzy Spława-Neyman (1933)."></div>
+        </div>
+
+        <div class="quiz-question" data-q="5">
+          <p><strong>5.</strong> Przedział ufności dla proporcji \(p\) wymaga minimalnej próby:</p>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false">n ≥ 10</div>
+            <div class="quiz-option" data-correct="false">n ≥ 30</div>
+            <div class="quiz-option" data-correct="true">n ≥ 100</div>
+            <div class="quiz-option" data-correct="false">n ≥ 1000</div>
+          </div>
+          <div class="quiz-feedback" data-success="Poprawnie! Warunek n ≥ 100 zapewnia odpowiednią aproksymację rozkładem normalnym." data-error="Nie — standardowy warunek to n ≥ 100."></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== LESSON NAV ===== -->
+    <div class="lesson-nav">
+      <a href="lekcja1.html" class="prev">
+        <span class="nav-label">← Poprzednia</span>
+        <span class="nav-title">Lekcja 1: Estymacja punktowa</span>
+      </a>
+      <a href="lekcja3.html" class="next">
+        <span class="nav-label">Następna →</span>
+        <span class="nav-title">Lekcja 3: Testowanie hipotez</span>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <p>Statystyka — materiały do nauki &middot; 2025</p>
+  <p class="mt-2">
+    <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+  </p>
+</footer>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // KaTeX auto-render
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false},
+        {left: '\\[', right: '\\]', display: true}
+      ],
+      throwOnError: false
+    });
+  } else {
+    // Wait for KaTeX to load
+    const wait = setInterval(() => {
+      if (typeof renderMathInElement === 'function') {
+        clearInterval(wait);
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError: false
+        });
+      }
+    }, 100);
+    setTimeout(() => clearInterval(wait), 5000);
+  }
+
+  // Init quiz
+  initQuiz('quizLekcja2');
+
+  // =====================
+  // Helper: inverse normal CDF (approximation by Abramowitz & Stegun)
+  // =====================
+  function normInv(p) {
+    if (p <= 0) return -Infinity;
+    if (p >= 1) return Infinity;
+    if (p < 0.5) return -normInv(1 - p);
+    const t = Math.sqrt(-2 * Math.log(1 - p));
+    const c0 = 2.515517, c1 = 0.802853, c2 = 0.010328;
+    const d1 = 1.432788, d2 = 0.189269, d3 = 0.001308;
+    return t - (c0 + c1*t + c2*t*t) / (1 + d1*t + d2*t*t + d3*t*t*t);
+  }
+
+  function zValue(alpha) {
+    return normInv(1 - alpha / 2);
+  }
+
+  // t-distribution approximation (good enough for display)
+  function tValue(df, alpha) {
+    const z = zValue(alpha);
+    // Cornish-Fisher approximation
+    const g1 = (z*z*z + z) / (4 * df);
+    const g2 = (5*z*z*z*z*z + 16*z*z*z + 3*z) / (96 * df * df);
+    return z + g1 + g2;
+  }
+
+  // =====================
+  // 1. ALPHA SLIDER CHART
+  // =====================
+  const alphaSlider = document.getElementById('alphaSlider');
+  const alphaLabel = document.getElementById('alphaLabel');
+  const zLabel = document.getElementById('zLabel');
+  const alphaCtx = document.getElementById('alphaChart').getContext('2d');
+
+  function getChartColors() {
+    const style = getComputedStyle(document.documentElement);
+    return {
+      primary: style.getPropertyValue('--color-primary').trim(),
+      accent: style.getPropertyValue('--color-accent').trim(),
+      text: style.getPropertyValue('--color-text').trim(),
+      textMuted: style.getPropertyValue('--color-text-muted').trim(),
+      divider: style.getPropertyValue('--color-divider').trim(),
+      surface: style.getPropertyValue('--color-surface').trim(),
+      primaryLight: style.getPropertyValue('--color-primary-light').trim(),
+    };
+  }
+
+  // Generate data for multiple confidence levels
+  function alphaChartData() {
+    const conf = parseInt(alphaSlider.value);
+    const alpha = 1 - conf / 100;
+    const z = zValue(alpha);
+    const s = 5.085, n = 20, xbar = 5.8;
+    const margin = z * s / Math.sqrt(n);
+    return { conf, alpha, z, xbar, margin, lower: xbar - margin, upper: xbar + margin };
+  }
+
+  const alphaChartInstance = new Chart(alphaCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Przedział ufności'],
+      datasets: [
+        { label: 'Dolna granica', data: [0], backgroundColor: 'transparent', borderWidth: 0 },
+        { label: 'Szerokość przedziału', data: [0], backgroundColor: 'rgba(37,99,235,0.3)', borderColor: 'rgba(37,99,235,0.8)', borderWidth: 2 }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
+      },
+      scales: {
+        x: { min: -5, max: 18, title: { display: true, text: 'Wartość' } },
+        y: { display: false }
+      }
+    }
+  });
+
+  function updateAlphaChart() {
+    const d = alphaChartData();
+    alphaLabel.textContent = d.conf + '%';
+    zLabel.textContent = d.z.toFixed(3);
+
+    alphaChartInstance.data.datasets[0].data = [d.lower];
+    alphaChartInstance.data.datasets[1].data = [d.upper - d.lower];
+
+    // Update annotation-like title
+    alphaChartInstance.options.plugins.title = {
+      display: true,
+      text: `Przedział: (${d.lower.toFixed(2)} ; ${d.upper.toFixed(2)})  |  Szerokość: ${(d.upper - d.lower).toFixed(2)}`,
+      font: { size: 14, weight: '600' }
+    };
+
+    alphaChartInstance.options.scales.x.min = Math.min(-2, d.lower - 2);
+    alphaChartInstance.options.scales.x.max = Math.max(14, d.upper + 2);
+
+    alphaChartInstance.update();
+  }
+
+  alphaSlider.addEventListener('input', updateAlphaChart);
+  updateAlphaChart();
+
+  // =====================
+  // 2. 100 CONFIDENCE INTERVALS CANVAS
+  // =====================
+  const ciCanvas = document.getElementById('ciCanvas');
+  const ciCtx = ciCanvas.getContext('2d');
+  const ciConfSelect = document.getElementById('ciConfLevel');
+  const ciRegenBtn = document.getElementById('ciRegenBtn');
+  const ciStats = document.getElementById('ciStats');
+
+  const TRUE_MEAN = 50;
+  const POP_STD = 10;
+  const SAMPLE_N = 25;
+
+  function generateCI() {
+    const confLevel = parseFloat(ciConfSelect.value);
+    const z = zValue(1 - confLevel);
+    const intervals = [];
+    let containsCount = 0;
+
+    for (let i = 0; i < 100; i++) {
+      // Simulate sample mean from normal distribution
+      let sum = 0;
+      for (let j = 0; j < SAMPLE_N; j++) {
+        // Box-Muller
+        const u1 = Math.random(), u2 = Math.random();
+        sum += TRUE_MEAN + POP_STD * Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+      }
+      const sampleMean = sum / SAMPLE_N;
+      const margin = z * POP_STD / Math.sqrt(SAMPLE_N);
+      const lower = sampleMean - margin;
+      const upper = sampleMean + margin;
+      const contains = lower <= TRUE_MEAN && upper >= TRUE_MEAN;
+      if (contains) containsCount++;
+      intervals.push({ mean: sampleMean, lower, upper, contains });
+    }
+
+    return { intervals, containsCount, confLevel };
+  }
+
+  function drawCI() {
+    const { intervals, containsCount, confLevel } = generateCI();
+    ciStats.textContent = `Zawiera μ=${TRUE_MEAN}: ${containsCount}/100 (${containsCount}%)`;
+
+    const dpr = window.devicePixelRatio || 1;
+    const rect = ciCanvas.getBoundingClientRect();
+    ciCanvas.width = rect.width * dpr;
+    ciCanvas.height = rect.height * dpr;
+    ciCtx.scale(dpr, dpr);
+
+    const W = rect.width;
+    const H = rect.height;
+    const padL = 50, padR = 30, padT = 20, padB = 30;
+    const plotW = W - padL - padR;
+    const plotH = H - padT - padB;
+
+    const colors = getChartColors();
+
+    ciCtx.clearRect(0, 0, W, H);
+
+    // Find range
+    let minVal = Infinity, maxVal = -Infinity;
+    intervals.forEach(ci => {
+      if (ci.lower < minVal) minVal = ci.lower;
+      if (ci.upper > maxVal) maxVal = ci.upper;
+    });
+    const pad = (maxVal - minVal) * 0.05;
+    minVal -= pad; maxVal += pad;
+
+    const xScale = v => padL + (v - minVal) / (maxVal - minVal) * plotW;
+    const barH = plotH / 100;
+
+    // Draw true mean line
+    const trueMeanX = xScale(TRUE_MEAN);
+    ciCtx.save();
+    ciCtx.strokeStyle = colors.accent || '#7c3aed';
+    ciCtx.lineWidth = 2;
+    ciCtx.setLineDash([6, 3]);
+    ciCtx.beginPath();
+    ciCtx.moveTo(trueMeanX, padT);
+    ciCtx.lineTo(trueMeanX, H - padB);
+    ciCtx.stroke();
+    ciCtx.restore();
+
+    // Label
+    ciCtx.fillStyle = colors.accent || '#7c3aed';
+    ciCtx.font = '600 12px "Space Grotesk", sans-serif';
+    ciCtx.textAlign = 'center';
+    ciCtx.fillText(`μ = ${TRUE_MEAN}`, trueMeanX, padT - 5);
+
+    // Draw intervals
+    intervals.forEach((ci, i) => {
+      const y = padT + i * barH + barH * 0.15;
+      const h = barH * 0.7;
+      const x1 = xScale(ci.lower);
+      const x2 = xScale(ci.upper);
+
+      ciCtx.fillStyle = ci.contains
+        ? (colors.primary || 'rgba(37,99,235,0.5)')
+        : (colors.accent ? colors.accent : 'rgba(220,38,38,0.7)');
+      ciCtx.globalAlpha = ci.contains ? 0.45 : 0.75;
+      ciCtx.fillRect(x1, y, x2 - x1, h);
+      ciCtx.globalAlpha = 1;
+
+      // Center dot
+      const mx = xScale(ci.mean);
+      ciCtx.beginPath();
+      ciCtx.arc(mx, y + h / 2, Math.max(1.5, h * 0.25), 0, Math.PI * 2);
+      ciCtx.fillStyle = ci.contains ? (colors.primary || '#2563eb') : '#dc2626';
+      ciCtx.fill();
+    });
+
+    // X-axis ticks
+    ciCtx.fillStyle = colors.textMuted || '#5a6577';
+    ciCtx.font = '11px "Space Grotesk", sans-serif';
+    ciCtx.textAlign = 'center';
+    const tickStep = Math.ceil((maxVal - minVal) / 10);
+    for (let v = Math.ceil(minVal); v <= maxVal; v += tickStep) {
+      const x = xScale(v);
+      ciCtx.fillText(v, x, H - padB + 16);
+    }
+  }
+
+  drawCI();
+  ciRegenBtn.addEventListener('click', drawCI);
+  ciConfSelect.addEventListener('change', drawCI);
+
+  // =====================
+  // 3. N vs INTERVAL WIDTH CHART
+  // =====================
+  const nCtx = document.getElementById('nEffectChart').getContext('2d');
+  const nValues = [5,10,15,20,30,50,75,100,150,200,300,500];
+  const s = 5.085;
+  const widths95 = nValues.map(n => {
+    const t = n >= 30 ? 1.96 : tValue(n - 1, 0.05);
+    return 2 * t * s / Math.sqrt(n);
+  });
+
+  new Chart(nCtx, {
+    type: 'line',
+    data: {
+      labels: nValues,
+      datasets: [{
+        label: 'Szerokość 95% CI',
+        data: widths95,
+        borderColor: '#2563eb',
+        backgroundColor: 'rgba(37,99,235,0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointBackgroundColor: '#2563eb',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: 'Jak rośnie n, maleje szerokość przedziału (s = 5,085, 95% CI)', font: { size: 14, weight: '600' } }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Liczebność próby n' } },
+        y: { title: { display: true, text: 'Szerokość przedziału' }, beginAtZero: true }
+      }
+    }
+  });
+
+  // =====================
+  // 4. MEAN CALCULATOR
+  // =====================
+  const calcMeanBtn = document.getElementById('calcMeanBtn');
+  const calcMeanResult = document.getElementById('calcMeanResult');
+  const calcMeanCanvas = document.getElementById('calcMeanChart');
+  let calcMeanChartInst = null;
+
+  calcMeanBtn.addEventListener('click', () => {
+    const n = parseInt(document.getElementById('calcN').value);
+    const xbar = parseFloat(document.getElementById('calcXbar').value);
+    const sVal = parseFloat(document.getElementById('calcS').value);
+    const alpha = parseFloat(document.getElementById('calcAlpha').value);
+
+    if (isNaN(n) || isNaN(xbar) || isNaN(sVal) || n < 2 || sVal <= 0) {
+      calcMeanResult.innerHTML = '<span style="color:var(--color-error);">Sprawdź dane wejściowe (n ≥ 2, s > 0).</span>';
+      calcMeanResult.style.display = 'block';
+      return;
+    }
+
+    const useTDist = n < 30;
+    const critVal = useTDist ? tValue(n - 1, alpha) : zValue(alpha);
+    const margin = critVal * sVal / Math.sqrt(n);
+    const lower = xbar - margin;
+    const upper = xbar + margin;
+    const confPct = ((1 - alpha) * 100).toFixed(0);
+    const distName = useTDist ? `t-Studenta (df=${n-1})` : 'normalnego (z)';
+
+    calcMeanResult.innerHTML = `
+      <p><strong>Rozkład:</strong> ${distName}</p>
+      <p><strong>Wartość krytyczna:</strong> ${critVal.toFixed(4)}</p>
+      <p><strong>Margines błędu:</strong> ${margin.toFixed(4)}</p>
+      <p style="font-size:var(--text-base);margin-top:var(--space-2);font-weight:700;color:var(--color-primary);">
+        ${confPct}% CI: (${lower.toFixed(4)} ; ${upper.toFixed(4)})
+      </p>
+      <p><strong>Szerokość:</strong> ${(upper - lower).toFixed(4)}</p>
+    `;
+    calcMeanResult.style.display = 'block';
+    document.getElementById('calcMeanChartWrap').style.display = 'block';
+
+    // Draw simple visual
+    if (calcMeanChartInst) calcMeanChartInst.destroy();
+    calcMeanChartInst = new Chart(calcMeanCanvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: [`${confPct}% CI`],
+        datasets: [
+          { label: 'Offset', data: [lower], backgroundColor: 'transparent' },
+          { label: 'Przedział', data: [upper - lower], backgroundColor: 'rgba(37,99,235,0.35)', borderColor: '#2563eb', borderWidth: 2 }
+        ]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          title: { display: true, text: `x̄ = ${xbar} ± ${margin.toFixed(3)}`, font: { size: 13, weight: '600' } }
+        },
+        scales: {
+          x: {
+            stacked: true,
+            min: lower - margin,
+            max: upper + margin,
+            title: { display: true, text: 'Wartość' }
+          },
+          y: { stacked: true, display: false }
+        }
+      }
+    });
+  });
+
+  // =====================
+  // 5. CHI-SQUARE CHART
+  // =====================
+  const chiCtx = document.getElementById('chiSquareChart').getContext('2d');
+
+  // Chi-square PDF approximation using gamma function
+  function chiSquarePDF(x, k) {
+    if (x <= 0) return 0;
+    const halfK = k / 2;
+    // ln(PDF) = (k/2 - 1)*ln(x) - x/2 - (k/2)*ln(2) - lnGamma(k/2)
+    const lnPdf = (halfK - 1) * Math.log(x) - x / 2 - halfK * Math.log(2) - lnGamma(halfK);
+    return Math.exp(lnPdf);
+  }
+
+  function lnGamma(z) {
+    // Stirling / Lanczos approximation
+    const g = 7;
+    const coef = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+      771.32342877765313, -176.61502916214059, 12.507343278686905,
+      -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    if (z < 0.5) {
+      return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGamma(1 - z);
+    }
+    z -= 1;
+    let x = coef[0];
+    for (let i = 1; i < g + 2; i++) x += coef[i] / (z + i);
+    const t = z + g + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+
+  // df=24, alpha=0.10
+  const df = 24;
+  const chiLabels = [];
+  const chiData = [];
+  for (let x = 0.5; x <= 55; x += 0.5) {
+    chiLabels.push(x.toFixed(1));
+    chiData.push(chiSquarePDF(x, df));
+  }
+
+  // Critical values
+  const chiLower = 13.848;
+  const chiUpper = 36.415;
+
+  const chiColors = chiLabels.map(x => {
+    const v = parseFloat(x);
+    if (v <= chiLower || v >= chiUpper) return 'rgba(220,38,38,0.35)';
+    return 'rgba(37,99,235,0.2)';
+  });
+
+  new Chart(chiCtx, {
+    type: 'bar',
+    data: {
+      labels: chiLabels,
+      datasets: [{
+        label: 'χ²(24) PDF',
+        data: chiData,
+        backgroundColor: chiColors,
+        borderColor: chiLabels.map(x => {
+          const v = parseFloat(x);
+          if (v <= chiLower || v >= chiUpper) return 'rgba(220,38,38,0.6)';
+          return 'rgba(37,99,235,0.4)';
+        }),
+        borderWidth: 1,
+        barPercentage: 1.0,
+        categoryPercentage: 1.0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: `Rozkład χ²(24) — obszar odrzucenia (α/2 = 0,05 po każdej stronie)`,
+          font: { size: 13, weight: '600' }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'χ²' },
+          ticks: {
+            callback: function(val, idx) {
+              const v = parseFloat(chiLabels[idx]);
+              if (v % 5 === 0) return v;
+              return '';
+            }
+          }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: 'Gęstość' }
+        }
+      }
+    }
+  });
+
+  // =====================
+  // 6. PROPORTION CALCULATOR
+  // =====================
+  const calcPropBtn = document.getElementById('calcPropBtn');
+  const calcPropResult = document.getElementById('calcPropResult');
+  const calcPropCanvas = document.getElementById('calcPropChart');
+  let calcPropChartInst = null;
+
+  calcPropBtn.addEventListener('click', () => {
+    const n = parseInt(document.getElementById('propN').value);
+    const m = parseInt(document.getElementById('propM').value);
+    const alpha = parseFloat(document.getElementById('propAlpha').value);
+
+    if (isNaN(n) || isNaN(m) || n < 100 || m < 0 || m > n) {
+      calcPropResult.innerHTML = '<span style="color:var(--color-error);">Sprawdź dane (n ≥ 100, 0 ≤ m ≤ n).</span>';
+      calcPropResult.style.display = 'block';
+      return;
+    }
+
+    const pHat = m / n;
+    const qHat = 1 - pHat;
+    const z = zValue(alpha);
+    const margin = z * Math.sqrt(pHat * qHat / n);
+    const lower = Math.max(0, pHat - margin);
+    const upper = Math.min(1, pHat + margin);
+    const confPct = ((1 - alpha) * 100).toFixed(0);
+
+    calcPropResult.innerHTML = `
+      <p><strong>p̂ =</strong> ${m}/${n} = ${pHat.toFixed(4)}</p>
+      <p><strong>z<sub>α/2</sub> =</strong> ${z.toFixed(4)}</p>
+      <p><strong>Margines błędu:</strong> ${margin.toFixed(4)}</p>
+      <p style="font-size:var(--text-base);margin-top:var(--space-2);font-weight:700;color:var(--color-primary);">
+        ${confPct}% CI: (${lower.toFixed(4)} ; ${upper.toFixed(4)})
+      </p>
+      <p><strong>Szerokość:</strong> ${(upper - lower).toFixed(4)}</p>
+    `;
+    calcPropResult.style.display = 'block';
+    document.getElementById('calcPropChartWrap').style.display = 'block';
+
+    if (calcPropChartInst) calcPropChartInst.destroy();
+    calcPropChartInst = new Chart(calcPropCanvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: [`${confPct}% CI`],
+        datasets: [
+          { label: 'Offset', data: [lower], backgroundColor: 'transparent' },
+          { label: 'Przedział', data: [upper - lower], backgroundColor: 'rgba(5,150,105,0.3)', borderColor: '#059669', borderWidth: 2 }
+        ]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          title: { display: true, text: `p̂ = ${pHat.toFixed(4)} ± ${margin.toFixed(4)}`, font: { size: 13, weight: '600' } }
+        },
+        scales: {
+          x: {
+            stacked: true,
+            min: Math.max(0, lower - margin * 2),
+            max: Math.min(1, upper + margin * 2),
+            title: { display: true, text: 'Proporcja' }
+          },
+          y: { stacked: true, display: false }
+        }
+      }
+    });
+  });
+
+  // =====================
+  // Handle theme changes for CI canvas
+  // =====================
+  const observer = new MutationObserver(() => {
+    drawCI();
+  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+});
+</script>
+
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

@@ -1,4 +1,87 @@
+import os
+import re
 
+base_dir = r"c:/Users/recyt/Documents/GitHub/Nauka-na-Deep-Learning"
+css_path = os.path.join(base_dir, "style.css")
+js_path = os.path.join(base_dir, "script.js")
+
+# 1. Update style.css
+with open(css_path, "r", encoding="utf-8") as f:
+    css = f.read()
+
+# Add new styles before the media query at the end
+# The media query is at the very end
+media_query_str = "@media (max-width: 600px)"
+if media_query_str in css:
+    css_before, css_after = css.split(media_query_str, 1)
+else:
+    css_before = css
+    css_after = "\n}"
+
+new_css = """
+/* ===== SITE NAV (Top) ===== */
+.site-nav { width: 100%; padding: 15px 50px; display: flex; align-items: center; justify-content: space-between; position: sticky; top:0; z-index: 100; backdrop-filter: blur(12px); background: rgba(5, 5, 5, 0.85); border-bottom: 1px solid #222; }
+.nav-inner { width:100%; max-width: 1200px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center; }
+.nav-logo { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: 2px; text-transform: uppercase; text-decoration:none; display:flex; align-items:center; gap: 10px;}
+.nav-links { display: flex; gap: 20px; list-style:none; }
+.nav-links a { color: #888; text-decoration:none; font-weight:600; padding: 8px 16px; border-radius: 4px; transition:0.2s;}
+.nav-links a:hover, .nav-links a.active { color:#fff; background: #222; }
+
+/* ===== LESSON LAYOUT ===== */
+.lesson-hero { text-align:center; padding: 60px 20px 40px; }
+.lesson-hero-content h1 { font-size: 34px; font-weight: 800; color:#fff; }
+.lesson-layout { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 260px 1fr; gap: 40px; align-items: start;}
+
+/* ===== TOC SIDEBAR ===== */
+.lesson-sidebar { position:sticky; top: 100px; align-self: start; max-height: calc(100vh - 120px); overflow-y: auto; }
+.toc-title { font-size: 13px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px; }
+.toc-list { list-style:none; border-left: 2px solid #222; }
+.toc-list li { margin-bottom: 2px; }
+.toc-list a { display:block; padding: 8px 15px; color:#888; text-decoration:none; font-size:14px; border-left: 2px solid transparent; margin-left:-2px; transition:0.2s; line-height:1.4;}
+.toc-list a:hover, .toc-list a.active { color:#61afef; border-left-color: #61afef; background: #111; }
+
+.content-section { margin-bottom: 60px; scroll-margin-top: 100px; }
+.content-section h1 { font-size: 28px; margin-bottom: 20px; color:#fff;}
+.content-section h2 { font-size: 24px; margin-bottom: 20px; color:#fff; padding-bottom:10px; border-bottom:1px solid #222;}
+
+/* ===== QUIZ SECTION ===== */
+.quiz-container { background: #111; border: 1px solid #333; border-radius: 8px; padding: 40px; margin-top: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);}
+.quiz-container h3 { font-size: 22px; margin-bottom: 10px; color:#fff; }
+.text-muted { color:#888; font-size:14px;}
+.mt-2 { margin-top: 10px;}
+.quiz-question { background: #0a0a0a; border: 1px solid #222; border-radius: 6px; padding: 20px; margin-top: 25px; }
+.quiz-question p { color: #ccc; margin-bottom: 15px; font-weight:600;}
+.quiz-options { display: flex; flex-direction: column; gap: 10px; }
+.quiz-option { padding: 15px 20px; border: 1px solid #333; border-radius: 4px; background: #161616; color:#aaa; cursor:pointer; transition:0.2s; font-size:14px; font-weight:500;}
+.quiz-option:hover { border-color: #666; color:#fff; background: #222;}
+.quiz-option.correct { border-color: #98c379; background: #1a2e1d; color:#98c379; }
+.quiz-option.wrong { border-color: #e06c75; background: #31181a; color:#e06c75; }
+.quiz-option.disabled { pointer-events:none; opacity:0.6; }
+.quiz-feedback { margin-top: 15px; padding: 10px 15px; border-radius: 4px; font-size:14px; display:none; }
+.quiz-feedback.show { display:block; }
+.quiz-feedback.success { background: #1a2e1d; color: #98c379; border: 1px solid #98c379;}
+.quiz-feedback.error { background: #31181a; color: #e06c75; border: 1px solid #e06c75;}
+
+/* ===== ADAPTING PREV/NEXT CLASSES ===== */
+.lesson-nav { display:flex; justify-content:space-between; padding-top:40px; margin-top:40px; border-top:1px solid #333; }
+.lesson-nav a { padding:15px 25px; border-radius:4px; font-weight:bold; background:#fff; color:#000; text-decoration:none; display:inline-block; transition:0.2s;}
+.lesson-nav a:hover { background:#ddd; }
+
+"""
+
+combined_css = css_before + new_css + media_query_str + css_after
+with open(css_path, "w", encoding="utf-8") as f:
+    f.write(combined_css)
+
+
+# 2. Update script.js
+with open(js_path, "r", encoding="utf-8") as f:
+    js = f.read()
+
+# We need to strip the MENU LOGIC block and NAVIGATION logic since we are no longer SPA.
+# We will just write a whole new script.js with the old perceptron and MLP parts and new TOC/Quiz parts.
+
+new_js = """
 document.addEventListener('DOMContentLoaded', () => {
 
     /* ===== TOC ACTIVE TRACKING ===== */
@@ -192,113 +275,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(bSun) updateBike();
 
-
-    /* ===== LEKCJA 1: INTERACTIVE BOUNDARY ===== */
-    const dbCanvas = document.getElementById('decisionBoundaryChart');
-    if(dbCanvas) {
-        const ctx = dbCanvas.getContext('2d');
-        let dbChart;
-
-        // Dataset (Red vs Blue points)
-        const pts = [
-            {x: 1, y: 1, class: 0}, {x: 2, y: 1.5, class: 0}, {x: 1.5, y: 2, class: 0},
-            {x: 3, y: 3, class: 1}, {x: 4, y: 2.5, class: 1}, {x: 3.5, y: 4, class: 1}
-        ];
-
-        const w1sl = document.getElementById('w1-slider');
-        const w2sl = document.getElementById('w2-slider');
-        const bsl = document.getElementById('b-slider');
-
-        function drawDecisionBoundary() {
-            if(!w1sl || !w2sl || !bsl) return;
-            const w1 = parseFloat(w1sl.value);
-            const w2 = parseFloat(w2sl.value);
-            const b = parseFloat(bsl.value);
-
-            document.getElementById('w1-val').innerText = w1.toFixed(1);
-            document.getElementById('w2-val').innerText = w2.toFixed(1);
-            document.getElementById('b-val').innerText = b.toFixed(1);
-
-            // Calculate line: w1*x + w2*y + b = 0  => y = (-w1*x - b) / w2
-            let lineData = [];
-            if(Math.abs(w2) > 0.01) {
-                lineData.push({x: -5, y: (-w1 * -5 - b)/w2});
-                lineData.push({x: 5, y: (-w1 * 5 - b)/w2});
-            } else {
-                lineData.push({x: -b/w1, y: -5});
-                lineData.push({x: -b/w1, y: 5});
-            }
-
-            if(dbChart) dbChart.destroy();
-            dbChart = new Chart(ctx, {
-                type: 'scatter',
-                data: {
-                    datasets: [
-                        { label: 'Klasa 0', data: pts.filter(p=>p.class===0), backgroundColor: '#e06c75', pointRadius:6 },
-                        { label: 'Klasa 1', data: pts.filter(p=>p.class===1), backgroundColor: '#61afef', pointRadius:6 },
-                        { label: 'Granica (-w1*X - b)/w2', data: lineData, type: 'line', borderColor: '#222', borderWidth: 2, fill: false, pointRadius:0}
-                    ]
-                },
-                options: {
-                    animation: false,
-                    scales: {
-                        x: { min: 0, max: 5 },
-                        y: { min: 0, max: 5 }
-                    }
-                }
-            });
-        }
-
-        w1sl.addEventListener('input', drawDecisionBoundary);
-        w2sl.addEventListener('input', drawDecisionBoundary);
-        bsl.addEventListener('input', drawDecisionBoundary);
-        drawDecisionBoundary();
-    }
-
-
-    /* ===== LEKCJA 2: ACTIVATION CHART ===== */
-    const actCanvas = document.getElementById('activationChart');
-    if(actCanvas) {
-        const ctx2 = actCanvas.getContext('2d');
-        let actChart;
-
-        const sel = document.getElementById('activation-select');
-
-        function drawActivation() {
-            const funcType = sel.value;
-            let dataPoints = [];
-            for(let x = -5; x <= 5; x+=0.5) {
-                let y = 0;
-                if(funcType === 'relu') y = Math.max(0, x);
-                if(funcType === 'sigmoid') y = 1 / (1 + Math.exp(-x));
-                if(funcType === 'tanh') y = Math.tanh(x);
-                dataPoints.push({x: x, y: y});
-            }
-
-            if(actChart) actChart.destroy();
-            actChart = new Chart(ctx2, {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: funcType.toUpperCase(),
-                        data: dataPoints,
-                        borderColor: '#c678dd',
-                        borderWidth: 3,
-                        pointRadius: 2,
-                        fill: false
-                    }]
-                },
-                options: {
-                    animation: { duration: 400 },
-                    scales: {
-                        x: { min: -5, max: 5 },
-                        y: { min: funcType==='relu' ? -1 : -1.5, max: funcType==='relu' ? 5 : 1.5 }
-                    }
-                }
-            });
-        }
-
-        sel.addEventListener('change', drawActivation);
-        drawActivation();
-    }
 });
+"""
+
+with open(js_path, "w", encoding="utf-8") as f:
+    f.write(new_js)
+
+print("JS and CSS files updated successfully.")
