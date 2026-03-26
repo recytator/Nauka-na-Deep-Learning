@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
             screen.classList.remove('active-screen');
             screen.classList.add('hidden-screen');
             setTimeout(() => {
-                screen.style.display = 'none'; // force hide
-            }, 500);
+                screen.style.display = 'none'; 
+            }, 400);
         });
         
         homeScreen.style.display = 'block';
@@ -87,13 +87,13 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', () => {
                 if(idx + 1 < sections.length) {
                     sections[idx].classList.remove('active-section');
-                    setTimeout(() => sections[idx].classList.add('hidden'), 400);
+                    setTimeout(() => sections[idx].classList.add('hidden'), 300);
                     
                     setTimeout(() => {
                         sections[idx+1].classList.remove('hidden');
                         sections[idx+1].classList.add('active-section');
                         window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }, 400);
+                    }, 300);
                 }
             });
         });
@@ -104,13 +104,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 sections.forEach((s, i) => { if (s.classList.contains('active-section')) currentIdx = i; });
                 if (currentIdx > 0) {
                     sections[currentIdx].classList.remove('active-section');
-                    setTimeout(() => sections[currentIdx].classList.add('hidden'), 400);
+                    setTimeout(() => sections[currentIdx].classList.add('hidden'), 300);
                     
                     setTimeout(() => {
                         sections[currentIdx-1].classList.remove('hidden');
                         sections[currentIdx-1].classList.add('active-section');
                         window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }, 400);
+                    }, 300);
                 }
             });
         });
@@ -127,11 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const flowerNames = ['Setosa (0)', 'Versicolor (1)', 'Virginica (2)'];
-    const flowerColors = {
-        'Setosa (0)': '#3b82f6',     
-        'Versicolor (1)': '#a78bfa', 
-        'Virginica (2)': '#f43f5e',  
-    };
 
     function updateMLPLogic() {
         if (!plSlider || !probsList || !finalChoice) return;
@@ -162,9 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const maxIdx = probsArr.map(Number).indexOf(maxVal);
         
         const winner = flowerNames[maxIdx];
-        finalChoice.innerText = `Wynik = Gatunek ${maxIdx} ! (${winner})`;
-        finalChoice.style.color = flowerColors[winner];
-        finalChoice.style.borderLeftColor = flowerColors[winner];
+        finalChoice.innerText = `Wynik = Klasa Gatunkowa: ${winner}`;
     }
     updateMLPLogic();
 
@@ -195,16 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if(isGoing) {
             bResult.classList.add('yes-go');
-            bResult.style.background = 'rgba(16, 185, 129, 0.2)';
-            bResult.style.border = '2px solid #10b981';
-            bResult.style.color = '#10b981';
-            bResult.innerText = `Potencjał wyjścia: ${s.toFixed(2)} ≥ 0 ➔ Aktywacja Perceptronu (Klasa Pozytywna)`;
+            bResult.innerText = `Potencjał wyjścia: ${s.toFixed(2)} ≥ 0 ➔ Decyzja Pozytywna (1)`;
         } else {
             bResult.classList.add('no-go');
-            bResult.style.background = 'rgba(239, 68, 68, 0.2)';
-            bResult.style.border = '2px solid #ef4444';
-            bResult.style.color = '#fca5a5';
-            bResult.innerText = `Potencjał wyjścia: ${s.toFixed(2)} < 0 ➔ Brak Aktywacji (Klasa Negatywna)`;
+            bResult.innerText = `Potencjał wyjścia: ${s.toFixed(2)} < 0 ➔ Decyzja Negatywna (0)`;
         }
     }
 
