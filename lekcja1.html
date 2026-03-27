@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klasyczny Perceptron</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="bg-mesh"></div>
+
+    <nav class="site-nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo" id="nav-logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Logo">
+                    <circle cx="8" cy="10" r="2.5" fill="currentColor" opacity="0.4" />
+                    <circle cx="8" cy="16" r="2.5" fill="currentColor" opacity="0.4" />
+                    <circle cx="8" cy="22" r="2.5" fill="currentColor" opacity="0.4" />
+                    <circle cx="18" cy="13" r="2.5" fill="currentColor" opacity="0.7" />
+                    <circle cx="18" cy="19" r="2.5" fill="currentColor" opacity="0.7" />
+                    <circle cx="28" cy="16" r="2.5" fill="currentColor" />
+                    <line x1="8" y1="10" x2="18" y2="13" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                    <line x1="8" y1="16" x2="18" y2="13" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                    <line x1="8" y1="16" x2="18" y2="19" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                    <line x1="8" y1="22" x2="18" y2="19" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                    <line x1="18" y1="13" x2="28" y2="16" stroke="currentColor" stroke-width="1" opacity="0.4" />
+                    <line x1="18" y1="19" x2="28" y2="16" stroke="currentColor" stroke-width="1" opacity="0.4" />
+                </svg>
+                [ Deep Learning ]
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="">Strona główna</a></li>
+                <li><a href="lekcja1.html" class="active">Klasyczny Perceptron</a></li>
+                <li><a href="lekcja2.html" class="">Sieć MLP</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="lesson-hero">
+        <div class="lesson-hero-content">
+            <h1>Klasyczny Perceptron</h1>
+        </div>
+    </header>
+    <div class="lesson-layout">
+
+        <aside class="lesson-sidebar">
+            <div class="toc-wrapper">
+                <div class="toc-title">Spis treści</div>
+                <ol class="toc-list">
+                    <li><a href="#sec-1">1. Wprowadzenie teoretyczne: Perceptron</a></li>
+                    <li><a href="#sec-2">2. Inicjalizacja Klasy (__init__)</a></li>
+                    <li><a href="#sec-3">3. Proces predykcji (predict)</a></li>
+                    <li><a href="#sec-4">4. Trening Klasyfikatora (fit)</a></li>
+                    <li><a href="#sec-5">5. Kalkulacja Błędu (Reguła uczenia)</a></li>
+                    <li><a href="#sec-6">6. Ewaluacja Dokładności (evaluate)</a></li>
+                    <li><a href="#sec-7">7. Problemy Modelu Liniowego (Bramka XOR)</a></li>
+                    <li><a href="#sec-8">8. Gotowe klasyfikatory (Scikit-Learn)</a></li>
+                    <li><a href="#sec-9">9. Eksperyment Diagnostyczny (Confusion Matrix)</a></li>
+                    <li><a href="#sec-10">10. Interaktywny Model Perceptronu</a></li>
+
+                    <li><a href="#quiz">Quiz końcowy</a></li>
+                </ol>
+            </div>
+        </aside>
+        <main class="lesson-content">
+            <section id="sec-1" class="content-section fade-in">
+
+
+
+                <h1>Wprowadzenie teoretyczne: <br><span>Perceptron</span></h1>
+                <p><b>Perceptron</b> to najprostsza architektura sztucznej sieci neuronowej. Został opracowany w
+                    1957 roku przez Franka Rosenblatta. Stanowi matematyczny model pojedynczego neuronu
+                    biologicznego.</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header">Inspiracja biologiczna a implementacja</div>
+                        <div class="code-desc">Biologiczny neuron przyjmuje sygnały przez dendryty, kumuluje
+                            potencjał, a następnie przekazuje impuls dalej. <b>W programowaniu modeluje się to jako
+                                funkcję sumującą.</b> Neuron przyjmuje wartości wejściowe, mnoży je przez
+                            przyporządkowane im wagi (odpowiadające sile synaps) i, jeśli zsumowany wynik przekroczy
+                            ustalony próg, zwraca wartość <code>1</code> (aktywacja). W przeciwnym razie zwraca
+                            <code>0</code>.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> To wirtualny odpowiednik pojedynczej komórki
+                                nerwowej w mózgu. Pobiera dane, przemnaża je przez ich "ważność", po czym wszystko
+                                sumuje. Jeśli wynik przekracza określoną barierę, funkcja odpala sygnał i krzyczy
+                                "TAK" (1). Jeśli nie, milczy i zwraca "NIE" (0).</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header">Separowalność liniowa</div>
+                        <div class="code-desc">Pojedynczy perceptron jest klasyfikatorem <b>liniowym</b>. Oznacza
+                            to, że dzieli przestrzeń decyzyjną za pomocą pojedynczej prostej (lub hiperpłaszczyzny w
+                            wymiarach wyższych). Nie radzi sobie z problemami nieliniowymi (np. problemem XOR), co
+                            stało się historyczną przyczyną powstania wielowarstwowych sieci neuronowych (MLP).
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Ten model potrafi narysować na wykresie
+                                tylko jedną, idealnie prostą kreskę, aby oddzielić dwa zbiory danych od siebie.
+                                Jeśli dane układają się w koło lub szachownicę, jedna kreska nie wystarczy. To
+                                największa wada tego najprostszego algorytmu.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anim-box">
+                    <div class="perceptron-diagram">
+                        <div class="p-inputs">
+                            <div class="p-in-node">X1</div>
+                            <div class="p-in-node">X2</div>
+                            <div class="p-in-node">X3</div>
+                        </div>
+                        <div class="p-lines"></div>
+                        <div class="p-soma">Suma = Σ (W*X)</div>
+                        <div class="p-arrow">➔</div>
+                        <div class="p-out">Wyj: 1</div>
+                    </div>
+                    <p class="anim-desc">Wartości wejściowe mnożone są przez wagi i sumowane, co prowadzi do
+                        ostatecznej binarnej decyzji na wyjściu.</p>
+            </section>
+
+            <section id="sec-2" class="content-section fade-in">
+
+
+
+                <h1>Inicjalizacja Klasy <br><span>(__init__)</span></h1>
+                <p>Aby przetestować ten model matematyczny od podstaw, zbudujemy go korzystając z języka Python w
+                    formie obiektowej (OOP).</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header"><span class="keyword">class</span> <span
+                                class="class">Perceptron</span>:</div>
+                        <div class="code-desc"><b>Definicja klasy:</b> Tworzymy obiekt nowej klasy. Użycie
+                            <code>Perceptron()</code> w kodzie zainicjuje nową instancję naszego neuronu.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Budujemy fabrykę produkującą nasze
+                                matematyczne neurony. Każde wywołanie tej komendy tworzy dla nas jeden, niezależny
+                                obwód decyzyjny.</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header"> <span class="keyword">def</span> <span
+                                class="function">__init__</span>(self,
+                            lr=<span class="number">0.1</span>,
+                            epochs=<span class="number">20</span>):</div>
+                        <div class="code-desc"><b>Konstruktor:</b> Wywoływany podczas tworzenia obiektu. Parametr
+                            <b>lr (Learning Rate, współczynnik uczenia)</b> określa wielkość korekty podjętej
+                            podczas błędu klasyfikacji, natomiast <b>epochs</b> (epoki) odpowiada za liczbę pełnych
+                            przejść przez zbiór danych treningowych.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Konfigurujemy maszynę startową. Ustalamy,
+                                jak wielkie kroki ma stawiać podczas poprawiania swoich błędów (lr) i ile razy ma
+                                przeczytać całą księgę z danymi treningowymi od deski do deski (epoki).</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header"> <span class="keyword">self</span>.w = np.random.uniform(<span
+                                class="number">-0.5</span>, <span class="number">0.5</span>, <span
+                                class="number">3</span>)
+                        </div>
+                        <div class="code-desc"><b>Inicjalizacja wag:</b> Tworzymy wektor trzech wag, losując
+                            wartości z przedziału od -0.5 do 0.5. Pozycja <code>self.w[0]</code> reprezentuje tzw.
+                            <b>bias</b>, przesunięcie funkcji ułatwiające generalizację z modelem liniowym.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Ponieważ neuron nie umie na początku
+                                niczego, przydzielamy mu losowe liczby do sprawdzania ważności danych wejściowych.
+                                Bias to stały próg startowy, od którego zaczynamy kalkulacje.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anim-box">
+                    <div class="rand-weights">
+                        <div class="w-cube">W0</div>
+                        <div class="w-cube">W1</div>
+                        <div class="w-cube">W2</div>
+                    </div>
+                    <p class="anim-desc">Trzy wylosowane wartości początkowe (w tym bias W0), które w trakcie nauki
+                        ulegną odpowiedniej korekcie.</p>
+                </div>
+
+                <button class="btn btn-primary next-btn">DALEJ ➔</button>
+            </section>
+
+            <section id="sec-3" class="content-section fade-in">
+
+
+
+                <h1>Proces predykcji <br><span>(predict)</span></h1>
+                <p>Funkcja decyzyjna neuronu działa w oparciu o iloczyn skalarny wektora sygnałów oraz wektora wag.
+                </p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header"> <span class="keyword">def</span> <span
+                                class="function">predict</span>(self,
+                            x):<br> x = np.concatenate(([<span class="number">1</span>], x))</div>
+                        <div class="code-desc"><b>Doklejenie jedynki dla biasu:</b> Dodajemy wartość równą `1` na
+                            początek wektora wejściowego układu. Przeprowadzamy ten zabieg matematyczny, aby
+                            operacja mnożenia pierwszego elementu przez wagę W0 zawsze zwracała czystą i
+                            niezmanipulowaną wartość przesunięcia (Biasu).
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Pierwsza waga (bias) potrzebuje partnera do
+                                mnożenia, aby program się nie wyłożył. Doklejamy wirtualną jedynkę do danych
+                                wejściowych, by wynik mnożenia z biasem pozostał bez zmian.</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header"> s = np.dot(<span class="keyword">self</span>.w, x)</div>
+                        <div class="code-desc"><b>Iloczyn skalarny:</b> Używamy funkcji NumPy `dot`. Funkcja oblicza
+                            sumę iloczynów poszczególnych zmiennych wejściowych (np:
+                            <code>S = W0*1 + W1*x1 + W2*x2</code>). Zmienna <b>s</b> wyznacza łączny
+                            <i>potencjał</i> wygenerowany przez perceptron.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Tu dzieje się matematyczna magia pod spodem.
+                                Mnożymy wszystkie dane przez ich ważność i dodajemy to wszystko do jednego wielkiego
+                                wiadra. Wynik to ogólna siła przekonania naszego modelu.</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header"> <span class="keyword">return</span> <span class="number">1</span>
+                            <span class="keyword">if</span> s >= <span class="number">0</span> <span
+                                class="keyword">else</span>
+                            <span class="number">0</span>
+                        </div>
+                        <div class="code-desc"><b>Funkcja krokowa:</b> Ostateczna kwalifikacja sygnału. Jeśli
+                            zgromadzony potencjał 's' osiągnie co najmniej pułap zera, funkcja oddaje wartość 1
+                            (klasa z aktywacją). Poniżej zera zwracane jest 0.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Surowy wyrok. Jeśli siła przekonania wyszła
+                                na plusie lub wynosi zero, odsyłamy "1" (czyli sukces, aktywacja). Jeśli wartość
+                                wyszła ujemna, zamykamy obwód i odsyłamy "0".</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anim-box">
+                    <div class="step-anim">
+                        <div class="step-bar-bg">
+                            <div class="step-bar-fill"></div>
+                        </div>
+                        <div class="step-result step-res-1">Przekroczenie progu: 1</div>
+                    </div>
+                    <p class="anim-desc">Potencjał sumy w tym wzorcu rośnie do momentu przekroczenia wartości
+                        zerowej, zwracając ostateczną aktywację binarną.</p>
+                </div>
+
+
+            </section>
+
+            <section id="sec-4" class="content-section fade-in">
+
+
+
+                <h1>Trening Klasyfikatora <br><span>(fit)</span></h1>
+                <p>Aby wagi dostosowały się do rzeczywistego środowiska zadania, inicjujemy pętlę uczenia
+                    nadzorowanego.</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header"> <span class="keyword">def</span> <span
+                                class="function">fit</span>(self, X,
+                            y):<br> <span class="keyword">for</span> _
+                            <span class="keyword">in</span> <span class="built_in">range</span>(<span
+                                class="keyword">self</span>.epochs):<br> errors = <span class="number">0</span>
+                        </div>
+                        <div class="code-desc">W wywołaniu podajemy macierz cech próbek w parametrze (X) oraz
+                            historyczne prawidłowe etykiety próbki (y). Sieć powtórzy wyliczanie wielokrotnie
+                            poprzez iterację ustaloną w liczbie podanej jako `epochs`. W tej samej przestrzeni
+                            zerowany jest także wskaźnik kumulacji błędów dla aktualnie przetwarzanej epoki uczenia.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Uruchamiamy tryb nauki na błędach.
+                                Przekazujemy modelowi zadania (X) i od razu odpowiedzi do nich (y). Nakazujemy mu
+                                rozwiązać ten sam zestaw zadań wielokrotnie, na początku każdej tury resetując
+                                licznik potknięć do zera.</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header"> <span class="keyword">for</span> x, yd <span class="keyword">in</span>
+                            <span class="built_in">zip</span>(X, y):<br> x_ext =
+                            np.concatenate(([<span class="number">1</span>], x))<br> y_pred = <span
+                                class="keyword">self</span>.predict(x)</div>
+                        <div class="code-desc">Wewnętrzna pętla odczytuje każdy przypadek X z zestawienia, w tym
+                            samym momencie wyciągając etykietę idealną przyciskiem <code>zip()</code> do zmiennej
+                            <code>yd</code> (desired). Perceptron odczytuje dany zbiór zmiennych wejściowych do
+                            <code>y_pred</code> używając uprzednio utworzonej metody `predict()`.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Wyciągamy z worka po jednym konkretnym
+                                zadaniu na raz i jedną poprawną do niego odpowiedź. Model analizuje zadanie swoimi
+                                wylosowanymi wagami i wypluwa zgadywankę (swój przewidziany wynik).</div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </section>
+
+            <section id="sec-5" class="content-section fade-in">
+
+
+
+                <h1>Kalkulacja Błędu <br><span>(Reguła uczenia)</span></h1>
+                <p>Implementacja fundamentalnej zasady różnicowej na bazie korekt Hebbianowskich z logiką
+                    modyfikacji wag w zależności od popełnionego błędu klasyfikacji.</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header"> error = yd - y_pred</div>
+                        <div class="code-desc"><b>Obliczenie Straty:</b> Otrzymana formuła to odejmowanie etykiety
+                            przewidzianej od tej poprawnej. Kiedy wartość oczekiwanej aktywacji to (1), a sieć
+                            mylnie zwróciła (0), mamy różnicę <b>1</b>. Brak aktywacji gdzie w teorii miała zajść
+                            zwiastuje błąd <b>-1</b>. Jeśli predykcje się zgadzają wartość błędu sprowadza się do
+                            <b>0</b>.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Sprawdzamy klucz odpowiedzi. Odejmujemy
+                                wynik modelu od prawdziwej odpowiedzi z arkusza. Jeśli model trafił, różnica to
+                                zero. Jeśli przestrzelił lub zaniżył wynik, błąd to plus jeden albo minus jeden. To
+                                jednoznaczny drogowskaz dla matematyki.</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header"> <span class="keyword">self</span>.w += <span
+                                class="keyword">self</span>.lr *
+                            error * x_ext</div>
+                        <div class="code-desc"><b>Aktualizacja Wagi:</b> Wektor wag modyfikujemy przy pomocy
+                            współczynnika ułatwiającego stabilność zbiegania (Learning Rate) przemnożonego przez
+                            uprzednio obliczony błąd oraz sam wektor parametrów z przestrzeni próbki. Sieć
+                            dynamicznie przybliża granicę do obszaru optymalnego podziału.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Tutaj obwód dokonuje nauki. Mając błąd,
+                                model używa go jako siły pociągowej, dodaje do swoich obecnych wag mały ułamek (krok
+                                nauki) powiązany z popełnioną pomyłką. Linie cięcia na wykresie przesuwają się
+                                minimalnie na odpowiednie miejsce.</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header"> errors += <span class="built_in">abs</span>(error)<br> <span
+                                class="keyword">if</span> errors == <span class="number">0</span>:<br> <span
+                                class="keyword">break</span></div>
+                        <div class="code-desc">Sumujemy odnotowane błędy. Zastosowane zdanie logiczne na pętlę
+                            zatrzyma iterację funkcji `fit` przedwcześnie w sytuacji osiągnięcia zerowej tolerancji
+                            błędu przez perceptron we wszystkie podane testy. Używana jest komenda
+                            <code>break</code>.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Śledzimy, ile w ogóle było błędów w całym
+                                przejściu przez dokumentację. Jeśli sieć ani razu się nie pomyliła, przerywamy naukę
+                                natychmiast, żeby zaoszczędzić zasoby procesora, model uznał się za przygotowanego.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anim-box">
+                    <div class="update-anim">
+                        <span class="w-old">W: 0.12</span> ➔ <span class="w-new">W: 0.52 !</span>
+                    </div>
+                    <p class="anim-desc">Błąd predykcyjny spowodował modyfikację pierwotnego ułamka przestrzeni
+                        liniowej aby obniżyć lub zwiększyć istotność parametru sieci.</p>
+                </div>
+
+
+            </section>
+
+            <section id="sec-6" class="content-section fade-in">
+
+
+
+                <h1>Ewaluacja Dokładności <br><span>(evaluate)</span></h1>
+                <p>W celu weryfikacji rzetelności wytrenowanego wcześniej systemu decyzyjnego, podajemy nową próbę
+                    danych ewaluacyjnych bez dostarczania możliwości modyfikacji wag.</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header"> <span class="keyword">def</span> <span
+                                class="function">evaluate</span>(self,
+                            X, y):<br> correct = <span class="number">0</span><br> <span class="keyword">for</span> x,
+                            yd <span class="keyword">in</span> <span class="built_in">zip</span>(X,y):</div>
+                        <div class="code-desc">Funkcja odwołująca się do ewaluacji post-procesowej na nowej próbie
+                            `X` wraz z kluczami kontrolnymi `yd`. Ustawiamy bazową pulę wskaźników
+                            <code>correct</code> na zero. Zmienne w perceptronie (self.w) już się nie zmieniają,
+                            ponieważ ominięto polecenia aktualizacji wag obecne wcześniej.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Czas na egzamin końcowy. Pokazujemy
+                                programowi nowe przykłady, których nigdy w życiu nie widział. Tym razem blokujemy mu
+                                możliwość poprawiania błędów i włączamy tryb czystego śledzenia poprawnych trafień.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header"> y_pred = <span class="keyword">self</span>.predict(x)<br> <span
+                                class="keyword">if</span> y_pred == yd:<br> correct += <span class="number">1</span><br>
+                            <span class="built_in">print</span>(f<span class="string">"Dokładność:
+                                {correct}/{len(y)}"</span>)
+                        </div>
+                        <div class="code-desc">Sieciowy algorytm wyprowadza binarną asercję z użyciem metody
+                            `predict`. Kod potwierdza zgodność przez `==` podbijając pole pomyślności. Funkcja
+                            <code>len()</code> przelicza liczbę próbek, aby wygenerować wskaźnik ostatecznej
+                            pewności ewaluacji na strumień wskaźników procentowych (miara `Accuracy`).
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Każda trafiona zgadywanka modelu dodaje
+                                jeden punkt do puli nagród. Na sam koniec dzielimy zdobyte punkty przez ilość
+                                wszystkich pytań, otrzymując chłodny wskaźnik jego skuteczności w formacie ułamkowym
+                                lub procentowym.</div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </section>
+
+
+            <div class="viz-container scale-in"
+                style="background:#111; padding:30px; border-radius:8px; border:1px solid #333; margin:40px 0;">
+                <div class="viz-title" style="color:#fff; font-size:18px; margin-bottom:15px; font-weight:bold;">📈
+                    Interaktywna
+                    Granica Decyzyjna (Perceptron)</div>
+                <p style="color:#aaa; font-size:14px; margin-bottom:20px;">Dopasuj wagi (W1, W2) i Bias, aby linia
+                    oddzieliła
+                    czerwone punkty od niebieskich.</p>
+                <div class="controls" style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom: 20px;">
+                    <div class="control-group">
+                        <label style="color:#61afef; font-size:12px; font-weight:bold;">Waga 1 (oś X): <span
+                                id="w1-val">1.0</span></label>
+                        <input type="range" id="w1-slider" min="-5" max="5" step="0.1" value="1.0" style="width:120px;">
+                    </div>
+                    <div class="control-group">
+                        <label style="color:#61afef; font-size:12px; font-weight:bold;">Waga 2 (oś Y): <span
+                                id="w2-val">-1.0</span></label>
+                        <input type="range" id="w2-slider" min="-5" max="5" step="0.1" value="-1.0"
+                            style="width:120px;">
+                    </div>
+                    <div class="control-group">
+                        <label style="color:#c678dd; font-size:12px; font-weight:bold;">Bias: <span
+                                id="b-val">0.0</span></label>
+                        <input type="range" id="b-slider" min="-10" max="10" step="0.5" value="0.0"
+                            style="width:120px;">
+                    </div>
+                </div>
+                <div
+                    style="position:relative; height: 350px; width: 100%; max-width: 500px; margin:0 auto; background:#fff; border-radius:4px;">
+                    <canvas id="decisionBoundaryChart"></canvas>
+                </div>
+            </div>
+
+            <section id="sec-7" class="content-section fade-in">
+
+
+
+                <h1>Problemy Modelu Liniowego <br><span>(Bramka XOR)</span></h1>
+                <p>Za pomocą perceptronu da się wymodelować bramki matematyczne z klasycznymi granicami cięcia
+                    (takie jak AND czy OR). Prawdziwym problemem dla prostej funkcji stała się nieresponsywność na
+                    bramkę Alternatywy Wykluczającej XOR.</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header">X_xor = np.array([[<span class="number">0</span>,<span
+                                class="number">0</span>], [<span class="number">0</span>,<span class="number">1</span>],
+                            [<span class="number">1</span>,<span class="number">0</span>], [<span
+                                class="number">1</span>,<span class="number">1</span>]])<br>y_xor = np.array([<span
+                                class="number">0</span>,<span class="number">1</span>,<span
+                                class="number">1</span>,<span class="number">0</span>])</div>
+                        <div class="code-desc">Aktywacja w problemie XOR następuje tylko w obrębach wektorowych
+                            odwróconych par (1, 0) i (0, 1), jednak gaśnie podczas powtórzeń tych samych stanów.
+                            Architektura perceptronu zawiodła matematycznie, stąd powód stosowania sieci złożonej z
+                            rzędów i warstw perceptronów w architekturach MLP.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Problem XOR polega na tym, że poprawne
+                                odpowiedzi układają się po skosie (jak dwa rogi szachownicy). Jedna absolutnie
+                                prosta kreska perceptronu nie potrafi przeciąć planszy tak, aby złapać w swoją
+                                siatkę poprawne punkty, omijając pozostałe. To ściana nie do przebicia dla tego
+                                konkretnego algorytmu.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anim-box">
+                    <div class="xor-grid-wrap">
+                        <div class="xor-p x-00">0</div>
+                        <div class="xor-p x-11">0</div>
+                        <div class="xor-p x-01">1</div>
+                        <div class="xor-p x-10">1</div>
+                        <div class="xor-line"></div>
+                    </div>
+                    <p class="anim-desc">Bezpośrednia, osamotniona linia percepcyjna nie potrafi odpowiednio
+                        przeciąć koordynatów na macierzy wyrysowanych XOR aby pozycjonować prawidłowo odpowiednią
+                        klasę.</p>
+                </div>
+
+
+            </section>
+
+            <section id="sec-8" class="content-section fade-in">
+
+
+
+                <h1>Gotowe klasyfikatory <br><span>(Scikit-Learn)</span></h1>
+                <p>Środowiska analityczne posługują się obecnie zoptymalizowanymi rozwiązaniami bibliotecznymi jak
+                    np. Scikit-Learn. Pozwala to na przyspieszone badania algorytmu bez koniczności pisania
+                    architektury w pętli operacyjnej własnoręcznie dla każdego przypadku.</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header">X,y = <span class="function">make_classification</span>(n_samples=<span
+                                class="number">200</span>, n_informative=<span class="number">2</span>,
+                            random_state=<span class="number">42</span>)</div>
+                        <div class="code-desc">Funkcja z zakresu uczenia maszynowego pozwalająca wygenerować w pełni
+                            sztuczny zbiór danych o żądanej liczebności i wymiarowości wektorów wejściowych.
+                            Dołączany <code>random_state</code> wymusza wyliczenie powtarzalnej struktury układu.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Zamiast szukać prawdziwych pacjentów czy
+                                zbiorów danych w internecie, biblioteka sama wymyśla precyzyjne symulacje punktów
+                                dla naszego algorytmu. Parametr powtarzalności pilnuje, by generowane obiekty za
+                                każdym odpaleniem programu wyglądały tak samo i nie zaburzały naszych odczytów
+                                testowych.</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header">p_sk = <span class="class">SklearnPerceptron</span>(eta0=<span
+                                class="number">0.01</span>,
+                            max_iter=<span class="number">100</span>)</div>
+                        <div class="code-desc">Wyciągnięcie wprost dedykowanej biblioteki SklearnPerceptron
+                            odpowiadającej zdefiniowanym dotychczasowym zjawiskom programistycznym. W terminologii
+                            Scikit-Learn parametr wagi oznaczany jest mianem <code>eta0</code> dla stopnia
+                            zróżnicowania edukacyjnego sieci (`lr`) oraz argument <code>max_iter</code> stanowiący
+                            obudowę testową iteracji `epochs`.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Wykorzystujemy gotowy moduł, tworzony przez
+                                dziesiątki inżynierów przez wiele lat. Argumenty pod spodem robią dokładnie to samo,
+                                co pisaliśmy wcześniej ręcznie, ale całość zamyka się w jednej wysoce wydajnej
+                                linijce gotowej do użycia w przemyśle analitycznym.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anim-box">
+                    <div class="race-anim">
+                        <div class="race-track">
+                            <div class="runner r-my">Zbudowany Skrypt (Python): 19.0ms</div>
+                        </div>
+                        <div class="race-track">
+                            <div class="runner r-sk">Scikit-Learn (C++ Wrapper): 0.4ms</div>
+                        </div>
+                    </div>
+                    <p class="anim-desc">Zanotowana różnica czasu kompilacji dzięki ujęciu silnika matematycznego
+                        niższego poziomu na zasadzie interfejsu C powiązanego ze stosem Python.</p>
+                </div>
+
+
+            </section>
+
+            <section id="sec-9" class="content-section fade-in">
+
+
+
+                <h1>Eksperyment Diagnostyczny <br><span>(Confusion Matrix)</span></h1>
+                <p>Zaimportujemy złożony wielowymiarowy zbiór wariantów medycznych raka piersi i wytestujemy
+                    skuteczność zachowując wirtualną Macierz Błędu (Confusion Matrix).</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header"><span class="function">train_test_split</span>( ..., stratify=y)
+                            <br> clf = <span class="class">Perceptron</span>( ...,
+                            early_stopping=<span class="keyword">True</span>)
+                        </div>
+                        <div class="code-desc"><b>stratify=y:</b> Argument zabezpiecza poprawność balansu danych
+                            weryfikacyjnych wymuszając sprawiedliwe zachowanie procentowe w przypadku
+                            testu.<br><b>early_stopping:</b> Sieć wyposażono w zatrzymanie wyliczeń pętli, jeśli
+                            funkcja wyłapie symptomy stagnacji, uchroni to sieć przed przeuczeniem (Overfit).
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Podzielenie danych medycznych musi być
+                                uczciwe, nie chcemy by w puli treningowej wylądowali przypadkiem sami zdrowi ludzie.
+                                Parametr startify rygorystycznie o to dba. Przerwanie uczenia to z kolei gwizdek
+                                bezpieczeństwa ucinający naukę, gdy badany model przestaje łapać pojęcie, aby
+                                zaniechać marnowania czasu kompilacji serwerów.</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header">cm = <span class="function">confusion_matrix</span>(y_test,
+                            y_pred_test)</div>
+                        <div class="code-desc">Podział skuteczności opartej dotychczasowo na proporcji "Accuracy"
+                            przełożony na zaawansowaną macierz 2x2, precyzującą, jakie typy błędów algorytm wywołuje
+                            najczęściej.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Sam fakt, że trafiliśmy w 90 procentach to
+                                za mało dla medycyny. Macierz dekonstruuje tę wartość i dokładnie oskarża model z
+                                jakich konkretnych pomyłek wynika brakujący ułamek sprawności testu.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anim-box" style="padding: 10px;">
+                    <div class="cm-mat">
+                        <div class="cm-c cm-ok">TP / Czułość <br>(Znalezione Pozytywne: 41)</div>
+                        <div class="cm-c cm-err" style="border-left: 1px solid #333;">FP / Błąd 1 Rodz.
+                            <br>(Podniesiony Alarm Błędny: 5)
+                        </div>
+                        <div class="cm-c cm-err cm-fn">FN / Błąd 2 Rodz. <br>(Ominięte zagrożenie: 1)</div>
+                        <div class="cm-c cm-ok" style="border-left: 1px solid #333;">TN / Specyficzność
+                            <br>(Prawidłowe zaprzeczenie: 67)
+                        </div>
+                    </div>
+                    <p class="anim-desc" style="margin-top: 15px !important;">Pole "FN" generuje w przypadku
+                        medycyny najbardziej dotkliwy błąd ze względu na odesłanie chorego pacjenta w
+                        przeświadczeniu pełnego zdrowia przez system.</p>
+                </div>
+
+
+            </section>
+
+            <section id="sec-10" class="content-section fade-in">
+
+
+
+                <h1>Interaktywny Model Perceptronu</h1>
+                <p>Zaimportowaliśmy gotowe historyczne wagi prosto z wytrenowanego skryptu Python na podstawie
+                    prostego testu warunków wyjścia na przejażdżkę rowerem.</p>
+
+                <div class="playground-wrap">
+                    <div class="bike-ui">
+                        <label class="switch-row">
+                            <input type="checkbox" id="bike-sun" checked>
+                            <div class="lbl-txt">Występowanie zjawiska słonecznego<br><small style="color:#aaa;">(Waga:
+                                    -0.0797)</small></div>
+                        </label>
+                        <label class="switch-row">
+                            <input type="checkbox" id="bike-time" checked>
+                            <div class="lbl-txt">Posiadanie wystarczającego czasu<br><small style="color:#aaa;">(Waga:
+                                    0.3138)</small>
+                            </div>
+                        </label>
+                        <label class="switch-row">
+                            <input type="checkbox" id="bike-ok">
+                            <div class="lbl-txt">Ogólna sprawność usterkowa maszyny<br><small style="color:#aaa;">(Waga:
+                                    0.2271)</small></div>
+                        </label>
+                    </div>
+                    <div class="code-desc"
+                        style="text-align:center; margin-top:15px; border-radius:4px; font-weight:bold;">
+                        Wzór Oceny = Bias (-0.4100) + Łączne parametry aktywnych cech W[n].</div>
+                    <div class="result-box no-go" id="bike-result"></div>
+                </div>
+
+
+            </section>
+
+
+            <section id="quiz" class="content-section fade-in">
+                <h2>Quiz końcowy</h2>
+                <div class="quiz-container" id="quiz-l1">
+                    <h3>🎓 Sprawdź swoją wiedzę</h3>
+                    <p class="text-muted mt-2">Pytania z modułu. Wybierz poprawną odpowiedź.</p>
+
+                    <div class="quiz-question">
+                        <p><strong>1.</strong> Przykładowe pytanie?</p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-correct="true">Poprawna odpowiedź</div>
+                            <div class="quiz-option" data-correct="false">Błędna odpowiedź</div>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <!-- W JS wygenerujemy więcej pytań z tablicy dla wygody -->
+            </section>
+        </main>
+    </div>
+
+
+    <footer class="site-footer">Wykonanie: Miłosz Prusinowski</footer>
+    <script src="script.js"></script>
+</body>
+
+</html>
