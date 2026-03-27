@@ -193,6 +193,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if(bSun) updateBike();
 
 
+    /* ===== CHART.JS GLOBAL DEFAULTS ===== */
+    if (window.Chart) {
+        Chart.defaults.color = 'rgba(255, 255, 255, 0.7)';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+        Chart.defaults.font.family = "'Inter', 'Segoe UI', sans-serif";
+        Chart.defaults.plugins.legend.labels.usePointStyle = true;
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        Chart.defaults.plugins.tooltip.titleColor = '#fff';
+        Chart.defaults.plugins.tooltip.bodyColor = '#ccc';
+        Chart.defaults.plugins.tooltip.cornerRadius = 4;
+        Chart.defaults.plugins.tooltip.padding = 10;
+    }
+
     /* ===== LEKCJA 1: INTERACTIVE BOUNDARY ===== */
     const dbCanvas = document.getElementById('decisionBoundaryChart');
     if(dbCanvas) {
@@ -234,16 +247,61 @@ document.addEventListener('DOMContentLoaded', () => {
                 type: 'scatter',
                 data: {
                     datasets: [
-                        { label: 'Klasa 0', data: pts.filter(p=>p.class===0), backgroundColor: '#e06c75', pointRadius:6 },
-                        { label: 'Klasa 1', data: pts.filter(p=>p.class===1), backgroundColor: '#61afef', pointRadius:6 },
-                        { label: 'Granica (-w1*X - b)/w2', data: lineData, type: 'line', borderColor: '#222', borderWidth: 2, fill: false, pointRadius:0}
+                        { 
+                            label: 'Klasa 0', 
+                            data: pts.filter(p=>p.class===0), 
+                            backgroundColor: '#e06c75', 
+                            pointRadius: 8,
+                            hoverRadius: 10,
+                            borderWidth: 2,
+                            borderColor: 'rgba(255,255,255,0.1)'
+                        },
+                        { 
+                            label: 'Klasa 1', 
+                            data: pts.filter(p=>p.class===1), 
+                            backgroundColor: '#61afef', 
+                            pointRadius: 8,
+                            hoverRadius: 10,
+                            borderWidth: 2,
+                            borderColor: 'rgba(255,255,255,0.1)'
+                        },
+                        { 
+                            label: 'Granica', 
+                            data: lineData, 
+                            type: 'line', 
+                            borderColor: '#fff', 
+                            borderWidth: 3, 
+                            borderDash: [5, 5],
+                            fill: false, 
+                            pointRadius: 0,
+                            tension: 0
+                        }
                     ]
                 },
                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
                     animation: false,
                     scales: {
-                        x: { min: 0, max: 5 },
-                        y: { min: 0, max: 5 }
+                        x: { 
+                            min: 0, max: 5,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            title: { display: true, text: 'Cecha X1', color: '#888' }
+                        },
+                        y: { 
+                            min: 0, max: 5,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            title: { display: true, text: 'Cecha X2', color: '#888' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                padding: 20,
+                                font: { size: 12 }
+                            }
+                        }
                     }
                 }
             });
@@ -267,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
         function drawActivation() {
             const funcType = sel.value;
             let dataPoints = [];
-            for(let x = -5; x <= 5; x+=0.5) {
+            for(let x = -5; x <= 5; x+=0.2) {
                 let y = 0;
                 if(funcType === 'relu') y = Math.max(0, x);
                 if(funcType === 'sigmoid') y = 1 / (1 + Math.exp(-x));
@@ -283,16 +341,32 @@ document.addEventListener('DOMContentLoaded', () => {
                         label: funcType.toUpperCase(),
                         data: dataPoints,
                         borderColor: '#c678dd',
-                        borderWidth: 3,
-                        pointRadius: 2,
-                        fill: false
+                        borderWidth: 4,
+                        pointRadius: 0,
+                        fill: true,
+                        backgroundColor: 'rgba(198, 120, 221, 0.1)',
+                        tension: 0.4
                     }]
                 },
                 options: {
-                    animation: { duration: 400 },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 600, easing: 'easeOutQuart' },
                     scales: {
-                        x: { min: -5, max: 5 },
-                        y: { min: funcType==='relu' ? -1 : -1.5, max: funcType==='relu' ? 5 : 1.5 }
+                        x: { 
+                            min: -5, max: 5,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            title: { display: true, text: 'Sygnał wejściowy (Z)', color: '#888' }
+                        },
+                        y: { 
+                            min: funcType==='relu' ? -1 : -1.5, 
+                            max: funcType==='relu' ? 5 : 1.5,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            title: { display: true, text: 'Aktywacja (A)', color: '#888' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
                     }
                 }
             });
