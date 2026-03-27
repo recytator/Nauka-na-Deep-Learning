@@ -29,12 +29,10 @@
                     <line x1="18" y1="13" x2="28" y2="16" stroke="currentColor" stroke-width="1" opacity="0.4" />
                     <line x1="18" y1="19" x2="28" y2="16" stroke="currentColor" stroke-width="1" opacity="0.4" />
                 </svg>
-                [ Deep Learning ]
+                [ Miły Deep Learning ]
             </a>
             <ul class="nav-links">
                 <li><a href="index.html" class="">Strona główna</a></li>
-                <li><a href="lekcja1.html" class="active">Klasyczny Perceptron</a></li>
-                <li><a href="lekcja2.html" class="">Sieć MLP</a></li>
             </ul>
         </div>
     </nav>
@@ -272,7 +270,8 @@
                         <div class="code-header"> <span class="keyword">for</span> x, yd <span class="keyword">in</span>
                             <span class="built_in">zip</span>(X, y):<br> x_ext =
                             np.concatenate(([<span class="number">1</span>], x))<br> y_pred = <span
-                                class="keyword">self</span>.predict(x)</div>
+                                class="keyword">self</span>.predict(x)
+                        </div>
                         <div class="code-desc">Wewnętrzna pętla odczytuje każdy przypadek X z zestawienia, w tym
                             samym momencie wyciągając etykietę idealną przyciskiem <code>zip()</code> do zmiennej
                             <code>yd</code> (desired). Perceptron odczytuje dany zbiór zmiennych wejściowych do
