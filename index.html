@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,17 +8,28 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <div class="bg-mesh"></div>
-    
+
     <nav class="site-nav">
         <div class="nav-inner">
             <a href="index.html" class="nav-logo" id="nav-logo">
                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Logo">
-                    <rect x="2" y="18" width="6" height="12" rx="1.5" fill="currentColor" opacity="0.3"/>
-                    <rect x="10" y="12" width="6" height="18" rx="1.5" fill="currentColor" opacity="0.5"/>
-                    <rect x="18" y="6" width="6" height="24" rx="1.5" fill="currentColor" opacity="0.7"/>
-                    <rect x="26" y="2" width="6" height="28" rx="1.5" fill="currentColor"/>
+                    <!-- Nodes -->
+                    <circle cx="8" cy="10" r="2.5" fill="currentColor" opacity="0.4" />
+                    <circle cx="8" cy="16" r="2.5" fill="currentColor" opacity="0.4" />
+                    <circle cx="8" cy="22" r="2.5" fill="currentColor" opacity="0.4" />
+                    <circle cx="18" cy="13" r="2.5" fill="currentColor" opacity="0.7" />
+                    <circle cx="18" cy="19" r="2.5" fill="currentColor" opacity="0.7" />
+                    <circle cx="28" cy="16" r="2.5" fill="currentColor" />
+                    <!-- Connections -->
+                    <line x1="8" y1="10" x2="18" y2="13" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                    <line x1="8" y1="16" x2="18" y2="13" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                    <line x1="8" y1="16" x2="18" y2="19" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                    <line x1="8" y1="22" x2="18" y2="19" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                    <line x1="18" y1="13" x2="28" y2="16" stroke="currentColor" stroke-width="1" opacity="0.4" />
+                    <line x1="18" y1="19" x2="28" y2="16" stroke="currentColor" stroke-width="1" opacity="0.4" />
                 </svg>
                 [ Deep Learning ]
             </a>
@@ -30,57 +42,70 @@
     </nav>
 
 
-<header class="hero glass-effect" style="max-width:900px; margin: 50px auto; padding: 60px 40px; text-align:center;">
-    <h1 class="main-title" style="margin-bottom: 20px;">Deep Learning i Sieci Neuronowe</h1>
-    <p style="color:#bbb; font-size:18px; margin-bottom: 40px; line-height:1.6;">Opanuj sztuczną inteligencję od podstaw. Od pojedynczego matematycznego neuronu, po głębokie sieci wielowarstwowe. Architektura krok po kroku z sekcją "Po ludzku".</p>
-    <a href="lekcja1.html" class="btn btn-primary" style="font-size: 16px; padding: 15px 30px;">Zacznij naukę ➔</a>
-</header>
+    <header class="hero glass-effect"
+        style="max-width:900px; margin: 50px auto; padding: 60px 40px; text-align:center;">
+        <h1 class="main-title" style="margin-bottom: 20px;">Deep Learning i Sieci Neuronowe</h1>
+        <p style="color:#bbb; font-size:18px; margin-bottom: 40px; line-height:1.6;">Opanuj sztuczną inteligencję od
+            podstaw. Od pojedynczego matematycznego neuronu, po głębokie sieci wielowarstwowe. Architektura krok po
+            kroku z sekcją "Po ludzku".</p>
+        <a href="lekcja1.html" class="btn btn-primary" style="font-size: 16px; padding: 15px 30px;">Zacznij naukę ➔</a>
+    </header>
 
-<div class="lessons-grid" style="max-width: 900px; margin: 0 auto; padding-bottom: 60px;">
-    <a href="lekcja1.html" class="lesson-card glass-effect">
-        <div class="lesson-number" style="background:#111; border:1px solid #61afef; color:#61afef;">01</div>
-        <h3>Klasyczny Perceptron</h3>
-        <p>Zrozumienie podstaw: architektura neuronu, reguła uczenia, operacje logiczne, klasyfikacja na zbiorze medycznym i interaktywny symulator decyzji.</p>
-        <div class="lesson-topics">
-            <span class="topic-tag">Matematyka</span>
-            <span class="topic-tag">Wagi i Bias</span>
-            <span class="topic-tag">Logika XOR</span>
-            <span class="topic-tag">Scikit-Learn</span>
-        </div>
-    </a>
-    
-    <a href="lekcja2.html" class="lesson-card glass-effect">
-        <div class="lesson-number" style="background:#111; border:1px solid #c678dd; color:#c678dd;">02</div>
-        <h3>Sieć MLP (Keras)</h3>
-        <p>Architektury wielowarstwowe (Dense), funkcje aktywacji ReLU i Softmax, optymalizator Adam oraz skalowanie danych z interaktywnymi wizualizacjami.</p>
-        <div class="lesson-topics">
-            <span class="topic-tag">Keras i TF</span>
-            <span class="topic-tag">Hidden Layers</span>
-            <span class="topic-tag">Softmax</span>
-            <span class="topic-tag">Propagacja Wsteczna</span>
-        </div>
-    </a>
-</div>
+    <div class="lessons-grid">
+        <a href="lekcja1.html" class="lesson-card glass-effect">
+            <div class="lesson-number" style="border-color: #61afef; color: #61afef;">01</div>
+            <h3>Klasyczny Perceptron</h3>
+            <p>Zrozumienie podstaw: architektura neuronu, reguła uczenia, operacje logiczne, klasyfikacja na zbiorze
+                medycznym i interaktywny symulator decyzji.</p>
+            <div class="lesson-topics">
+                <span class="topic-tag">Matematyka</span>
+                <span class="topic-tag">Wagi i Bias</span>
+                <span class="topic-tag">Logika XOR</span>
+                <span class="topic-tag">Scikit-Learn</span>
+            </div>
+        </a>
 
-<section style="max-width: 900px; margin: 0 auto 80px auto; text-align:center;">
-    <h2 style="font-size: 28px; margin-bottom: 30px; color:#fff;">Jak korzystać z kursu?</h2>
-    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-        <div class="glass-effect" style="padding:30px; margin-bottom:0;">
-            <h3 style="color:#e5c07b; margin-bottom: 10px;">1. Moduł "Po ludzku"</h3>
-            <p style="color:#aaa; font-size:14px;">Zawsze gdy matematyka staje się zawiła, szukaj bloków "Po ludzku", w których omawiamy trudne zagadnienia na prostych, życiowych przykładach.</p>
-        </div>
-        <div class="glass-effect" style="padding:30px; margin-bottom:0;">
-            <h3 style="color:#61afef; margin-bottom: 10px;">2. Interaktywne Wizualizacje</h3>
-            <p style="color:#aaa; font-size:14px;">Baw się suwakami i symulatorami. Zobaczysz na żywo, jak zmiana wag lub danych wejściowych wpływa na wynik sieci i decyzję klasyfikatora.</p>
-        </div>
-        <div class="glass-effect" style="padding:30px; margin-bottom:0;">
-            <h3 style="color:#98c379; margin-bottom: 10px;">3. Quizy</h3>
-            <p style="color:#aaa; font-size:14px;">Na końcu każdej lekcji rozwiąż quiz ewaluacyjny, aby utrwalić zdobytą wiedzę i zweryfikować zrozumienie materiału.</p>
-        </div>
+        <a href="lekcja2.html" class="lesson-card glass-effect">
+            <div class="lesson-number" style="border-color: #c678dd; color: #c678dd;">02</div>
+            <h3>Sieć MLP (Keras)</h3>
+            <p>Architektury wielowarstwowe (Dense), funkcje aktywacji ReLU i Softmax, optymalizator Adam oraz skalowanie
+                danych z interaktywnymi wizualizacjami.</p>
+            <div class="lesson-topics">
+                <span class="topic-tag">Keras i TF</span>
+                <span class="topic-tag">Hidden Layers</span>
+                <span class="topic-tag">Softmax</span>
+                <span class="topic-tag">Propagacja Wsteczna</span>
+            </div>
+        </a>
     </div>
-</section>
 
-    <footer class="site-footer">Wykonanie: Projekt Nauka na Deep Learning</footer>
+
+    <section class="how-to-use"
+        style="max-width: 1100px; margin: 0 auto 100px auto; text-align:center; padding: 0 20px;">
+        <h2 style="font-size: 32px; margin-bottom: 10px; color:#fff; font-weight: 800;">Jak korzystać z kursu?</h2>
+        <p style="color: #888; margin-bottom: 40px;">Prosty przewodnik po interaktywnych materiałach edukacyjnych</p>
+        <div class="how-to-use-grid">
+            <div class="how-to-use-card glass-effect">
+                <h3 style="color:#e5c07b;">1. Moduł "Po ludzku"</h3>
+                <p>Zawsze gdy matematyka staje się zawiła, szukaj bloków "Po ludzku", w których omawiamy trudne
+                    zagadnienia na prostych, życiowych przykładach.</p>
+            </div>
+            <div class="how-to-use-card glass-effect">
+                <h3 style="color:#61afef;">2. Interaktywne Wizualizacje</h3>
+                <p>Baw się suwakami i symulatorami. Zobaczysz na żywo, jak zmiana wag lub danych wejściowych wpływa na
+                    wynik sieci i decyzję klasyfikatora.</p>
+            </div>
+            <div class="how-to-use-card glass-effect">
+                <h3 style="color:#98c379;">3. Quizy</h3>
+                <p>Na końcu każdej lekcji rozwiąż quiz ewaluacyjny, aby utrwalić zdobytą wiedzę i zweryfikować
+                    zrozumienie materiału.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <footer class="site-footer">Wykonanie: Miłosz Prusinowski</footer>
     <script src="script.js"></script>
 </body>
+
 </html>
