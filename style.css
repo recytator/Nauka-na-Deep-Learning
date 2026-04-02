@@ -1606,6 +1606,96 @@ input[type=checkbox] {
     background: #ddd;
 }
 
+/* P9 Class vs Regression */
+.cr-compare { display: flex; gap: 40px; justify-content: center; width: 100%; margin-top:10px; }
+.cr-panel { display: flex; flex-direction: column; align-items: center; border: 1px solid #333; border-radius:8px; padding: 20px; width:45%; background: #111; position: relative; height: 180px; }
+.cr-title { font-size: 14px; font-weight: bold; color: #888; margin-bottom: 20px;}
+
+/* Classification Anim */
+.c-ball { width: 15px; height: 15px; background: #fff; border-radius: 50%; position: absolute; top: 50px; animation: cBounce 3s infinite ease-in-out; }
+.c-buckets { display: flex; gap: 20px; position: absolute; bottom: 20px; }
+.c-bucket { width: 40px; height: 30px; border: 2px solid; border-top: none; border-radius: 0 0 10px 10px; display: flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:bold; }
+
+@keyframes cBounce {
+   0% { top: 50px; left: 50%; transform: translateX(-50%); }
+   40% { top: 120px; left: 30%; transform: translateX(-50%); opacity: 1; }
+   50% { top: 120px; left: 30%; transform: translateX(-50%); opacity: 0; }
+   51% { top: 50px; left: 50%; transform: translateX(-50%); opacity: 0; }
+   60% { top: 50px; left: 50%; transform: translateX(-50%); opacity: 1; }
+   90% { top: 120px; left: 70%; transform: translateX(-50%); opacity: 1; }
+   100% { top: 120px; left: 70%; transform: translateX(-50%); opacity: 0; }
+}
+
+/* Regression Anim */
+.r-ball { width: 15px; height: 15px; background: #98c379; border-radius: 50%; position: absolute; left: 50%; transform:translateX(-50%); bottom: 20px; animation: rShoot 3s infinite ease-in-out; z-index:2;}
+.r-scale { border-left: 2px dashed #555; height: 100px; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 20px; }
+.r-scale::after { content: '94.2'; position: absolute; top: 10px; left: 15px; color: #98c379; font-size: 12px; font-family: monospace; font-weight:bold; opacity:0; animation: rText 3s infinite ease-in-out; }
+
+@keyframes rShoot {
+    0% { bottom: 20px; }
+    50% { bottom: 100px; }
+    100% { bottom: 20px; }
+}
+@keyframes rText {
+    0% { opacity: 0; }
+    40% { opacity: 0; }
+    50% { opacity: 1; }
+    60% { opacity: 0; }
+    100% { opacity: 0; }
+}
+
+/* P10 Loss Bar Chart */
+.loss-anim { display: flex; flex-direction: column; gap:15px; width: 300px; margin-top:20px; }
+.loss-row { display: flex; align-items: center; gap: 15px; }
+.loss-label { width: 50px; font-size: 12px; font-weight: bold; color: #888; text-align: right; }
+.loss-track { flex-grow: 1; height: 12px; background: #222; border-radius: 6px; position: relative; }
+.loss-bar { height: 100%; border-radius: 6px; }
+
+.bar-mae { background: #e5c07b; animation: maeGrow 4s infinite linear; }
+.bar-mse { background: #e06c75; animation: mseGrow 4s infinite ease-in; }
+.bar-hub { background: #61afef; animation: hubGrow 4s infinite ease-in-out; }
+
+@keyframes maeGrow { 0% { width: 0%; } 100% { width: 70%; } }
+@keyframes mseGrow { 0% { width: 0%; } 100% { width: 100%; background: #ff4040; box-shadow: 0 0 15px #ff4040; } }
+@keyframes hubGrow { 0% { width: 0%; } 100% { width: 60%; } }
+
+/* P11 tf.data Pipeline */
+.pipe-anim { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 20px 10px; }
+.pipe-stage { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.p-st-title { font-size: 11px; color:#888; text-transform:uppercase; font-weight:bold; }
+.p-st-box { width: 60px; height: 60px; border: 1px solid #333; background: #111; border-radius: 8px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;}
+.p-arrow { color: #555; font-size: 16px; font-weight: bold; }
+
+.d-item { width: 15px; height: 15px; position: absolute; border-radius:3px; }
+.i-red { background: #e06c75; }
+.i-blu { background: #61afef; }
+.i-grn { background: #98c379; }
+
+/* Raw Data */
+.raw-1 { top: 10px; left: 22px; }
+.raw-2 { top: 35px; left: 10px; }
+.raw-3 { top: 35px; left: 35px; }
+
+/* Shuffle - animate position swaps */
+.shuf-1 { animation: s1 2s infinite alternate ease-in-out; }
+.shuf-2 { animation: s2 2s infinite alternate ease-in-out; }
+.shuf-3 { animation: s3 2s infinite alternate ease-in-out; }
+
+@keyframes s1 { 0% { top: 10px; left: 22px; } 100% { top: 35px; left: 35px; } }
+@keyframes s2 { 0% { top: 35px; left: 10px; } 100% { top: 10px; left: 22px; } }
+@keyframes s3 { 0% { top: 35px; left: 35px; } 100% { top: 35px; left: 10px; } }
+
+/* Batch - items squeezed together */
+.bat-wrap { display: flex; gap: 2px; border: 1px dashed #e5c07b; padding: 2px; border-radius: 4px; animation: bPulse 2s infinite alternate; }
+.bat-wrap .d-item { position: relative; width: 12px; height: 12px; }
+@keyframes bPulse { from { border-color: transparent; } to { border-color: #e5c07b; } }
+
+/* Prefetch - shooting batch to GPU */
+.p-gpu { font-weight: bold; color: #c678dd; font-size: 16px; }
+.pref-batch { position: absolute; display: flex; gap:2px; left: -30px; animation: shootGPU 2s infinite linear; }
+.pref-batch .d-item { position: relative; width: 8px; height: 8px; }
+@keyframes shootGPU { 0% { left: -30px; opacity:1; } 80% { left: 40px; opacity:1; } 100% { left: 40px; opacity:0; } }
+
 @media (max-width: 1024px) {
     .nav-inner {
         padding: 0;

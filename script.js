@@ -47,6 +47,15 @@ document.addEventListener('DOMContentLoaded', () => {
         { q: "Funkcja np.argmax(probs, axis=1) służy do:", opts: [{t: "Wyciągnięcia z tabeli Softmax indeksu klasy o największej pewności (zwycięzcy)", c: true}, {t: "Podniesienia do maksymalnej potęgi każdej wartości", c: false}, {t: "Usunięcia danych", c: false}] }
     ];
 
+    // Baza pytań dla Lekcji 3
+    const questionsL3 = [
+        { q: "Którą funkcję aktywacji użylibyśmy w ostatniej warstwie w problemie Regresji?", opts: [{t: "Nie używalibyśmy żadnej (zwykle Linear/None), bo zniekształciłoby to naszą liczbę predykcji", c: true}, {t: "Softmax, aby rozrzucić prawodpodobieństwa do równego 100 procentowego stopnia.", c: false}, {t: "Trzeba używać zawsze ReLU na wyjściach.", c: false}] },
+        { q: "Co jest kluczową zaletą zdefiniowanej funkcji błędów: Huber Loss?", opts: [{t: "To, że najszybciej się zlicza na GPU o słabych statystykach.", c: false}, {t: "Odwzorowuje idealny logarytm.", c: false}, {t: "Łączy spadek bezwzględny z kwadratowym odcięciem przez wariacyjne wygłuszanie szumów od silnych wartości odstających w zbiorze danych.", c: true}] },
+        { q: "W jakim celu uruchamiane jest narzędzie tf.data.Dataset w Tensorflow?", opts: [{t: "Zwiększa rozmiar obwodu Dense tworząc więcej przestrzeni uczenia", c: false}, {t: "Tworzy asynchroniczne porcjowanie danych i ich ładowanie w locie skracające spowalniające wąskie gardła w sprzęcie na ram k. graficznej.", c: true}, {t: "Wyręcza kod w generowaniu klas na Softmax.", c: false}] },
+        { q: "Do czego odnosi się polecenie '.shuffle()' w klasie Data Dataset?", opts: [{t: "Podrzuca dane wejściowe by sieć uczyła się na wzorcach, a nie na zablokowanej kolejności i rytmie zgadywanek", c: true}, {t: "Skaluje je wymiarem 1 do zera usuwając braki.", c: false}, {t: "Wymazuje wszystkie dane poza zakresem Delta.", c: false}] },
+        { q: "Co ułatwia korzystanie z tzw. Class Subclassing API (dziedziczenie) w kodzie Model Keras z definicją __init__ w architekturach sieci MLP?", opts: [{t: "Wprowadza ograniczenie używania klas TensorFlow wykluczając ewentualne zawieszenie modelu przed jego zakończeniem.", c: false}, {t: "Kod nie staje się przez to szybszy, funkcja istnieje tylko w imię optymalizowania pliku kodu bez uzytku dla inżynierów", c: false}, {t: "Obudowywuje układy w szczelną klasę, ułatwia debugowanie skomplikowanych rozgałęzień (np skip connections).", c: true}] }
+    ];
+
     function renderQuiz(container, questions) {
         if(!container) return;
         // Wyczyśćmy istniejący kod w HTML quizu
@@ -106,6 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const qL2 = document.getElementById('quiz-l2');
     if(qL2) renderQuiz(qL2, questionsL2);
+
+    const qL3 = document.getElementById('quiz-l3');
+    if(qL3) renderQuiz(qL3, questionsL3);
 
 
     /* ===== MLP LOGIC (ARGMAX & SOFTMAX) ===== */
@@ -374,5 +386,110 @@ document.addEventListener('DOMContentLoaded', () => {
 
         sel.addEventListener('change', drawActivation);
         drawActivation();
+    }
+
+    /* ===== LEKCJA 3: REGRESSION METRICS CHART ===== */
+    const regCanvas = document.getElementById('regressionChart');
+    if(regCanvas) {
+        const ctx3 = regCanvas.getContext('2d');
+        let regChart;
+
+        // Wygenerujemy zbiór sztucznych punktów danych laboratoryjnych
+        // np. X: 1..10, Y = ~2.5*X + 5 + noise
+        const scatterPts = [];
+        for(let i=0; i<40; i++) {
+            let x = Math.random() * 10;
+            let noise = (Math.random() - 0.5) * 8; // szum od -4 do 4
+            scatterPts.push({ x: x, y: (2.5 * x + 5) + noise });
+        }
+
+        const rwSlider = document.getElementById('reg-w-slider');
+        const rbSlider = document.getElementById('reg-b-slider');
+        const txtMSE = document.getElementById('metric-mse');
+        const txtMAE = document.getElementById('metric-mae');
+        const txtW = document.getElementById('reg-w-val');
+        const txtB = document.getElementById('reg-b-val');
+
+        function drawRegressionLine() {
+            if(!rwSlider || !rbSlider) return;
+
+            const w = parseFloat(rwSlider.value);
+            const b = parseFloat(rbSlider.value);
+
+            txtW.innerText = w.toFixed(1);
+            txtB.innerText = b.toFixed(1);
+
+            let linePoints = [
+                { x: 0, y: (w * 0) + b },
+                { x: 10, y: (w * 10) + b }
+            ];
+
+            // Calculate Metrics
+            let sum_se = 0;
+            let sum_ae = 0;
+            scatterPts.forEach(pt => {
+                let pred = (w * pt.x) + b;
+                let error = pt.y - pred;
+                sum_se += error * error;
+                sum_ae += Math.abs(error);
+            });
+            let mse = sum_se / scatterPts.length;
+            let mae = sum_ae / scatterPts.length;
+
+            txtMSE.innerText = mse.toFixed(2);
+            txtMAE.innerText = mae.toFixed(2);
+
+            if(regChart) regChart.destroy();
+
+            regChart = new Chart(ctx3, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Punkty laboratoryjne (True Y)',
+                            data: scatterPts,
+                            backgroundColor: '#61afef',
+                            pointRadius: 5,
+                            hoverRadius: 8,
+                            borderColor: 'rgba(255,255,255,0.05)',
+                        },
+                        {
+                            label: 'Regresja Modelu (Pred Y)',
+                            data: linePoints,
+                            type: 'line',
+                            borderColor: '#e06c75',
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            fill: false,
+                            tension: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    scales: {
+                        x: { 
+                            min: 0, max: 10,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            title: { display: true, text: 'Zmienna Niezależna X', color: '#888' }
+                        },
+                        y: { 
+                            min: 0, max: 40,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            title: { display: true, text: 'Zmienna Zależna Y', color: '#888' }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top' }
+                    }
+                }
+            });
+        }
+
+        rwSlider.addEventListener('input', drawRegressionLine);
+        rbSlider.addEventListener('input', drawRegressionLine);
+        drawRegressionLine();
     }
 });

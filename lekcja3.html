@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modele Regresyjne - MLP</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="bg-mesh"></div>
+
+    <nav class="site-nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo" id="nav-logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Logo">
+                    <circle cx="8" cy="10" r="2.5" fill="currentColor" opacity="0.4" />
+                    <circle cx="8" cy="16" r="2.5" fill="currentColor" opacity="0.4" />
+                    <circle cx="8" cy="22" r="2.5" fill="currentColor" opacity="0.4" />
+                    <circle cx="18" cy="13" r="2.5" fill="currentColor" opacity="0.7" />
+                    <circle cx="18" cy="19" r="2.5" fill="currentColor" opacity="0.7" />
+                    <circle cx="28" cy="16" r="2.5" fill="currentColor" />
+                    <line x1="8" y1="10" x2="18" y2="13" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                    <line x1="8" y1="16" x2="18" y2="13" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                    <line x1="8" y1="16" x2="18" y2="19" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                    <line x1="8" y1="22" x2="18" y2="19" stroke="currentColor" stroke-width="1" opacity="0.2" />
+                    <line x1="18" y1="13" x2="28" y2="16" stroke="currentColor" stroke-width="1" opacity="0.4" />
+                    <line x1="18" y1="19" x2="28" y2="16" stroke="currentColor" stroke-width="1" opacity="0.4" />
+                </svg>
+                [ Miły Deep Learning ]
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="">Strona główna</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="lesson-hero">
+        <div class="lesson-hero-content">
+            <h1>Regresja w Sieciach Neuronowych</h1>
+        </div>
+    </header>
+
+    <div class="lesson-layout">
+
+        <aside class="lesson-sidebar">
+            <div class="toc-wrapper">
+                <div class="toc-title">Spis treści</div>
+                <ol class="toc-list">
+                    <li><a href="#sec-1">1. Regresja a Klasyfikacja</a></li>
+                    <li><a href="#sec-2">2. Przygotowanie danych (Pandas)</a></li>
+                    <li><a href="#sec-3">3. Architektura sieci do regresji</a></li>
+                    <li><a href="#sec-4">4. Funkcje Strat i Metryki</a></li>
+                    <li><a href="#sec-5">5. Optymalizacja I/O: tf.data.Dataset</a></li>
+                    <li><a href="#sec-6">6. Architektura Obiektowa (OOP)</a></li>
+                    <li><a href="#sec-7">7. Interaktywna Wizualizacja Straty</a></li>
+                    <li><a href="#quiz">Quiz końcowy</a></li>
+                </ol>
+            </div>
+        </aside>
+
+        <main class="lesson-content">
+
+            <section id="sec-1" class="content-section fade-in">
+                <h1>Regresja <br><span>a Klasyfikacja</span></h1>
+                <p>Dotychczasowe sieci (takie jak perceptron) służyły do rozwiązywania problemu <b>Klasyfikacji</b> (np. chory/zdrowy, rodzaj gatunku kwiata). <b>Regresja</b> natomiast polega na przewidywaniu ciągłej wartości liczbowej (np. ceny domu, poziomu lepkości substancji w laboratorium, temperatury).</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header">Kluczowe różnice układów sztucznych sieci</div>
+                        <div class="code-desc">W regresji, ostatnia warstwa sieci nie decyduje do którego "worka" wrzucić dane. Jej zdaniem jest zwrócenie konkretnej, oszacowanej liczby w wyjściu układu wprost ze wskaźnika.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Klasyfikacja to odpowiadanie na pytanie wyboru (np. "Czy to kot czy pies?"). Regresja to zgadywanie surowej kwoty ("Ile litrów farby trzeba kupić?"). Nie ma tu prawdopodobieństw. Zamiast ograniczać wyjście suwakiem od zera do jedynki, wyrzucamy taką liczbę, jaka po prostu wyszła komputerowi z równania.</div>
+                        </div>
+                    </div>
+                </div>
+
+            <div class="anim-box scale-in">
+                <div class="cr-compare">
+                    <div class="cr-panel">
+                        <div class="cr-title">Klasyfikacja (np. Gatunek)</div>
+                        <div class="c-ball"></div>
+                        <div class="c-buckets">
+                            <div class="c-bucket" style="border-color: #61afef; color:#61afef">KOSZ A</div>
+                            <div class="c-bucket" style="border-color: #e06c75; color:#e06c75">KOSZ B</div>
+                        </div>
+                    </div>
+                    <div class="cr-panel">
+                        <div class="cr-title">Regresja (np. Temperatura)</div>
+                        <div class="r-scale"></div>
+                        <div class="r-ball"></div>
+                    </div>
+                </div>
+                <p class="anim-desc">W klasyfikacji ograniczamy wektor opadania wyniku do jednego konkretnego "worka". W regresji miarka jest płynną linią zmiennoprzecinkową i nieskończoną szalą przewidywań.</p>
+            </div>
+            </section>
+
+
+            <section id="sec-2" class="content-section fade-in">
+                <h1>Przygotowanie danych <br><span>(Pandas)</span></h1>
+                <p>Przed wykonaniem predykcji, zbiory z aparatury laboratoryjnej (lub plików Excel) zazwyczaj wymagają solidnej interwencji transformacyjnej.</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header">data['column'] = data['column'].<span class="function">str.replace</span>(',', '.').<span class="function">astype</span>(float)</div>
+                        <div class="code-desc">Częstym problemem zestawów (szczególnie polskich programów badawczych) jest stosowanie po formatowaniu CSV przecinków jako separatora dziesiętnego wyplutego tekstu. Ponieważ Python wymusza składnię amerykańską, używamy biblioteki Pandas żeby pozamieniać rzędami ułamki i następnie rzucać stringi jako oficjalne klasy liczbowe float.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Python dostaje białej gorączki, jeśli próbujesz dodawać wyrazy tekstowe z przecinkami zamiast cyfr. Metoda `str.replace` działa tu jak narzędzie "Znajdź i zamień" w Wordzie, przygotowując plik żeby nie wybuchł kalkulator matematyczny uczenia maszynowego.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sec-3" class="content-section fade-in">
+                <h1>Architektura sieci <br><span>do regresji</span></h1>
+                <p>Aby przystosować uklad MLP obecny w bibliotece TensorFlow Keras, zmieniamy konstrukcję ostatniej warstwy układu (tzw. Top Headu).</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header">warstwa_wyjsciowa = tf.keras.layers.<span class="class">Dense</span>(<span class="number">1</span>)(warstwa_ukryta)</div>
+                        <div class="code-desc">Dla problemu regresyjnego na ogół oczekuje się tylko jednego, nieograniczonego oszacowania. W odróżnieniu od klasyfikacji gatunków (z funkcją 'Softmax') nie deklarujemy polecenia <span class="keyword">activation</span> lub jawnie wskazujemy <code>activation=None</code> zapewniając surowy przepływ prądu ("Linear Activation").
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Wyrzucamy filtr z ostatniej bramki. Jeśli matematyka w środku po wymnożeniu wypuści liczbę 421.5, to dokładnie taką liczbę chcemy zobaczyć na samym końcu przewodu bez odkształceń. Gdybyśmy użyli tutaj filtru Softmax lub step, obciąłby on ten wysiłek procesora do nielogicznej jedynki!</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sec-4" class="content-section fade-in">
+                <h1>Funkcje Strat <br><span>i Metryki Regresyjne</span></h1>
+                <p>Jako model pozbawiony dystrybucji prawdopodobieństw, metryka oceniająca (np. Accuracy) musiałaby idealnie ustrzelić nieskończony ciąg liczb zmiennoprzecinkowych by uznać trafienie. Rezygnuje się więc z procentów trafień badając marginesy odchyłu oszacowań za pomocą dedykowanych rozwiązań.</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header"><span class="function">mse</span> i <span class="function">mae</span> (Mean Absolute Error)</div>
+                        <div class="code-desc">MSE liczy kwadraty błędów, bardzo mocno karząc sieć za ogromne pomyłki wychyleniowe modelu. MAE bada po prostu średnią bezwzględnych strat od osi (czyli średnie pudło wyrażone w punktach naturalnych wprost z tabeli wartości np. litrach czy stopniach Celsjusza po usunięciu stref na minusie).
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Skoro musisz zgadnąć odległość, nie wskażemy czy przegrałeś w 100%. Mówimy Ci raczej: "twoja zgadywanka średnio pomyliła się o 2 metry od celu" (MAE). Oraz: "jeden strzał kompletnie pojechał poza tarcze, polecimy mocno karą wymiarową na siatkę kwadratową" (MSE).</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header">loss = tf.keras.losses.<span class="class">Huber</span>(delta=<span class="number">1.0</span>)</div>
+                        <div class="code-desc">Huber to rewolucyjny kompromis funkcji straty. Łączy zalety układu upewniającego się co do odległości kwadratowych mniejszych luk z precyzją wyciągania liniowego. Główną zaletą jej strukturalizacji wewnątrz Keras jest olbrzymia redukcja wpływu anomalii środowiskowych ("Outliers") ze stopniem granicznym "delta".
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Huber to sprytny nauczyciel. Normalnym błędowym chybieniom daje łagodne pole kwadratowe dla szukającego algorytmu by płynnie osiadł w zagłębieniu. Jednak dostrzegając kompletnie odklejoną wartość w zbiorze laboratoryjnym, obcina straty do prostych składowych - program nie wpada w wariację od odchylenia błędu sprzętowego czujnika.</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header">metrics = [ tf.keras.metrics.<span class="class">R2Score</span>(name=<span class="string">"r2"</span>) ]</div>
+                        <div class="code-desc">Miara statystyczna R-kwadrat. Wyznacza jakość w jakiej rozłożenie proporcji zmiennych wariacyjnych modelu tłumaczą powiązanie bazy danych z modelem. Wartość wynosząca idealną (1.0) oznaczałaby doskonałość modelu w odgadującą przewidywalność zaleceń regresyjnych bez naruszeń odchyleń.
+                        </div>
+                    </div>
+                </div>
+
+            <div class="anim-box scale-in">
+                <div style="font-size: 13px; color:#aaa; font-weight:bold; margin-bottom: 5px;">Wyjście pomyłki dla ogromnego błędu ze zbioru (Outlier)</div>
+                <div class="loss-anim">
+                    <div class="loss-row">
+                        <div class="loss-label">MAE</div>
+                        <div class="loss-track"><div class="loss-bar bar-mae"></div></div>
+                    </div>
+                    <div class="loss-row">
+                        <div class="loss-label">HUBER</div>
+                        <div class="loss-track"><div class="loss-bar bar-hub"></div></div>
+                    </div>
+                    <div class="loss-row">
+                        <div class="loss-label">MSE</div>
+                        <div class="loss-track"><div class="loss-bar bar-mse"></div></div>
+                    </div>
+                </div>
+                <p class="anim-desc">MSE wariuje (rośnie kwadratowo wymierząjąc gigantyczną karę skryptowi). W przeciwieństwie do powyższych, <b>Huber Loss</b> inteligentnie amortyzuje wpadki w bazie, minimalnie skracając potknięcia by sieć zachowała balans!</p>
+            </div>
+            </section>
+
+            <section id="sec-5" class="content-section fade-in">
+                <h1>Optymalizacja wprowadzania danych <br><span>(tf.data.Dataset)</span></h1>
+                <p>Przy olbrzymich plikach system nie może zaczytywać całej kompilacji do procesora ze względu na pojemność pamięci. Aby osiągnąć maksymalną skalowalność, wdraża się oficjalny ekosystem pipelinenu Tensorflow dla zbiorów surowych w obiektowej definicji <code>Dataset</code>.</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header">train_ds = ( tf.data.Dataset.<span class="function">from_tensor_slices</span>((X_train, y_train))<br>    .<span class="function">shuffle</span>(len(X_train))<br>    .<span class="function">batch</span>(batch_size)<br>    .<span class="function">prefetch</span>(tf.data.AUTOTUNE) )</div>
+                        <div class="code-desc">System operacyjny "kuje na zimno". Odbiera macierze par X i y odpalając ciągi modyfikatorów na pętlach: miesza próbki by algorytm nie oszukiwał na zapamiętaniu układu, paczkuje je w batche i na ułamek ucisku przed odpaleniem asynchronicznie przesyła (prefetchuje) proces roboczy do wirtualnej pamięci graficznej skracając "Idle czas" silnika ML na procesorze na optymalnym priorytecie systemu Autotune.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> Wyobraź sobie pracownika (kartę graficzną) układającego cegły. Zawsze musiał czekać na taczkę po ułożeniu ściany. Konfiguracją "Prefetch" angażujesz tło do automatycznego przygotowywania kolejnej taczki cegieł w tle, w momencie zrzuconego zapasu. Karta nie ma przestojów, skrypt ćwiczący sztuczną inteligencję przy potężnych obrazkach po prostu frunie po zasobach.</div>
+                        </div>
+                    </div>
+                </div>
+
+            <div class="anim-box scale-in">
+                <div class="pipe-anim">
+                    <div class="pipe-stage">
+                        <div class="p-st-title">Raw</div>
+                        <div class="p-st-box">
+                            <div class="d-item i-red raw-1"></div>
+                            <div class="d-item i-blu raw-2"></div>
+                            <div class="d-item i-grn raw-3"></div>
+                        </div>
+                    </div>
+                    <div class="p-arrow">➔</div>
+                    <div class="pipe-stage">
+                        <div class="p-st-title">Shuffle</div>
+                        <div class="p-st-box">
+                            <div class="d-item i-red shuf-1"></div>
+                            <div class="d-item i-blu shuf-2"></div>
+                            <div class="d-item i-grn shuf-3"></div>
+                        </div>
+                    </div>
+                    <div class="p-arrow">➔</div>
+                    <div class="pipe-stage">
+                        <div class="p-st-title">Batch</div>
+                        <div class="p-st-box">
+                            <div class="bat-wrap">
+                                <div class="d-item i-blu"></div>
+                                <div class="d-item i-red"></div>
+                                <div class="d-item i-grn"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-arrow">➔</div>
+                    <div class="pipe-stage">
+                        <div class="p-st-title">Prefetch</div>
+                        <div class="p-st-box" style="border-color: #c678dd; box-shadow: 0 0 10px rgba(198,120,221,0.2)">
+                            <div class="pref-batch">
+                                <div class="d-item i-blu"></div>
+                                <div class="d-item i-red"></div>
+                                <div class="d-item i-grn"></div>
+                            </div>
+                            <div class="p-gpu">GPU</div>
+                        </div>
+                    </div>
+                </div>
+                <p class="anim-desc">Zestaw narzędzi z optymalizatorem 'autotune' dba stale o ciągłość prądu kart (GPU) z asynchronicznym wstrzykiwaniem paczek by wgrać je przed usunięciem starych!</p>
+            </div>
+            </section>
+
+            <section id="sec-6" class="content-section fade-in">
+                <h1>Architektura Obiektowa Modelu <br><span>(OOP Keras Subclassing)</span></h1>
+                <p>Nauce zawdzięczamy nie tylko sekwencje łączone krok po kroku za pomocą list (Sequential). Pełny obwód możemy samodzielnie zabudować klasowo.</p>
+
+                <div class="line-by-line">
+                    <div class="code-row">
+                        <div class="code-header"><span class="keyword">class</span> <span class="class">MLPmodel</span>(keras.Model):<br> <span class="keyword">def</span> <span class="function">__init__</span>(self):<br>  super(MLPmodel, self).__init__()<br>  <span class="keyword">self</span>.warstwa = keras.layers.<span class="class">Dense</span>(64, activation='relu')</div>
+                        <div class="code-desc">Kod konstruktora klasy pochodnej narzuca w pamięci strukturę węzłów i warstw dla sztucznych synaps po dziedziczeniu zasobności <code>keras.Model</code>. Użytkownik przydziela je do wczytanego podzespołu w ramach atrybutów <code>self.xyz</code> bez konkretnego okablowywania układów z prądem.
+                            <div class="po-ludzku"><b>💡 Po ludzku:</b> To kompletny plac budowy z planem projektu. Tylko kupujemy tu kable, żarówki i stacyjki do układu nie montując ich na razie. Składujemy je cichaczem do pudełka z imieniem konkretnej instancji modułu do wczytania sztucznej inteligencji by nie zaśmiecić obszaru roboczego platformie.</div>
+                        </div>
+                    </div>
+                    <div class="code-row">
+                        <div class="code-header"><span class="keyword">def</span> <span class="function">call</span>(self, x):<br> x = <span class="keyword">self</span>.warstwa(x)<br> <span class="keyword">return</span> <span class="keyword">self</span>.wyjscie(x)</div>
+                        <div class="code-desc">Metoda wyliczeniowa <code>call(x)</code> definiuje oficjalny "Forward Pass" (Przejście Wprzód). System przepuszcza sygnał przez warstwę i wydziela strumień wyjścia. Konstruktor ten daje wielokrotnie lepszą modularność układów operacyjnych przy eksperymentach dynamicznych, sieciach z rozwidleniami, skip connections lub hybrydach.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="viz-container scale-in"
+                style="background:#111; padding:30px; border-radius:8px; border:1px solid #333; margin:40px 0;">
+                <div class="viz-title" style="color:#fff; font-size:18px; margin-bottom:15px; font-weight:bold;">📉 Interaktywna Liniowa Predykcja</div>
+                <p style="color:#aaa; font-size:14px; margin-bottom:20px;">Dopasuj suwakami oszacowaną regresję. Obejrzyj, jak metryka MSE rośnie bardzo agresywnie, gdy czerwona linia znacznie odjeżdża od chmury realnych obserwacji badawczych, w porównaniu z MAE.</p>
+                <div class="controls" style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom: 20px;">
+                    <div class="control-group">
+                        <label style="color:#98c379; font-size:12px; font-weight:bold;">Waga sieci (W1 / Nachylenie): <span id="reg-w-val">1.0</span></label>
+                        <input type="range" id="reg-w-slider" min="0" max="6" step="0.1" value="1.0" style="width:120px;">
+                    </div>
+                    <div class="control-group">
+                        <label style="color:#98c379; font-size:12px; font-weight:bold;">Bias sieci (W0 / Podstawa): <span id="reg-b-val">0.0</span></label>
+                        <input type="range" id="reg-b-slider" min="-10" max="25" step="0.5" value="0.0"
+                            style="width:120px;">
+                    </div>
+                </div>
+                <div style="background: #1a1a1a; padding: 15px; border-radius: 4px; display: flex; gap: 30px; margin-bottom: 20px; border: 1px solid #333;">
+                    <div style="color: #bbb; font-size: 14px;">Średni Błąd Kwadratowy (MSE): <span id="metric-mse" style="color: #e06c75; font-weight: bold; font-family: monospace;">0.00</span></div>
+                    <div style="color: #bbb; font-size: 14px;">Średni Błąd Bezwzględny (MAE): <span id="metric-mae" style="color: #e5c07b; font-weight: bold; font-family: monospace;">0.00</span></div>
+                </div>
+                <div
+                    style="position:relative; height: 350px; width: 100%; margin:0 auto; background:#000; border-radius:8px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden;">
+                    <canvas id="regressionChart"></canvas>
+                </div>
+            </div>
+
+            <section id="quiz" class="content-section fade-in">
+                <h2>Quiz końcowy</h2>
+                <div class="quiz-container" id="quiz-l3">
+                    <!-- JS automatycznie dorzuci tu zawartość -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="site-footer">Wykonanie: Miłosz Prusinowski</footer>
+    <script src="script.js"></script>
+</body>
+
+</html>
