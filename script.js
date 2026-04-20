@@ -706,4 +706,234 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLabels();
         initSimChart();
     }
+
+    /* ===== LEKCJA 5: QUIZ ===== */
+    const questionsL5 = [
+        { q: "Jaką rolę pełni warstwa BatchNormalization?", opts: [{t: "Przyspiesza ładowanie zdjęć na kartę graficzną.", c: false}, {t: "Standaryzuje ukryte aktywacje wewnątrz sieci, zapobiegając nadmiernym wahaniom gradientów i przyspieszając naukę.", c: true}, {t: "Kasuje połowę danych ze zbioru MNIST by zmniejszyć objętość.", c: false}] },
+        { q: "Czym jest zjawisko Overfittingu?", opts: [{t: "Błędem sprzętowym wynikającym z przeładowania VRAM.", c: false}, {t: "Niedostosowaniem modelu, gdy jest on zbyt słaby na rozróżnianie klas.", c: false}, {t: "Przeuczeniem; sieć doskonale zdaje sprawdzian naukowy 'na pamięć' gubiąc zdolność poprawnej klasyfikacji całkowicie nowych przykładów (tzw. brak generalizacji).", c: true}] },
+        { q: "Co dokładnie robi L2 Regularization (Ridge)?", opts: [{t: "Redukuje wymiary fotografii podczas podglądu.", c: false}, {t: "Dodaje karę do funkcji straty za nazbyt duże wzrosty wag komórek, co zmusza układ do gładkości wektorów.", c: true}, {t: "Przerywa odpalony proces fit() po 5 krokach straty.", c: false}] },
+        { q: "Do czego służy parametr `patience=5` przy uruchomieniu Callbacks (EarlyStopping)?", opts: [{t: "Model poczeka z rozpoczęciem treningu 5 minut po wywołaniu kodu.", c: false}, {t: "Przerwie szkolenie gdy strata walidacyjna nie odnotuje poprawy od pięciu Epok z rzędu powracając do najlepszych wag z przeszłości.", c: true}, {t: "Zatrzyma uczenie za pięć piętnasta.", c: false}] },
+        { q: "Kiedy powinniśmy użyć Keras Tunera RandomSearch zamiast ręcznego zgadywania np. Dropout Rate w kodzie?", opts: [{t: "Używamy go zawsze, bo szaleńczo zmniejsza nasz czas ręcznego szukania najlepszego stosunku cech poprzez maszynowe próby i błędy.", c: true}, {t: "Nigdy, to zabroniona praktyka i zawsze powinno wpisywać się `0.5`.", c: false}, {t: "Wyłącznie przy podłączeniach na API w chmurze Google Colab dla serwera wirtualnego.", c: false}] }
+    ];
+    const qL5 = document.getElementById('quiz-l5');
+    if(qL5) renderQuiz(qL5, questionsL5);
+
+    /* ===== LEKCJA 5: DROPOUT INTERACTIVE ===== */
+    const doNet = document.getElementById('dropout-net');
+    if(doNet) {
+        let hHTML = '';
+        for(let i=0; i<8; i++) {
+            hHTML += `<div id="do-node-${i}" style="width:40px; height:40px; border-radius:50%; background:#c678dd; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; transition: all 0.3s ease;">
+                <div class="cross" style="display:none; position:absolute; width:100%; height:4px; background:#e06c75; transform:rotate(45deg); box-shadow: 0 0 5px #000;"></div>
+                <div class="cross" style="display:none; position:absolute; width:100%; height:4px; background:#e06c75; transform:rotate(-45deg); box-shadow: 0 0 5px #000;"></div>
+            </div>`;
+        }
+        doNet.innerHTML = hHTML;
+
+        setInterval(() => {
+            for(let i=0; i<8; i++) {
+                let n = document.getElementById(`do-node-${i}`);
+                if(n) {
+                    n.style.background = '#c678dd';
+                    n.querySelectorAll('.cross').forEach(c => c.style.display = 'none');
+                    n.style.opacity = '1';
+                    n.style.transform = 'scale(1)';
+                }
+            }
+            let dropped = [];
+            while(dropped.length < 3) {
+                let rd = Math.floor(Math.random() * 8);
+                if(!dropped.includes(rd)) dropped.push(rd);
+            }
+            dropped.forEach(d => {
+                let n = document.getElementById(`do-node-${d}`);
+                if(n) {
+                    n.style.background = '#333';
+                    n.style.opacity = '0.3';
+                    n.style.transform = 'scale(0.8)';
+                    n.querySelectorAll('.cross').forEach(c => c.style.display = 'block');
+                }
+            });
+        }, 1500);
+    }
+
+    /* ===== LEKCJA 5: REGULARIZATION SIMULATOR ===== */
+    const regSimCanvas = document.getElementById('regularizationSimChart');
+    if (regSimCanvas) {
+        const ctx5 = regSimCanvas.getContext('2d');
+        let regSimChart;
+        
+        const regSlider = document.getElementById('reg-str-slider'); // 0=None, 1=Good, 2=Heavy
+        const regValText = document.getElementById('reg-str-val');
+        const btnRegTrain = document.getElementById('reg-train-btn');
+        const regTerminalContent = document.getElementById('reg-terminal-content');
+        const earlyStopBanner = document.getElementById('early-stop-banner');
+        
+        let regInterval;
+        let regEpoch = 0;
+        let rLossHistory = [];
+        let rValLossHistory = [];
+        let rCurrentLoss = 2.0; 
+        let patienceCounter = 0;
+        let minValLoss = 999;
+        let isStopped = false;
+
+        const regNames = ["Brak (Overfitting Alert!)", "Optymalna (L2 + Dropout)", "Zbyt Silna (Underfit)"];
+
+        function addRegTerminalLog(ep, lossVal, valLossVal, msgStr = '') {
+            if (!regTerminalContent) return;
+            const logLine = document.createElement('div');
+            logLine.style.marginBottom = '6px';
+            if (msgStr) {
+                logLine.innerHTML = `<span style="color:#e06c75; font-weight:bold;">${msgStr}</span>`;
+            } else {
+                logLine.innerHTML = `Epoch ${ep}/50 <br><span style="color:#c678dd;">100/100 ━━━━━━━━━━━━━━━━━━━━</span> <span style="color:#61afef;">loss:</span> <span style="color:#fff;">${lossVal.toFixed(4)}</span> - <span style="color:#e5c07b;">val_loss:</span> <span style="color:#fff;">${valLossVal.toFixed(4)}</span>`;
+            }
+            regTerminalContent.appendChild(logLine);
+            regTerminalContent.scrollTop = regTerminalContent.scrollHeight;
+        }
+
+        function clearRegTerminal() {
+            if (regTerminalContent) {
+                regTerminalContent.innerHTML = '<div style="color:#c678dd; margin-bottom:5px;"><i>-- Model.fit() zainicjowane z Callbacks --</i></div>';
+            }
+        }
+
+        function initRegSimChart() {
+            if (regSimChart) regSimChart.destroy();
+            rLossHistory = [];
+            rValLossHistory = [];
+            regEpoch = 0;
+            patienceCounter = 0;
+            minValLoss = 999;
+            rCurrentLoss = 2.0;
+            isStopped = false;
+            
+            clearRegTerminal();
+            if(earlyStopBanner) earlyStopBanner.style.display = 'none';
+
+            regSimChart = new Chart(ctx5, {
+                type: 'line',
+                data: {
+                    labels: [], // epochs
+                    datasets: [
+                        {
+                            label: 'Loss',
+                            data: rLossHistory,
+                            borderColor: '#61afef',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            tension: 0.2,
+                            pointRadius: 1
+                        },
+                        {
+                            label: 'Val_Loss',
+                            data: rValLossHistory,
+                            borderColor: '#e06c75',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            tension: 0.2,
+                            pointRadius: 1,
+                            borderDash: [4, 4]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 0 },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Epoki', color: '#888' },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        y: {
+                            min: 0, suggestedMax: 2.5,
+                            title: { display: true, text: 'Błąd (Loss)', color: '#888' },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateRegLabels() {
+            if(regSlider && regValText) regValText.innerText = regNames[parseInt(regSlider.value)];
+        }
+
+        if(regSlider) regSlider.addEventListener('input', updateRegLabels);
+        
+        function stepRegTraining() {
+            if (regEpoch >= 50 || isStopped) {
+                clearInterval(regInterval);
+                btnRegTrain.innerText = isStopped ? "Zrestartuj Model" : "Zakończono Trening (Reset)";
+                btnRegTrain.style.background = "linear-gradient(135deg, #c678dd 0%, #85379e 100%)";
+                return;
+            }
+
+            const rIdx = parseInt(regSlider.value);
+            
+            let descent = 0;
+            let overfitPenalty = 0;
+
+            if (rIdx === 0) {
+                descent = (rCurrentLoss * 0.15);
+                if(regEpoch > 8) overfitPenalty = (regEpoch - 8) * 0.08; 
+            } else if (rIdx === 1) {
+                descent = (rCurrentLoss * 0.08);
+                if(regEpoch > 15) overfitPenalty = -0.01;
+            } else if (rIdx === 2) {
+                descent = (rCurrentLoss * 0.02);
+                overfitPenalty = 0;
+            }
+
+            rCurrentLoss = rCurrentLoss - descent;
+            if (rCurrentLoss < 0.05) rCurrentLoss = 0.05;
+
+            let stochNoise = (Math.random() - 0.5) * 0.05;
+
+            let vLoss = rCurrentLoss + overfitPenalty + Math.abs(stochNoise) + 0.1;
+
+            if (vLoss < minValLoss) {
+                minValLoss = vLoss;
+                patienceCounter = 0;
+            } else {
+                patienceCounter++;
+            }
+
+            rLossHistory.push(rCurrentLoss);
+            rValLossHistory.push(vLoss);
+            regSimChart.data.labels.push(regEpoch + 1);
+            
+            regSimChart.update();
+            addRegTerminalLog(regEpoch + 1, rCurrentLoss, vLoss);
+
+            if (patienceCounter >= 5) {
+                addRegTerminalLog(regEpoch + 1, 0, 0, `early_stop: Brak poprawy val_loss przez 5 epok. Przerwanie uczenia.`);
+                if(earlyStopBanner) earlyStopBanner.style.display = 'block';
+                isStopped = true;
+            }
+
+            regEpoch++;
+        }
+
+        if(btnRegTrain) {
+            btnRegTrain.addEventListener('click', () => {
+                if (btnRegTrain.innerText.includes("Zatrzymaj")) {
+                    clearInterval(regInterval);
+                    btnRegTrain.innerText = "Wznów Trening";
+                    btnRegTrain.style.background = "linear-gradient(135deg, #c678dd 0%, #85379e 100%)";
+                } else {
+                    if (regEpoch >= 50 || isStopped) initRegSimChart(); 
+                    if(regEpoch === 0) clearRegTerminal();
+                    btnRegTrain.innerText = "Zatrzymaj (Stop)";
+                    btnRegTrain.style.background = "#e06c75";
+                    regInterval = setInterval(stepRegTraining, 120);
+                }
+            });
+        }
+        
+        updateRegLabels();
+        initRegSimChart();
+    }
 });
