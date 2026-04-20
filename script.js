@@ -621,7 +621,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             grid: { color: 'rgba(255,255,255,0.05)' }
                         },
                         y: {
-                            min: 0, max: 2.5,
+                            min: 0, suggestedMax: 2.5,
                             title: { display: true, text: 'Poziom błędu (Loss)', color: '#888' },
                             grid: { color: 'rgba(255,255,255,0.05)' }
                         }
@@ -672,8 +672,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             currentLoss = currentLoss - descent;
             
-            // Ogranicznik by wykres nie skalował się w nieskończoność wizualnie
-            if (currentLoss > 2.5) currentLoss = 2.5 + (Math.random() * 0.2); 
+            // Zmodyfikowany ogranicznik, wykres naturalnie dopasuje skalę Y dla wielkich liczb
+            if (currentLoss > 100.0) currentLoss = 100.0; 
             if (currentLoss < 0.1) currentLoss = 0.1 + Math.abs(stochNoise * 0.5);
 
             let vLoss = currentLoss + Math.abs(stochNoise * 1.5) + (epoch/100); // lekki overfit na koniec
