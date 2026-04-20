@@ -492,4 +492,218 @@ document.addEventListener('DOMContentLoaded', () => {
         rbSlider.addEventListener('input', drawRegressionLine);
         drawRegressionLine();
     }
+
+    /* ===== LEKCJA 4: QUIZ ===== */
+    const questionsL4 = [
+        { q: "Czym jest hiperparametr Learning Rate (Współczynnik uczenia)?", opts: [{t: "Rozmiarem pamięci graficznej (VRAM) wymaganej do pobrania.", c: false}, {t: "Mnożnikiem kontrolującym jak wielki krok w stronę minimum błędu sieć stawia po korekcie logiki.", c: true}, {t: "Czasem pomiędzy kolejnymi paczkami ładowanymi z CSV.", c: false}] },
+        { q: "Jak zachowa się sieć trenowana ze zbyt wielkim Learning Rate (np. rzędu 500.0)?", opts: [{t: "Algorytm może zgubić zbieżność, chaotycznie przeskakując minimum a błąd wzrośnie do nieskończoności.", c: true}, {t: "Nauka przebiegnie ekstremalnie powoli i precyzyjnie.", c: false}, {t: "Wykres Loss w ogóle się nie narysuje przez brak zgodności typów w Pandasie.", c: false}] },
+        { q: "Co determinuje mały Batch Size (Rozmiar Paczki = 16)?", opts: [{t: "Obliczenia oparte tylko na 16 próbkach dają chwiejny ale bardzo szybki krok schodzący w dół.", c: true}, {t: "Wymaga ogromnej mocy procesora do uśredniania dziesiątek tysięcy losowań gradientu by gładko iść.", c: false}, {t: "Zmniejsza moc sieci tak że uczy się tylko 16 warstw układu głębokiego ukrytego.", c: false}] },
+        { q: "Za co odpowiada Optymalizator 'Adam' w Kerasie?", opts: [{t: "Jest to funkcja straty używana zamiast Huber do oceny problemów kategorycznych", c: false}, {t: "Jest inteligentnym algorytmem zjazdowym, który z każdym krokiem dostosowuje pęd i współczynnik LR bezwładnościowo dla każdej wagi strukturalnej zmniejszając wpływ wahań w labiryncie błędu.", c: true}, {t: "Część frameworku wczytująca zdjęcia z systemu lokalnego komputera do GPU.", c: false}] },
+        { q: "Co się najprawdopodobniej stanie gdy ułożymy strukturę o głębi np. 10.000 warstw dla małego pliku Excela (z 20 wierszami prób)?", opts: [{t: "Model się zawiesi brakiem możliwości przetworzenia w Pythonie", c: false}, {t: "Sieć wykaże zjawisko Overfittingu (Przeuczenia) z powodu ogromnej ilości miejsca do memoratyzacji prób.", c: true}, {t: "Wygeneruje świetny wynik na teście, zwalczając całkowicie błąd Underfittingu", c: false}] }
+    ];
+    const qL4 = document.getElementById('quiz-l4');
+    if(qL4) renderQuiz(qL4, questionsL4);
+
+
+    /* ===== LEKCJA 4: BATCH SIZE INTERACTIVE ===== */
+    const bsButtons = document.querySelectorAll('.bs-btn');
+    const bsActiveLine = document.getElementById('bs-active-line');
+    const bsDescText = document.getElementById('bs-desc-text');
+
+    if (bsButtons.length > 0 && bsActiveLine && bsDescText) {
+        bsButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                bsButtons.forEach(b => {
+                    b.classList.remove('active');
+                    b.style.background = 'transparent';
+                });
+                
+                btn.classList.add('active');
+                
+                const bsType = btn.getAttribute('data-bs');
+                if (bsType === 'small') {
+                    btn.style.background = 'rgba(224, 108, 117, 0.2)';
+                    bsActiveLine.className = 'bs-line bs-zigzag';
+                    bsDescText.innerHTML = '<b>Rozmiar 16:</b> Trening maszynowy jest "głośny" i wysoce chaotyczny! Wykres stochastycznie skacze z gigantycznymi schodami, ponieważ poprawka nakładana jest na logikę na podstawie niepewnej opinii od garstki zaledwie szesnastu przykładów. Daje to jednak zjawisko pomocnego "szumu" ułatwiającego wyrwanie się z pułapek optymalizacji matematycznej.';
+                } else if (bsType === 'large') {
+                    btn.style.background = 'rgba(97, 175, 239, 0.2)';
+                    bsActiveLine.className = 'bs-line bs-smooth';
+                    bsDescText.innerHTML = '<b>Rozmiar 1024:</b> Trening maszynowy jest "łagodny" i spokojny jak rzeka. Uśredniona masa ponad tysiąca próbek stłumiła każdą pojedynczą odstającą pomyłkę. Pozwala to sieci idealnie skupić się na inżynieryjnych kierunkach spadku funkcji, ale biada jej, jeśli po drodze znajdzie się fałszywa głęboka dziura (tzw. Local Minima) - ugrzęźnie w niej nie mając szalonych skoków by z niej wyskoczyć!';
+                }
+            });
+        });
+    }
+
+
+    /* ===== LEKCJA 4: HYPERPARAM TRAINING SIMULATOR ===== */
+    const simCanvas = document.getElementById('trainSimChart');
+    if (simCanvas) {
+        const ctx4 = simCanvas.getContext('2d');
+        let simChart;
+        
+        const lrSlider = document.getElementById('sim-lr-slider'); // 0 to 3
+        const bsSlider = document.getElementById('sim-bs-slider'); // 0 to 2
+        const lrVal = document.getElementById('sim-lr-val');
+        const bsVal = document.getElementById('sim-bs-val');
+        const btnTrain = document.getElementById('sim-train-btn');
+        
+        let trainInterval;
+        let epoch = 0;
+        let lossHistory = [];
+        let valLossHistory = [];
+        let currentLoss = 2.0; 
+        
+        // Zależności do logiki
+        // LRs: 0 -> mały, 1 -> optymalny, 2 -> wysoki, 3 -> ogromny
+        const lrMap = [0.0001, 0.001, 0.1, 10.0];
+        const lrNames = ["0.0001 (Micro)", "0.001 (Optymalny)", "0.1 (Zbyt duży)", "10.0 (Wybuchowy)"];
+        // Batches: 0 -> 16, 1 -> 64, 2 -> 1024
+        const bsMap = [16, 64, 1024];
+
+        const terminalContent = document.getElementById('terminal-content');
+        function addTerminalLog(ep, lossVal, valLossVal) {
+            if (!terminalContent) return;
+            const logLine = document.createElement('div');
+            logLine.style.marginBottom = '6px';
+            logLine.innerHTML = `Epoch ${ep}/50 <br><span style="color:#98c379;">100/100 ━━━━━━━━━━━━━━━━━━━━</span> <span style="color:#61afef;">loss:</span> <span style="color:#fff;">${lossVal.toFixed(4)}</span> - <span style="color:#e5c07b;">val_loss:</span> <span style="color:#fff;">${valLossVal.toFixed(4)}</span>`;
+            terminalContent.appendChild(logLine);
+            terminalContent.scrollTop = terminalContent.scrollHeight;
+        }
+
+        function clearTerminal() {
+            if (terminalContent) {
+                terminalContent.innerHTML = '<div style="color:#5c2d91; margin-bottom:5px;"><i>-- Przygotowywanie rdzeni GPU, Model.fit() w gotowości... --</i></div>';
+            }
+        }
+
+        function initSimChart() {
+            if (simChart) simChart.destroy();
+            lossHistory = [];
+            valLossHistory = [];
+            epoch = 0;
+            currentLoss = 2.0;
+            
+            clearTerminal();
+
+            simChart = new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    labels: [], // epochs
+                    datasets: [
+                        {
+                            label: 'Strata Treningowa (Loss)',
+                            data: lossHistory,
+                            borderColor: '#61afef',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            tension: 0.1,
+                            pointRadius: 2
+                        },
+                        {
+                            label: 'Strata Walidacyjna (Val_Loss)',
+                            data: valLossHistory,
+                            borderColor: '#e5c07b',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            tension: 0.1,
+                            pointRadius: 2,
+                            borderDash: [5, 3]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 0 },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Epoki (Czas)', color: '#888' },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        y: {
+                            min: 0, max: 2.5,
+                            title: { display: true, text: 'Poziom błędu (Loss)', color: '#888' },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateLabels() {
+            if(lrSlider) lrVal.innerText = lrNames[parseInt(lrSlider.value)];
+            if(bsSlider) bsVal.innerText = bsMap[parseInt(bsSlider.value)].toString();
+        }
+
+        if(lrSlider) lrSlider.addEventListener('input', updateLabels);
+        if(bsSlider) bsSlider.addEventListener('input', updateLabels);
+        
+        function stepTraining() {
+            if (epoch >= 50) {
+                clearInterval(trainInterval);
+                btnTrain.innerText = "Trening Zakończony (Zresetuj)";
+                btnTrain.style.background = "linear-gradient(135deg, #5c2d91 0%, #3e1b66 100%)";
+                if (terminalContent) {
+                     const endNote = document.createElement('div');
+                     endNote.style.color = '#fff';
+                     endNote.style.marginTop = '10px';
+                     endNote.style.fontWeight = 'bold';
+                     endNote.innerText = "Model dopasowany. Trening przerwany.";
+                     terminalContent.appendChild(endNote);
+                     terminalContent.scrollTop = terminalContent.scrollHeight;
+                }
+                return;
+            }
+
+            const lrIdx = parseInt(lrSlider.value);
+            const bsIdx = parseInt(bsSlider.value);
+
+            // Logika symulacji
+            let stochNoise = 0;
+            if (bsIdx === 0) stochNoise = (Math.random() - 0.5) * 0.4; // 16: dużo szumu
+            if (bsIdx === 1) stochNoise = (Math.random() - 0.5) * 0.1; // 64: zbalansowany szum
+            if (bsIdx === 2) stochNoise = (Math.random() - 0.5) * 0.02; // 1024: gładko
+
+            let descent = 0;
+            if (lrIdx === 0) descent = 0.01 + stochNoise * 0.1; // bardzo powoli schodzi
+            if (lrIdx === 1) descent = (currentLoss * 0.1) + stochNoise; // optymalnie schodzi (krzywa eksponencjalna)
+            if (lrIdx === 2) descent = (currentLoss * -0.05) + stochNoise * 2; // odbija się / nie schodzi efektywnie
+            if (lrIdx === 3) descent = -1.0; // wybuch gradientu
+            
+            currentLoss = currentLoss - descent;
+            
+            // Ogranicznik by wykres nie skalował się w nieskończoność wizualnie
+            if (currentLoss > 2.5) currentLoss = 2.5 + (Math.random() * 0.2); 
+            if (currentLoss < 0.1) currentLoss = 0.1 + Math.abs(stochNoise * 0.5);
+
+            let vLoss = currentLoss + Math.abs(stochNoise * 1.5) + (epoch/100); // lekki overfit na koniec
+
+            lossHistory.push(currentLoss);
+            valLossHistory.push(vLoss);
+            simChart.data.labels.push(epoch + 1);
+            
+            simChart.update();
+            addTerminalLog(epoch + 1, currentLoss, vLoss);
+            epoch++;
+        }
+
+        if(btnTrain) {
+            btnTrain.addEventListener('click', () => {
+                if (btnTrain.innerText.includes("Zatrzymaj")) {
+                    clearInterval(trainInterval);
+                    btnTrain.innerText = "Wznów Trening";
+                    btnTrain.style.background = "linear-gradient(135deg, #5c2d91 0%, #3e1b66 100%)";
+                } else {
+                    if (epoch >= 50) initSimChart(); // zaczynamy od nowa jezeli juz doszlismy do min epok
+                    if(epoch === 0) clearTerminal();
+                    btnTrain.innerText = "Zatrzymaj (Stop)";
+                    btnTrain.style.background = "#e06c75";
+                    trainInterval = setInterval(stepTraining, 100);
+                }
+            });
+        }
+        
+        updateLabels();
+        initSimChart();
+    }
 });
